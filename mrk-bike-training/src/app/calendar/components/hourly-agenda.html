@@ -1,0 +1,104 @@
+<div class="agenda-panel-container">
+  @if (selectedEvent(); as event) {
+    <!-- Detailed View Mode -->
+    <div class="detail-view">
+      <button type="button" class="back-btn" (click)="clearEventSelection()">
+        ← Back to Agenda
+      </button>
+
+      <div class="detail-card" [style.border-left-color]="getResourceThemeColor(event.resourceId)">
+        <div class="detail-header">
+          <h2>{{ event.title }}</h2>
+          <span class="time">
+            📅 {{ event.startTime | date: 'mediumDate' }} <br/>
+            ⏰ {{ event.startTime | date: 'shortTime' }} - {{ event.endTime | date: 'shortTime' }}
+          </span>
+        </div>
+
+        <div class="detail-meta-grid">
+          <div class="label">Resource</div>
+          <div class="value">{{ getResourceName(event.resourceId) }}</div>
+
+          @if (event.status) {
+            <div class="label">Status</div>
+            <div class="value" style="font-weight: 600;">{{ event.status }}</div>
+          }
+
+          <!-- Dynamic Metadata Listing -->
+          @for (meta of getMetadataList(event); track meta.key) {
+            <div class="label">{{ meta.key }}</div>
+            <div class="value">{{ meta.value }}</div>
+          }
+        </div>
+
+        <!-- Event Notes -->
+        @if (event.metadata?.['notes']) {
+          <div class="detail-notes">
+            <h5>Internal Notes</h5>
+            <p>{{ event.metadata?.['notes'] }}</p>
+          </div>
+        }
+
+        <!-- Actions Panel (if not read-only) -->
+        @if (!readOnly()) {
+          <div class="detail-actions">
+            <button type="button" class="edit-btn" (click)="triggerEdit()">Edit Task</button>
+            <button type="button" class="delete-btn" (click)="triggerDelete()">Delete</button>
+          </div>
+        }
+      </div>
+    </div>
+  } @else {
+    <!-- Day Agenda View Mode -->
+    <div class="panel-header">
+      <h3>Daily Schedule</h3>
+    </div>
+
+    <div class="selected-date-title">
+      {{ selectedDate() | date: 'EEEE, MMMM d, y' }}
+    </div>
+
+    <div class="agenda-timeline">
+      <!-- Events List -->
+      @if (dateEvents().length > 0) {
+        @for (item of dateEvents(); track item.id) {
+          <div 
+            class="agenda-item" 
+            [style.border-left-color]="getResourceThemeColor(item.resourceId)"
+            (click)="selectEvent(item)"
+          >
+            <span class="item-time">
+              {{ item.startTime | date: 'shortTime' }} - {{ item.endTime | date: 'shortTime' }}
+            </span>
+            <span class="item-title">{{ item.title }}</span>
+            <span class="item-resource">{{ getResourceName(item.resourceId) }}</span>
+          </div>
+        }
+      } @else {
+        <p style="font-size: 0.85rem; color: var(--text-muted, #888); font-style: italic; margin: 1rem 0;">
+          No events scheduled for this day.
+        </p>
+      }
+
+      <!-- Availability Gaps (if any, and not read-only) -->
+      @if (!readOnly() && timelineGaps().length > 0) {
+        <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color-light, rgba(0,0,0,0.05)); padding-top: 1rem;">
+          <h4 style="margin: 0 0 0.75rem 0; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted, #777); letter-spacing: 0.05em;">
+            Available Slots
+          </h4>
+          
+          <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            @for (gap of timelineGaps(); track gap.label) {
+              <div class="gap-item">
+                <span>{{ gap.label }}</span>
+                <button type="button" class="add-gap-btn" (click)="triggerCreateInGap(gap)">
+                  + Book
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

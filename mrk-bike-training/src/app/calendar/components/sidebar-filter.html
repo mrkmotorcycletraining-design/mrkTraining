@@ -1,0 +1,116 @@
+<div class="sidebar-container">
+  <!-- Dynamic Dropdown Select Filters (e.g. Branch) -->
+  @for (filter of selectFilters(); track filter.key) {
+    <div class="filter-section">
+      <h3>{{ filter.label }}</h3>
+      <select 
+        class="branch-select" 
+        [value]="getSelectedMetaValue(filter.key)" 
+        (change)="onSelectChange(filter.key, $event)"
+      >
+        <option value="">All {{ filter.label }}s</option>
+        @for (opt of filter.options; track opt.value) {
+          <option [value]="opt.value">{{ opt.label }}</option>
+        }
+      </select>
+    </div>
+  }
+
+  <!-- Hierarchical Resources/Assets Tree -->
+  <div class="filter-section">
+    <div class="section-header">
+      <h3>Resources</h3>
+      <div class="macro-controls">
+        <button type="button" (click)="selectAllResources()">All</button>
+        <button type="button" (click)="clearAllResources()">None</button>
+      </div>
+    </div>
+
+    <div class="tree-container">
+      @for (node of resourceTree(); track node.parent.id) {
+        <!-- Parent Node (Category) -->
+        <div class="tree-node parent">
+          <div class="node-row" (click)="toggleResource(node.parent.id)">
+            <div class="node-left">
+              <input 
+                type="checkbox" 
+                [checked]="isResourceChecked(node.parent.id)"
+                (click)="$event.stopPropagation(); toggleResource(node.parent.id)"
+              />
+              @if (node.parent.colorTheme) {
+                <span class="color-badge" [style.background-color]="node.parent.colorTheme"></span>
+              }
+              <span>{{ node.parent.name }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Child Nodes (Individual Assets) -->
+        @for (child of node.children; track child.id) {
+          <div class="tree-node child">
+            <div class="node-row" (click)="toggleResource(child.id)">
+              <div class="node-left">
+                <input 
+                  type="checkbox" 
+                  [checked]="isResourceChecked(child.id)"
+                  (click)="$event.stopPropagation(); toggleResource(child.id)"
+                />
+                <span>{{ child.name }}</span>
+              </div>
+              <span 
+                class="status-dot" 
+                [class.maintenance]="child.status === 'MAINTENANCE'" 
+                [class.disabled]="child.status === 'DISABLED'"
+                [title]="child.status"
+              ></span>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  </div>
+
+  <!-- Secondary Checkbox Filters (e.g. Instructors) -->
+  @for (filter of checkboxFilters(); track filter.key) {
+    <div class="filter-section">
+      <div class="section-header">
+        <h3>{{ filter.label }}</h3>
+        <div class="macro-controls">
+          <button type="button" (click)="selectAllMeta(filter.key, filter.options)">All</button>
+          <button type="button" (click)="clearAllMeta(filter.key)">None</button>
+        </div>
+      </div>
+
+      <div class="meta-checkbox-list">
+        @for (opt of filter.options; track opt.value) {
+          <label>
+            <input 
+              type="checkbox" 
+              [checked]="isMetaChecked(filter.key, opt.value)"
+              (change)="toggleMeta(filter.key, opt.value)"
+            />
+            <span>{{ opt.label }}</span>
+          </label>
+        }
+      </div>
+    </div>
+  }
+
+  <!-- Status Bar Summary at bottom -->
+  <div class="status-bar-summary">
+    <div class="summary-row">
+      <span>Total Fleet Assets</span>
+      <span class="count">{{ statusCounts().total }}</span>
+    </div>
+    <div class="summary-row">
+      <span>Active/Ready</span>
+      <span class="count" style="color: #4CAF50;">{{ statusCounts().active }}</span>
+    </div>
+    @if (statusCounts().maintenance > 0) {
+      <div class="summary-row">
+        <span>In Maintenance</span>
+        <span class="count" style="color: #FFC107;">{{ statusCounts().maintenance }}</span>
+      </div>
+    }
+  </div>
+</div>

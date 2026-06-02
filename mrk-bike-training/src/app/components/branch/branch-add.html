@@ -1,0 +1,77 @@
+<form class="form-card" #f="ngForm" (ngSubmit)="submit(f)" novalidate>
+  <h3 class="form-title">Add Branch</h3>
+
+  <!-- Success / Error banners -->
+  @if (successMsg()) {
+    <div class="alert alert-success">✅ {{ successMsg() }}</div>
+  }
+  @if (errorMsg()) {
+    <div class="alert alert-error">⚠️ {{ errorMsg() }}</div>
+  }
+
+  <!-- Branch ID -->
+  <div class="field">
+    <label for="branchId">Branch ID <span class="required">*</span></label>
+    <input
+      id="branchId"
+      name="id"
+      type="text"
+      placeholder="e.g. 400001_MumbaiFort"
+      maxlength="255"
+      required
+      pattern="^[A-Za-z0-9_\-]+$"
+      [(ngModel)]="id"
+      #idCtrl="ngModel"
+      [class.invalid]="idCtrl.invalid && idCtrl.touched"
+    />
+    @if (idCtrl.touched && idCtrl.errors?.['required']) {
+      <span class="field-error">Branch ID is required</span>
+    }
+    @if (idCtrl.touched && idCtrl.errors?.['pattern']) {
+      <span class="field-error">Only letters, digits, underscores and hyphens allowed</span>
+    }
+    <span class="field-hint">Format: PinCode_CityName (e.g. 400001_MumbaiFort)</span>
+  </div>
+
+  <!-- Name -->
+  <div class="field">
+    <label for="branchName">Name <span class="required">*</span></label>
+    <input
+      id="branchName"
+      name="name"
+      type="text"
+      placeholder="Branch display name"
+      maxlength="255"
+      required
+      [(ngModel)]="name"
+      #nameCtrl="ngModel"
+      [class.invalid]="nameCtrl.invalid && nameCtrl.touched"
+    />
+    @if (nameCtrl.touched && nameCtrl.errors?.['required']) {
+      <span class="field-error">Name is required</span>
+    }
+  </div>
+
+  <!-- Address -->
+  <div class="field">
+    <label for="branchAddr">Address <span class="required">*</span></label>
+    <textarea
+      id="branchAddr"
+      name="location"
+      rows="3"
+      maxlength="1000"
+      placeholder="Full street address"
+      required
+      [(ngModel)]="location"
+      #locationCtrl="ngModel"
+      [class.invalid]="locationCtrl.invalid && locationCtrl.touched"
+    ></textarea>
+    @if (locationCtrl.touched && locationCtrl.errors?.['required']) {
+      <span class="field-error">Address is required</span>
+    }
+  </div>
+
+  <button type="submit" class="btn-primary" [disabled]="submitting()">
+    {{ submitting() ? 'Saving…' : 'Create Branch' }}
+  </button>
+</form>

@@ -1,0 +1,65 @@
+@if (activeCloneEvent(); as event) {
+  <div class="clone-modal-overlay" (click)="close()">
+    <div class="clone-modal-container" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Replicate / Clone Booking</h3>
+        <button type="button" class="close-btn" (click)="close()">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="clone-helper-text">
+          Select the target dates on which you want to clone this booking: 
+          <strong>"{{ event.title }}"</strong>.
+        </div>
+
+        <div class="calendars-row">
+          @for (grid of calendarGrids(); track grid.monthName) {
+            <div class="micro-calendar">
+              <div class="calendar-month-name">{{ grid.monthName }}</div>
+              
+              <div class="calendar-days-header">
+                @for (d of weekDays; track d) {
+                  <div>{{ d }}</div>
+                }
+              </div>
+
+              <div class="calendar-grid">
+                @for (item of grid.days; track item.date.getTime()) {
+                  <div 
+                    class="grid-day-cell"
+                    [class.other-month]="item.isOther"
+                    [class.selected]="isSelected(item.date)"
+                    (click)="toggleDate(item.date)"
+                  >
+                    {{ item.date.getDate() }}
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+
+        <label class="clone-settings">
+          <input 
+            type="checkbox" 
+            [checked]="maintainTimeSlots"
+            (change)="maintainTimeSlots = !maintainTimeSlots"
+          />
+          <span>Maintain original time slot ({{ event.startTime | date: 'shortTime' }} - {{ event.endTime | date: 'shortTime' }})</span>
+        </label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="cancel-btn" (click)="close()">Cancel</button>
+        <button 
+          type="button" 
+          class="submit-btn" 
+          [disabled]="targetDates.size === 0"
+          (click)="submitClone()"
+        >
+          Confirm Replications ({{ targetDates.size }})
+        </button>
+      </div>
+    </div>
+  </div>
+}

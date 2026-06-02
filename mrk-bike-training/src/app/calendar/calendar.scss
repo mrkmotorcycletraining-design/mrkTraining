@@ -1,0 +1,295 @@
+:host {
+  /* Design Tokens - Light Theme Default */
+  --canvas-bg: #FAF9F6; /* Soft warm cream */
+  --canvas-content: #FFFFFF;
+  --canvas-sidebar: rgba(255, 255, 255, 0.45);
+  --canvas-header: rgba(0, 0, 0, 0.02);
+  --canvas-gutter: rgba(0, 0, 0, 0.015);
+  --canvas-card: #FFFFFF;
+  --canvas-input: #FFFFFF;
+  --canvas-overlay: rgba(255, 255, 255, 0.85);
+  --canvas-weekend: rgba(0, 0, 0, 0.008);
+  --border-color: #E0E0E0;
+  --border-color-light: rgba(0, 0, 0, 0.05);
+  --text-color: #2C3E50; /* Deep slate */
+  --text-muted: #7F8C8D;
+  --accent-color: #1976D2;
+  --accent-color-dark: #1565C0;
+  --accent-color-light: rgba(25, 118, 210, 0.08);
+  --accent-hover-bg: rgba(25, 118, 210, 0.1);
+  --row-hover-bg: rgba(0, 0, 0, 0.02);
+  --today-bg: rgba(25, 118, 210, 0.03);
+
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-color: var(--canvas-bg);
+  color: var(--text-color);
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+:host.dark-theme {
+  /* Design Tokens - Dark Theme */
+  --canvas-bg: #121212; /* Low emission slate */
+  --canvas-content: #1E1E1E;
+  --canvas-sidebar: rgba(30, 30, 30, 0.6);
+  --canvas-header: rgba(255, 255, 255, 0.02);
+  --canvas-gutter: rgba(255, 255, 255, 0.025);
+  --canvas-card: #2A2A2A;
+  --canvas-input: #2D2D2D;
+  --canvas-overlay: rgba(30, 30, 30, 0.85);
+  --canvas-weekend: rgba(255, 255, 255, 0.005);
+  --border-color: #333333;
+  --border-color-light: rgba(255, 255, 255, 0.06);
+  --text-color: #E0E0E0;
+  --text-muted: #888888;
+  --accent-color: #64B5F6;
+  --accent-color-dark: #42A5F5;
+  --accent-color-light: rgba(100, 181, 246, 0.1);
+  --accent-hover-bg: rgba(100, 181, 246, 0.15);
+  --row-hover-bg: rgba(255, 255, 255, 0.03);
+  --today-bg: rgba(100, 181, 246, 0.05);
+}
+
+.calendar-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--canvas-content);
+  z-index: 10;
+  box-sizing: border-box;
+}
+
+.left-controls, .right-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.calendar-nav-btn {
+  background: var(--canvas-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-color);
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover {
+    background: var(--row-hover-bg);
+  }
+
+  &.today-btn {
+    font-weight: 700;
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+  }
+}
+
+.active-date-label {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-left: 0.75rem;
+  color: var(--text-color);
+}
+
+.view-segment-control {
+  display: flex;
+  background: var(--border-color-light);
+  padding: 2px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+
+  button {
+    background: none;
+    border: none;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+
+    &:hover {
+      color: var(--text-color);
+    }
+
+    &.active {
+      background: var(--canvas-content);
+      color: var(--accent-color);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+  }
+}
+
+/* Master Layout Stage split splits sidebar vs canvas vs details */
+.calendar-stage {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.sidebar-wrapper {
+  width: 240px;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
+  border-right: 1px solid var(--border-color);
+  background: var(--canvas-sidebar);
+}
+
+.canvas-wrapper {
+  flex-grow: 1;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0; /* Prevent flex blowout */
+}
+
+.agenda-wrapper {
+  width: 320px;
+  flex-shrink: 0;
+  height: 100%;
+  overflow-y: auto;
+  border-left: 1px solid var(--border-color);
+  background: var(--canvas-sidebar);
+}
+
+/* In MONTH VIEW: collapse both panels to overlays so grid gets full width */
+.calendar-stage.month-mode {
+  .sidebar-wrapper {
+    position: absolute;
+    left: -241px;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    transition: left 0.3s ease;
+    box-shadow: none;
+
+    &.drawer-open {
+      left: 0;
+      box-shadow: 8px 0 24px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .agenda-wrapper {
+    position: absolute;
+    right: -321px;
+    top: 0;
+    bottom: 0;
+    z-index: 100;
+    transition: right 0.3s ease;
+    box-shadow: none;
+
+    &.drawer-open {
+      right: 0;
+      box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+    }
+  }
+}
+
+/* Sidebar toggle button: always visible in month mode, hidden otherwise on desktop */
+.sidebar-toggle-btn {
+  display: none;
+  font-size: 1.2rem;
+  background: none;
+  border: none;
+  color: var(--text-color);
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  transition: background 0.2s;
+
+  &:hover {
+    background: var(--row-hover-bg);
+  }
+}
+
+/* Show sidebar toggle always when in month view */
+.month-view-mode .sidebar-toggle-btn {
+  display: block;
+}
+
+@media screen and (max-width: 992px) {
+  .agenda-wrapper {
+    width: 260px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .sidebar-toggle-btn {
+    display: block;
+  }
+  
+  .sidebar-wrapper {
+    position: absolute;
+    left: -240px;
+    z-index: 100;
+    transition: left 0.3s ease;
+
+    &.drawer-open {
+      left: 0;
+      box-shadow: 8px 0 24px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .agenda-wrapper {
+    position: absolute;
+    right: -320px;
+    z-index: 100;
+    width: 300px;
+    transition: right 0.3s ease;
+
+    &.drawer-open {
+      right: 0;
+      box-shadow: -8px 0 24px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  .left-controls {
+    .calendar-nav-btn {
+      padding: 0.3rem 0.6rem;
+      font-size: 0.75rem;
+    }
+    .active-date-label {
+      font-size: 0.95rem;
+      margin-left: 0.25rem;
+    }
+  }
+
+  .view-segment-control {
+    button {
+      padding: 0.3rem 0.5rem;
+      font-size: 0.725rem;
+    }
+  }
+}
+
+/* Floating overlay drawers screens on mobile click-outside blocking */
+.mobile-overlay-shadow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.25);
+  z-index: 90;
+  display: none;
+
+  &.visible {
+    display: block;
+  }
+}

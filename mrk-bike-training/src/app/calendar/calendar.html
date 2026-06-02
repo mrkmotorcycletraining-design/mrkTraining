@@ -1,0 +1,146 @@
+<!-- Calendar Toolbar Header -->
+<div class="calendar-top-bar" [class.month-view-mode]="selectedView() === 'month'">
+  <div class="left-controls">
+    <!-- Sidebar toggle: always visible in month view, mobile-only otherwise -->
+    <button 
+      type="button" 
+      class="sidebar-toggle-btn" 
+      (click)="toggleSidebar()"
+      title="Toggle Filters"
+    >
+      ☰
+    </button>
+
+    <button type="button" class="calendar-nav-btn" (click)="prev()">◀ Prev</button>
+    <button type="button" class="calendar-nav-btn today-btn" (click)="today()">Today</button>
+    <button type="button" class="calendar-nav-btn" (click)="next()">Next ▶</button>
+    
+    <span class="active-date-label">{{ getActiveDateLabel() }}</span>
+  </div>
+
+  <div class="right-controls">
+    <!-- Segment Switches for Layout views -->
+    <div class="view-segment-control">
+      <button 
+        type="button" 
+        [class.active]="selectedView() === 'month'" 
+        (click)="setView('month')"
+      >
+        Month
+      </button>
+      <button 
+        type="button" 
+        [class.active]="selectedView() === 'week'" 
+        (click)="setView('week')"
+      >
+        Week
+      </button>
+      <button 
+        type="button" 
+        [class.active]="selectedView() === 'day'" 
+        (click)="setView('day')"
+      >
+        Day
+      </button>
+      <button 
+        type="button" 
+        [class.active]="selectedView() === 'resource'" 
+        (click)="setView('resource')"
+      >
+        Timeline
+      </button>
+    </div>
+
+    <!-- Agenda toggle: always visible in month view, mobile-only otherwise -->
+    <button 
+      type="button" 
+      class="sidebar-toggle-btn" 
+      (click)="toggleAgenda()"
+      title="Toggle Daily Details"
+    >
+      📋
+    </button>
+  </div>
+</div>
+
+<!-- Main Calendar Layout Workspace -->
+<div 
+  class="calendar-stage"
+  [class.month-mode]="selectedView() === 'month'"
+>
+  <!-- Left Side: Custom Dynamic Tree Filters -->
+  <div 
+    class="sidebar-wrapper" 
+    [class.drawer-open]="sidebarOpen"
+  >
+    <app-sidebar-filter></app-sidebar-filter>
+  </div>
+
+  <!-- Central Stage: Active View Grid -->
+  <div class="canvas-wrapper" (click)="closeDrawers()">
+    @if (selectedView() === 'month') {
+      <app-month-view
+        (eventContextMenu)="onEventContextMenu($event)"
+      ></app-month-view>
+    } @else if (selectedView() === 'week') {
+      <app-week-view 
+        (eventChanged)="onEventDragChange($event)"
+        (cloneRequest)="activeCloneEvent.set($event)"
+        (eventContextMenu)="onEventContextMenu($event)"
+      ></app-week-view>
+    } @else if (selectedView() === 'day') {
+      <app-week-view 
+        [isSingleDay]="true"
+        (eventChanged)="onEventDragChange($event)"
+        (cloneRequest)="activeCloneEvent.set($event)"
+        (eventContextMenu)="onEventContextMenu($event)"
+      ></app-week-view>
+    } @else if (selectedView() === 'resource') {
+      <app-resource-timeline 
+        (eventChanged)="onEventDragChange($event)"
+      ></app-resource-timeline>
+    }
+  </div>
+
+  <!-- Right Side: Agenda & Detail Info Panel -->
+  <div 
+    class="agenda-wrapper" 
+    [class.drawer-open]="agendaOpen || !!selectedEvent()"
+  >
+    <app-hourly-agenda 
+      (eventDeleted)="onEventDeleteRequest($event)"
+    ></app-hourly-agenda>
+  </div>
+
+  <!-- Mobile/Month Overlay Shade backdrop to dismiss open drawers -->
+  <div 
+    class="mobile-overlay-shadow" 
+    [class.visible]="sidebarOpen || agendaOpen"
+    (click)="closeDrawers()"
+  ></div>
+</div>
+
+<!-- Dynamic Overlay Modals Layer -->
+
+<!-- 1. Quick Injections Right-Click Context Menu -->
+@if (quickMenu(); as q) {
+  <app-quick-menu 
+    [templates]="quickTemplates"
+    (quickCreate)="onQuickCreateTrigger($event)"
+  ></app-quick-menu>
+}
+
+<!-- 2. Detailed Create/Edit Reactive Modal Form -->
+@if (activeEditEvent() || activeCreateSlot()) {
+  <app-booking-form-modal 
+    [metadataFields]="metadataFormFields"
+    (save)="onBookingFormSave($event)"
+  ></app-booking-form-modal>
+}
+
+<!-- 3. Multi-Date Batch Replications Modal -->
+@if (activeCloneEvent()) {
+  <app-clone-modal 
+    (cloneConfirmed)="onCloneRequest($event)"
+  ></app-clone-modal>
+}

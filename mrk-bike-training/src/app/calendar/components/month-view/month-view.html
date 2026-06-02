@@ -1,0 +1,58 @@
+<div class="month-grid-container">
+  <!-- Weekday Labels -->
+  <div class="days-header-row">
+    @for (day of weekDays; track day) {
+      <div>{{ day }}</div>
+    }
+  </div>
+
+  <!-- Day Cells Grid -->
+  <div class="days-grid">
+    @for (date of gridDays(); track date.getTime()) {
+      <div 
+        class="day-cell"
+        [class.other-month]="isOtherMonth(date)"
+        [class.today]="isToday(date)"
+        [class.selected]="isSelected(date)"
+        (click)="selectDate(date)"
+        (contextmenu)="onCellRightClick($event, date)"
+        (touchstart)="onTouchStart($event, date)"
+        (touchend)="onTouchEnd()"
+      >
+        <div class="day-header">
+          <span class="day-number">{{ date.getDate() }}</span>
+          
+          @if (getEventsForDate(date).length > 0) {
+            <span 
+              class="density-badge"
+              [class.high]="getEventsForDate(date).length > 4"
+            >
+              {{ getEventsForDate(date).length }}
+            </span>
+          }
+        </div>
+
+        <div class="day-events">
+          @for (event of getEventsForDate(date).slice(0, 3); track event.id) {
+            <div 
+              class="month-event-strip {{ event.status | lowercase }}"
+              [style.background-color]="getResourceThemeColor(event.resourceId) + '12'"
+              [style.border-left-color]="getResourceThemeColor(event.resourceId)"
+              [style.color]="getResourceThemeColor(event.resourceId)"
+              (click)="selectEvent($event, event)"
+              (contextmenu)="onEventRightClick($event, event)"
+            >
+              <span class="title-text">{{ event.title }}</span>
+            </div>
+          }
+
+          @if (getEventsForDate(date).length > 3) {
+            <div class="more-indicator">
+              +{{ getEventsForDate(date).length - 3 }} more
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

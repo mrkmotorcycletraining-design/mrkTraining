@@ -1,0 +1,5 @@
+The Java Spring Boot backend should use BCrypt (BCryptPasswordEncoder) to hash passwords. BCrypt is a one-way hashing algorithm; you do not need to store an "encryption key" because the hash itself contains a randomly generated salt.
+
+Rule 3: Store any sensitive application-wide keys (like JWT signing secrets) securely outside your codebase using System Environment Variables or an .env file managed via Spring Profiles (application.yml), never hardcoded in GitHub.
+
+Use PostgreSQL, but install it via Docker directly on your application server.

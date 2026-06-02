@@ -1,0 +1,47 @@
+<div class="panel">
+  <div class="panel-header">
+    <h3>Trainers</h3>
+    <button class="btn-secondary" (click)="load()" [disabled]="loading()">
+      {{ loading() ? 'Loading…' : '↻ Refresh' }}
+    </button>
+  </div>
+
+  @if (errorMsg()) {
+    <div class="alert alert-error">⚠️ {{ errorMsg() }}</div>
+  }
+
+  @if (trainers().length === 0 && !loading()) {
+    <p class="empty-state">No trainers found. Add one using the Trainer → Add menu.</p>
+  } @else {
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Branch</th>
+          <th>Start Date</th>
+          <th>Salary (₹)</th>
+          <th>Available</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (t of trainers(); track t.id) {
+          <tr>
+            <td>{{ t.id }}</td>
+            <td>{{ t.name }}</td>
+            <td>{{ t.emailUsername }}</td>
+            <td>{{ t.branchName || t.branchId || '—' }}</td>
+            <td>{{ t.startDate || '—' }}</td>
+            <td>{{ t.salary != null ? (t.salary | number:'1.0-0') : '—' }}</td>
+            <td>
+              <span [class]="t.available ? 'badge badge-green' : 'badge badge-red'">
+                {{ t.available ? 'Yes' : 'No' }}
+              </span>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

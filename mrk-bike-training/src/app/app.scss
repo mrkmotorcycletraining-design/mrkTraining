@@ -1,0 +1,496 @@
+/* ============================================================
+   App Shell — MRK Bike Training
+   ============================================================ */
+
+:host {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Outfit", "Inter", sans-serif;
+  overflow: hidden;
+}
+
+/* ---- CSS Variables ---- */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+
+  /* Light theme tokens */
+  --nav-bg: #1565C0;          /* Blue brand */
+  --nav-bg-hover: #1976D2;
+  --nav-text: #FFFFFF;
+  --nav-text-muted: rgba(255, 255, 255, 0.75);
+  --nav-border: rgba(255, 255, 255, 0.12);
+  --nav-active-bg: rgba(255, 255, 255, 0.15);
+  --shell-bg: #F0F4FF;
+  --card-bg: #FFFFFF;
+  --border-color: #D0D9F0;
+  --text-color: #1A2340;
+  --toast-bg: #D32F2F;
+
+  background-color: var(--shell-bg);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+
+  &.dark-mode {
+    --nav-bg: #0D1B3E;
+    --nav-bg-hover: #1565C0;
+    --nav-text: #E8EEF8;
+    --nav-text-muted: rgba(232, 238, 248, 0.6);
+    --nav-border: rgba(255, 255, 255, 0.08);
+    --nav-active-bg: rgba(100, 181, 246, 0.18);
+    --shell-bg: #0F1117;
+    --card-bg: #1A1D27;
+    --border-color: #252A3A;
+    --text-color: #E8EEF8;
+    --toast-bg: #B71C1C;
+  }
+}
+
+/* ============================================================
+   Navbar
+   ============================================================ */
+.app-navbar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 1.25rem;
+  height: 56px;
+  background: var(--nav-bg);
+  color: var(--nav-text);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  z-index: 200;
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Brand */
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  flex-shrink: 0;
+
+  .brand-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+  }
+
+  .brand-name {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--nav-text);
+    white-space: nowrap;
+  }
+}
+
+/* Nav menu (desktop: horizontal row; mobile: dropdown) */
+.navbar-menu {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 2rem;
+  flex-grow: 1;
+}
+
+/* Dropdown / grouped nav items */
+.nav-group {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-item .nav-link {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  min-width: 160px;
+  flex-direction: column;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--nav-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  padding: 6px 0;
+  z-index: 250;
+}
+
+.nav-item:hover .dropdown-menu,
+.nav-item:focus-within .dropdown-menu {
+  display: flex;
+}
+
+.dropdown-item {
+  background: none;
+  border: none;
+  padding: 0.5rem 0.9rem;
+  text-align: left;
+  font-weight: 700;
+  color: var(--text-color);
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background: var(--nav-active-bg);
+  color: var(--nav-text);
+}
+
+.nav-link {
+  color: var(--nav-text-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.4rem 0.85rem;
+  border-radius: 6px;
+  transition: background 0.18s, color 0.18s;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--nav-active-bg);
+    color: var(--nav-text);
+  }
+
+  &.active {
+    background: var(--nav-active-bg);
+    color: var(--nav-text);
+  }
+}
+
+.navbar-divider {
+  flex-grow: 1; /* pushes theme button to the right */
+}
+
+/* Theme icon button */
+.theme-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--nav-border);
+  background: var(--nav-active-bg);
+  color: var(--nav-text);
+  cursor: pointer;
+  transition: background 0.18s, transform 0.18s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.22);
+    transform: rotate(15deg);
+  }
+
+  svg {
+    display: block;
+  }
+}
+
+/* Hamburger button (hidden on desktop) */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 36px;
+  height: 36px;
+  padding: 6px;
+  background: none;
+  border: 1px solid var(--nav-border);
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: auto;
+  flex-shrink: 0;
+
+  span {
+    display: block;
+    height: 2px;
+    background: var(--nav-text);
+    border-radius: 2px;
+    transition: transform 0.25s, opacity 0.25s;
+    transform-origin: center;
+  }
+
+  &.open {
+    span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  }
+}
+
+/* ============================================================
+   Main stage
+   ============================================================ */
+.app-stage {
+  flex-grow: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ============================================================
+   Toast alert
+   ============================================================ */
+.toast-alert {
+  position: fixed;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--toast-bg);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 30px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: slideDownIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes slideDownIn {
+  from { top: 48px; opacity: 0; }
+  to   { top: 72px; opacity: 1; }
+}
+
+/* ============================================================
+   Modal Dialog Overlay
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-wrapper {
+  position: relative;
+  background: var(--card-bg);
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-height: 80vh;
+  overflow: auto;
+  animation: scaleUp 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(211, 47, 47, 0.12);
+  color: #D32F2F;
+  font-size: 1.2rem;
+  cursor: pointer;
+  z-index: 10000;
+  transition: background 0.18s;
+}
+
+.modal-close:hover {
+  background: rgba(211, 47, 47, 0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes scaleUp {
+  from { transform: scale(0.92) translateY(-20px); opacity: 0; }
+  to   { transform: scale(1) translateY(0); opacity: 1; }
+}
+
+
+/* ============================================================
+   Responsive — collapse navbar on small screens
+   ============================================================ */
+@media screen and (max-width: 768px) {
+  .hamburger-btn {
+    display: flex;
+  }
+
+  .navbar-menu {
+    /* Hidden by default on mobile */
+    display: none;
+    position: absolute;
+    top: 56px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin-left: 0;
+    background: var(--nav-bg);
+    border-top: 1px solid var(--nav-border);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    padding: 0.5rem 0.75rem 0.75rem;
+    z-index: 199;
+
+    &.is-open {
+      display: flex;
+    }
+  }
+
+  /* Mobile: when nav is open, make dropdowns visible and inline with mobile styling */
+  .navbar-menu.is-open .dropdown-menu {
+    display: flex;
+    position: relative;
+    top: 0;
+    left: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    min-width: 0;
+  }
+
+  .navbar-menu.is-open .dropdown-item {
+    color: var(--nav-text);
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+  }
+
+  .nav-link {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  .navbar-divider {
+    flex-grow: 0;
+    height: 0.5rem;
+  }
+
+  .theme-icon-btn {
+    align-self: flex-start;
+    margin-top: 0.25rem;
+  }
+}
+
+/* ============================================================
+   Event Right-Click Context Menu
+   ============================================================ */
+.event-context-menu {
+  position: fixed;
+  z-index: 9999;
+  min-width: 190px;
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+  animation: ctxFadeIn 0.12s ease;
+
+  .ctx-menu-header {
+    padding: 0.55rem 0.9rem 0.4rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-color, #333);
+    opacity: 0.55;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-bottom: 1px solid var(--border-color, #e0e0e0);
+  }
+
+  .ctx-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0.6rem 0.9rem;
+    background: none;
+    border: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color, #333);
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s;
+
+    &:hover {
+      background: rgba(25, 118, 210, 0.08);
+    }
+
+    &.danger {
+      color: #D32F2F;
+
+      &:hover {
+        background: rgba(211, 47, 47, 0.08);
+      }
+    }
+
+    .ctx-icon {
+      font-size: 1rem;
+      line-height: 1;
+    }
+  }
+
+  .ctx-menu-divider {
+    height: 1px;
+    background: var(--border-color, #e0e0e0);
+    margin: 0;
+  }
+}
+
+@keyframes ctxFadeIn {
+  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Dark mode overrides for context menu */
+.app-shell.dark-mode .event-context-menu {
+  background: #1e2130;
+  border-color: #2e3450;
+
+  .ctx-menu-header {
+    border-bottom-color: #2e3450;
+  }
+
+  .ctx-menu-item {
+    color: #e8eef8;
+
+    &:hover {
+      background: rgba(100, 181, 246, 0.12);
+    }
+
+    &.danger {
+      color: #ef9a9a;
+
+      &:hover {
+        background: rgba(239, 154, 154, 0.1);
+      }
+    }
+  }
+
+  .ctx-menu-divider {
+    background: #2e3450;
+  }
+}

@@ -1,0 +1,100 @@
+<div class="timeline-scroll-container">
+  <!-- Sticky Left Sidebar (Resource Labels) -->
+  <div class="resources-sidebar-column">
+    <div class="sidebar-header">Asset List</div>
+    @for (res of activeResources(); track res.id) {
+      <div 
+        class="resource-row-label"
+        [class.maintenance]="res.status === 'MAINTENANCE'"
+        [class.disabled]="res.status === 'DISABLED'"
+      >
+        <h4>{{ res.name }}</h4>
+        <span>{{ res.status === 'MAINTENANCE' ? '🔧 Maintenance' : '✔ Active' }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- Horizontal Scrollable Timeline grid stage -->
+  <div class="timeline-grid-stage">
+    <!-- Hour Headers -->
+    <div class="timeline-hours-header">
+      @for (hr of timelineHours(); track hr) {
+        <div class="hour-header-cell">
+          {{ hr === 12 ? '12 PM' : hr > 12 ? (hr - 12) + ' PM' : hr + ' AM' }}
+        </div>
+      }
+    </div>
+
+    <!-- Timeline Grid lanes -->
+    <div class="timeline-rows-body" #rowsBody>
+      @for (res of activeResources(); track res.id) {
+        <div 
+          class="timeline-row-lane"
+          [class.maintenance]="res.status === 'MAINTENANCE'"
+          [class.disabled]="res.status === 'DISABLED'"
+        >
+          <!-- Grid Hour Intersections (for click & right-click creation) -->
+          @for (hr of timelineHours(); track hr) {
+            <div 
+              style="width: 100px; height: 100%; flex-shrink: 0;"
+              (click)="onGridCellClick($event, res.id, hr)"
+              (contextmenu)="onGridCellRightClick($event, res.id, hr)"
+            ></div>
+          }
+
+          <!-- Collision Indicator Overlay (if dragging over this lane) -->
+          @if (isOverlayVisibleInLane(res.id)) {
+            <div 
+              class="timeline-collision-overlay {{ collisionStatus() }}"
+              [style.left.px]="getOverlayLeft()"
+              [style.width.px]="getOverlayWidth()"
+            >
+              @if (collisionStatus() === 'collision') {
+                ⚠️ Collides
+              } @else if (collisionStatus() === 'invalid') {
+                🚫 Shaded
+              } @else {
+                ✔ Drop
+              }
+            </div>
+          }
+
+          <!-- Event Blocks for this lane -->
+          @for (event of getEventsForResource(res.id); track event.id) {
+            @if (draggingEvent()?.id !== event.id) {
+              <div 
+                class="timeline-event-node"
+                [style.left.px]="getEventLeft(event)"
+                [style.width.px]="getEventWidth(event)"
+                [style.background-color]="getResourceThemeColor(event.resourceId) + '12'"
+                [style.border-left-color]="getResourceThemeColor(event.resourceId)"
+                [style.color]="getResourceThemeColor(event.resourceId)"
+                (mousedown)="onDragStart($event, event)"
+                (touchstart)="onDragStart($event, event)"
+                (click)="selectEvent($event, event)"
+              >
+                <div class="event-title">{{ event.title }}</div>
+                <div class="event-time">
+                  {{ event.startTime | date: 'shortTime' }}
+                </div>
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Drag Floating Ghost Block -->
+@if (draggingEvent(); as drag) {
+  <div 
+    class="floating-ghost-block"
+    [style.left.px]="dragCurrentPosition()?.clientX"
+    [style.top.px]="dragCurrentPosition()?.clientY"
+    [style.border-left-color]="getResourceThemeColor(drag.resourceId)"
+  >
+    <h4>{{ drag.title }}</h4>
+    <span>Re-assigning...</span>
+  </div>
+}

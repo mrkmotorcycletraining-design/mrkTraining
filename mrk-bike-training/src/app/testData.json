@@ -1,0 +1,47 @@
+[
+  {
+    "id": 7081,
+    "resourceId": 101,
+    "title": "Demo Ride - Rohan Sharma",
+    "startTime": "2026-06-01T08:30:00",
+    "endTime": "2026-06-01T10:00:00",
+    "status": "CONFIRMED",
+    "metadata": { "locationBranchId": 501, "trainerId": "Instructor Alex", "clientId": "Rohan Sharma", "notes": "Client requested size-L riding jacket." }
+  },
+  {
+    "id": 7082,
+    "resourceId": 102,
+    "title": "Cruiser Training - Priya Sen",
+    "startTime": "2026-06-01T11:00:00",
+    "endTime": "2026-06-01T12:30:00",
+    "status": "CONFIRMED",
+    "metadata": { "locationBranchId": 501, "trainerId": "Instructor Jane", "clientId": "Priya Sen", "notes": "First off-road session." }
+  },
+  {
+    "id": 7083,
+    "resourceId": 201,
+    "title": "Engine Refitting Service",
+    "startTime": "2026-06-02T09:00:00",
+    "endTime": "2026-06-02T15:00:00",
+    "status": "PENDING",
+    "metadata": { "locationBranchId": 502, "trainerId": "Instructor Bob", "clientId": "Internal Workshop", "notes": "Requires custom piston valves replacement." }
+  },
+  {
+    "id": 7084,
+    "resourceId": 101,
+    "title": "Introductory Lesson - Kabir Dev",
+    "startTime": "2026-06-03T14:00:00",
+    "endTime": "2026-06-03T15:30:00",
+    "status": "CONFIRMED",
+    "metadata": { "locationBranchId": 501, "trainerId": "Instructor Alex", "clientId": "Kabir Dev", "notes": "Brand new rider." }
+  },
+  {
+    "id": 7085,
+    "resourceId": 301,
+    "title": "Off-Road Session - Amit Roy",
+    "startTime": "2026-06-04T12:00:00",
+    "endTime": "2026-06-04T15:00:00",
+    "status": "CONFIRMED",
+    "metadata": { "locationBranchId": 502, "trainerId": "Instructor Jane", "clientId": "Amit Roy", "notes": "Provide heavy knee guards." }
+  }
+]

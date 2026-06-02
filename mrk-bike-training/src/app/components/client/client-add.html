@@ -1,0 +1,138 @@
+<form class="form-card" #f="ngForm" (ngSubmit)="submit(f)" novalidate>
+  <h3 class="form-title">Add Client</h3>
+
+  @if (successMsg()) {
+    <div class="alert alert-success">✅ {{ successMsg() }}</div>
+  }
+  @if (errorMsg()) {
+    <div class="alert alert-error">⚠️ {{ errorMsg() }}</div>
+  }
+
+  <!-- Name -->
+  <div class="field">
+    <label for="clientName">Full Name <span class="required">*</span></label>
+    <input
+      id="clientName"
+      name="name"
+      type="text"
+      placeholder="e.g. Rohan Sharma"
+      maxlength="255"
+      required
+      [(ngModel)]="name"
+      #nameCtrl="ngModel"
+      [class.invalid]="nameCtrl.invalid && nameCtrl.touched"
+    />
+    @if (nameCtrl.touched && nameCtrl.errors?.['required']) {
+      <span class="field-error">Name is required</span>
+    }
+  </div>
+
+  <!-- Email -->
+  <div class="field">
+    <label for="clientEmail">Email <span class="required">*</span></label>
+    <input
+      id="clientEmail"
+      name="email"
+      type="email"
+      placeholder="client@example.com"
+      maxlength="255"
+      required
+      email
+      [(ngModel)]="email"
+      #emailCtrl="ngModel"
+      [class.invalid]="emailCtrl.invalid && emailCtrl.touched"
+    />
+    @if (emailCtrl.touched && emailCtrl.errors?.['required']) {
+      <span class="field-error">Email is required</span>
+    }
+    @if (emailCtrl.touched && emailCtrl.errors?.['email']) {
+      <span class="field-error">Enter a valid email address</span>
+    }
+  </div>
+
+  <!-- Password -->
+  <div class="field">
+    <label for="clientPwd">Password <span class="required">*</span></label>
+    <input
+      id="clientPwd"
+      name="password"
+      type="password"
+      placeholder="Min 6 characters"
+      minlength="6"
+      maxlength="255"
+      required
+      [(ngModel)]="password"
+      #pwdCtrl="ngModel"
+      [class.invalid]="pwdCtrl.invalid && pwdCtrl.touched"
+    />
+    @if (pwdCtrl.touched && pwdCtrl.errors?.['required']) {
+      <span class="field-error">Password is required</span>
+    }
+    @if (pwdCtrl.touched && pwdCtrl.errors?.['minlength']) {
+      <span class="field-error">Password must be at least 6 characters</span>
+    }
+  </div>
+
+  <!-- Confirm Password -->
+  <div class="field">
+    <label for="clientPwdConfirm">Confirm Password <span class="required">*</span></label>
+    <input
+      id="clientPwdConfirm"
+      name="confirmPassword"
+      type="password"
+      placeholder="Re-enter password"
+      required
+      [(ngModel)]="confirmPassword"
+      #cpwdCtrl="ngModel"
+      [class.invalid]="(cpwdCtrl.touched && cpwdCtrl.errors?.['required']) || passwordMismatch"
+    />
+    @if (cpwdCtrl.touched && cpwdCtrl.errors?.['required']) {
+      <span class="field-error">Please confirm your password</span>
+    }
+    @if (passwordMismatch) {
+      <span class="field-error">Passwords do not match</span>
+    }
+  </div>
+
+  <!-- Height & Weight row -->
+  <div class="field-row">
+    <div class="field">
+      <label for="clientHeight">Height (cm)</label>
+      <input
+        id="clientHeight"
+        name="height"
+        type="number"
+        min="50"
+        max="250"
+        placeholder="e.g. 170"
+        [(ngModel)]="height"
+        #heightCtrl="ngModel"
+        [class.invalid]="heightCtrl.invalid && heightCtrl.touched"
+      />
+      @if (heightCtrl.touched && (heightCtrl.errors?.['min'] || heightCtrl.errors?.['max'])) {
+        <span class="field-error">Height must be between 50–250 cm</span>
+      }
+    </div>
+    <div class="field">
+      <label for="clientWeight">Weight (kg)</label>
+      <input
+        id="clientWeight"
+        name="weight"
+        type="number"
+        min="20"
+        max="300"
+        placeholder="e.g. 65"
+        [(ngModel)]="weight"
+        #weightCtrl="ngModel"
+        [class.invalid]="weightCtrl.invalid && weightCtrl.touched"
+      />
+      @if (weightCtrl.touched && (weightCtrl.errors?.['min'] || weightCtrl.errors?.['max'])) {
+        <span class="field-error">Weight must be between 20–300 kg</span>
+      }
+    </div>
+  </div>
+
+  <button type="submit" class="btn-primary" [disabled]="submitting()">
+    {{ submitting() ? 'Saving…' : 'Create Client' }}
+  </button>
+</form>

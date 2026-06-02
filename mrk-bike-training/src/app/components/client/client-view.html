@@ -1,0 +1,39 @@
+<div class="panel">
+  <div class="panel-header">
+    <h3>Clients</h3>
+    <button class="btn-secondary" (click)="load()" [disabled]="loading()">
+      {{ loading() ? 'Loading…' : '↻ Refresh' }}
+    </button>
+  </div>
+
+  @if (errorMsg()) {
+    <div class="alert alert-error">⚠️ {{ errorMsg() }}</div>
+  }
+
+  @if (clients().length === 0 && !loading()) {
+    <p class="empty-state">No clients found. Add one using the Client → Add menu.</p>
+  } @else {
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Height (cm)</th>
+          <th>Weight (kg)</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of clients(); track c.id) {
+          <tr>
+            <td>{{ c.id }}</td>
+            <td>{{ c.name }}</td>
+            <td>{{ c.emailUsername }}</td>
+            <td>{{ c.heightCm ?? '—' }}</td>
+            <td>{{ c.weightKg ?? '—' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+</div>

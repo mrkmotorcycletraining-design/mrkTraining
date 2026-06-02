@@ -1,0 +1,131 @@
+<div class="week-view-scroll-container" #scrollContainer>
+  <!-- Sticky View Header -->
+  <div class="week-view-header">
+    <div class="time-gutter-header"></div>
+    <div class="columns-header-container">
+      @for (col of columnsList(); track col.getTime()) {
+        <div class="column-header-cell" [class.today]="isToday(col)">
+          <span class="day-label">{{ col | date: 'EEE' }}</span>
+          <div class="date-badge">{{ col | date: 'd' }}</div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Scrollable Grid Body -->
+  <div class="week-grid-body">
+    <!-- Time Gutter Hour Labels -->
+    <div class="time-gutter">
+      @for (hr of hours; track hr) {
+        <div class="hour-label">
+          {{ hr === 0 ? '12 AM' : hr === 12 ? '12 PM' : hr > 12 ? (hr - 12) + ' PM' : hr + ' AM' }}
+        </div>
+      }
+    </div>
+
+    <!-- Active Columns Stage -->
+    <div class="columns-body-container" #columnsContainer>
+      @for (col of columnsList(); track col.getTime()) {
+        <!-- FIX Bug 3: Compute overlap layout once per column, pass into each event node -->
+        @let colEvents = getEventsForColumn(col);
+        @let overlapMap = getColumnOverlapLayout(colEvents);
+
+        <div 
+          class="grid-column" 
+          [class.weekend]="isWeekend(col)"
+        >
+          <!-- Shading for Non-Operational Hours -->
+          @for (shade of getShadeBlocks(); track shade.top) {
+            <div 
+              class="non-operational-shade"
+              [style.top.px]="shade.top"
+              [style.height.px]="shade.height"
+            ></div>
+          }
+
+          <!-- Grid Clickable Hour Cells (for Quick Menu / Creation triggers) -->
+          @for (hr of hours; track hr) {
+            <div 
+              style="position: absolute; left: 0; right: 0; height: 60px;"
+              [style.top.px]="hr * 60"
+              (click)="onGridCellClick($event, col, hr)"
+              (contextmenu)="onGridCellRightClick($event, col, hr)"
+            ></div>
+          }
+
+          <!-- Real-time Collision Overlay during active Dragging -->
+          @if (isOverlayVisibleInColumn(col)) {
+            <div 
+              class="collision-overlay-preview {{ collisionStatus() }}"
+              [style.top.px]="getOverlayTop()"
+              [style.height.px]="getOverlayHeight()"
+            >
+              @if (collisionStatus() === 'collision') {
+                ⚠️ Blocked
+              } @else if (collisionStatus() === 'invalid') {
+                🚫 Maintenance
+              } @else {
+                ✔ Drop Here
+              }
+            </div>
+          }
+
+          <!-- Render Column Calendar Events with overlap side-by-side layout -->
+          @for (event of colEvents; track event.id) {
+            <!-- Hide event block if it is currently being dragged, as it floats under pointer -->
+            @if (draggingEvent()?.id !== event.id) {
+              <div 
+                class="event-node"
+                [style.top.px]="getEventTop(event)"
+                [style.height.px]="getEventHeight(event)"
+                [style.left]="(overlapMap.get(event.id)?.leftPercent ?? 0) + '%'"
+                [style.width]="'calc(' + (overlapMap.get(event.id)?.widthPercent ?? 100) + '% - 4px)'"
+                [style.right]="'auto'"
+                [style.background-color]="getResourceThemeColor(event.resourceId) + '18'"
+                [style.border-left-color]="getResourceThemeColor(event.resourceId)"
+                [style.color]="getResourceThemeColor(event.resourceId)"
+                (mousedown)="onDragStart($event, event)"
+                (touchstart)="onDragStart($event, event)"
+                (click)="selectEvent($event, event)"
+                (contextmenu)="onEventRightClick($event, event)"
+              >
+                <div class="event-title">{{ event.title }}</div>
+                <div class="event-time">
+                  {{ event.startTime | date: 'shortTime' }} - {{ event.endTime | date: 'shortTime' }}
+                </div>
+                
+                @if (event.metadata?.['trainerId']) {
+                  <div class="event-trainer">{{ event.metadata?.['trainerId'] }}</div>
+                }
+
+                @if (!readOnly() && config().enableCloning) {
+                  <button 
+                    type="button" 
+                    class="clone-btn" 
+                    (click)="triggerClone($event, event)"
+                    title="Clone Booking"
+                  >
+                    📋 Clone
+                  </button>
+                }
+              </div>
+            }
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- Floating absolute pointer drag preview representation (Ghost Block) -->
+@if (draggingEvent(); as drag) {
+  <div 
+    class="floating-ghost-block"
+    [style.left.px]="dragCurrentPosition()?.clientX"
+    [style.top.px]="dragCurrentPosition()?.clientY"
+    [style.border-left-color]="getResourceThemeColor(drag.resourceId)"
+  >
+    <h4>{{ drag.title }}</h4>
+    <span>Re-scheduling...</span>
+  </div>
+}
