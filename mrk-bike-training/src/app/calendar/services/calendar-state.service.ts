@@ -36,7 +36,7 @@ export class CalendarStateService {
 
   // Selected details / overlay states
   readonly selectedEvent = signal<CalendarEvent | null>(null);
-  readonly quickMenu = signal<{ x: number; y: number; resourceId: string | number; time: Date } | null>(null);
+  readonly quickMenu = signal<{ x: number; y: number; resourceId: string | number; startTime: Date; event?: CalendarEvent } | null>(null);
   readonly activeCloneEvent = signal<CalendarEvent | null>(null);
   readonly activeEditEvent = signal<CalendarEvent | null>(null); // For custom booking modal
   readonly activeCreateSlot = signal<{ resourceId: string | number; time: Date } | null>(null); // For triggering creation from grid double-click or empty slots

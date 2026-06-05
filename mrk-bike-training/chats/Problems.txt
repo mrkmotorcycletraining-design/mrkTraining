@@ -1,0 +1,9 @@
+Problems:
+
+1. Menu bar design is not consistent across all login screen
+2. On Month view can't see scheduled tasks, on right click could options should be: Create New Schedule, if right click on existing task: View, Edit, Delete. I should be able to select and drag it to other date and on drop a dialog should verify new schedule and update existing.
+3. on clicking on calender task, its saying edit, Assign Resource is not showing vehicles. Lets change everywhere reource/assignedResource to Vehicle
+4.  Main part that we urgently need to fix is that my UI should look asthetic, Admin can login and should be able to add/update/delete client, schedule for it, mark absence for client and trainer, Add/update/delete course client should be able to login, request training, see status, and most importantly calender and all its scheduling functionality and all views should work. Calender desing should be similar to outlook, google calender and TimeTree. Update course to add template, etc
+5. Refer requirement1.md
+6. ag-grid missing, forms are not aesthetic even some of them coming in same screen.
+7. can't request new training, create schedule, etc

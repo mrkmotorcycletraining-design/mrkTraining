@@ -1,13 +1,7 @@
 package com.mrk.training.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "users")
@@ -20,11 +14,11 @@ public class User {
     @Column(name = "email_username", unique = true, nullable = false)
     private String emailUsername;
 
+    @JsonIgnore
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "role_enum")
     private Role role;
 
     @Column(name = "is_active")

@@ -59,7 +59,7 @@ export class TrainerAdd implements OnInit {
     try {
       const trainer = await apiPost<TrainerModel>('/api/trainers', {
         emailUsername: this.email().trim(),
-        passwordHash: this.password(),
+        password: this.password(),
         name: this.name().trim(),
         startDate: this.startDate() || null,
         salary: this.salary(),

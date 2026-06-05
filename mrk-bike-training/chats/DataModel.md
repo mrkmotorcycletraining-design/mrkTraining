@@ -41,6 +41,8 @@ Here is the refined relational model structure, designed to be scalable, clean, 
 
 * `id`: AlphaNumeric (Shared/FK to User ID)
 * `name`: String
+* `uniqueId`: String (Admin-assigned, must be unique across all clients — can be an email or any custom value)
+* `allowedNumOfTrainings`: Integer (Max number of concurrent active/pending trainings; set and updated only by Admin/SuperAdmin; **not visible to the client**)
 * `heightCm`: Integer (Used to match `HtRangeReq` on bikes)
 * `weightKg`: Integer (Used to match `WtRangeReq` on bikes)
 
@@ -128,9 +130,12 @@ Here is the refined relational model structure, designed to be scalable, clean, 
 `clientId`: FK to ClientProfile 
 
 
-* 
-`branchId`: FK to Branch 
+* `branchId`: String — **intentionally NOT a foreign key**. This field stores different types of location identifiers depending on the course category:
+  * **Regular courses** → a valid `branches.id` value (e.g. `"400001_MumbaiFort"`)
+  * **Premium courses** → the client's location pincode (e.g. `"400050"`)
+  * **Trip courses** → a Trip ID string
 
+  > Referential integrity for regular branches is enforced at the application layer. Adding a hard FK here would require inserting a dummy `branches` row for every pincode and trip ID, which pollutes the `branches` table.
 
 * 
 `title`: String 
@@ -145,7 +150,11 @@ Here is the refined relational model structure, designed to be scalable, clean, 
 
 
 * `type`: Enum (`REGULAR_TRAINING`, `BUFFER_SESSION`, `TRIP`, `MAINTENANCE`)
-* `status`: Enum (`SCHEDULED`, `CONFIRMED`, `CANCELLED`)
+* `status`: Enum (`PENDING`, `ACTIVE`, `CANCELLED`)
+  * `PENDING` — client has submitted the request; awaiting Admin/SuperAdmin approval
+  * `ACTIVE` — Admin/SuperAdmin has approved the slot
+  * `CANCELLED` — slot was rejected or cancelled; optional `rejectionReason` text populated by admin
+* `rejectionReason`: String (Optional — populated by Admin/SuperAdmin on `CANCELLED`)
 
 #### 9. AttendanceLog
 

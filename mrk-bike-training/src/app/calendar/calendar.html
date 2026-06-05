@@ -81,6 +81,7 @@
     @if (selectedView() === 'month') {
       <app-month-view
         (eventContextMenu)="onEventContextMenu($event)"
+        (eventChanged)="onEventDragChange($event)"
       ></app-month-view>
     } @else if (selectedView() === 'week') {
       <app-week-view 
@@ -127,6 +128,8 @@
   <app-quick-menu 
     [templates]="quickTemplates"
     (quickCreate)="onQuickCreateTrigger($event)"
+    (editRequest)="activeEditEvent.set($event)"
+    (deleteRequest)="onEventDeleteRequest($event)"
   ></app-quick-menu>
 }
 

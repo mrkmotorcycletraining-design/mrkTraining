@@ -229,7 +229,7 @@ export class ResourceTimelineComponent {
       x: event.clientX,
       y: event.clientY,
       resourceId,
-      time: clickedTime
+      startTime: clickedTime
     });
   }
 

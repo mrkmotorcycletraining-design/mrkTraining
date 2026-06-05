@@ -1,12 +1,8 @@
 package com.mrk.training.web.request;
 
-import java.math.BigDecimal;
+import jakarta.validation.constraints.*;
 
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import java.math.BigDecimal;
 
 public class TrainerRequest {
 
@@ -17,7 +13,7 @@ public class TrainerRequest {
 
     @NotBlank(message = "Password is required")
     @Size(min = 6, max = 255, message = "Password must be at least 6 characters")
-    private String passwordHash;
+    private String password;
 
     @NotBlank(message = "Name is required")
     @Size(max = 255)
@@ -36,8 +32,8 @@ public class TrainerRequest {
 
     public String getEmailUsername() { return emailUsername; }
     public void setEmailUsername(String emailUsername) { this.emailUsername = emailUsername; }
-    public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getStartDate() { return startDate; }

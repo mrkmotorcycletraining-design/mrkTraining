@@ -7,20 +7,38 @@
     [ngStyle]="getMenuStyles()"
     (contextmenu)="$event.preventDefault()"
   >
-    <div class="menu-header">Quick Schedule</div>
-    
-    @for (tpl of templates; track tpl.title) {
-      <button type="button" class="menu-item" (click)="selectTemplate(tpl)">
-        <span>{{ tpl.title }}</span>
-        <span class="duration">{{ tpl.durationMinutes }}m</span>
+    @if (menu.event; as ev) {
+      <div class="menu-header">Task Options</div>
+      
+      <button type="button" class="menu-item" (click)="viewEvent()">
+        <span>👁️ View Details</span>
+      </button>
+      
+      <button type="button" class="menu-item" (click)="editEvent()">
+        <span>✏️ Edit Schedule</span>
+      </button>
+      
+      <div class="menu-divider"></div>
+      
+      <button type="button" class="menu-item" (click)="deleteEvent()">
+        <span style="color: #ff5252;">🗑️ Delete Schedule</span>
+      </button>
+    } @else {
+      <div class="menu-header">Quick Schedule</div>
+      
+      @for (tpl of templates; track tpl.title) {
+        <button type="button" class="menu-item" (click)="selectTemplate(tpl)">
+          <span>{{ tpl.title }}</span>
+          <span class="duration">{{ tpl.durationMinutes }}m</span>
+        </button>
+      }
+      
+      <div class="menu-divider"></div>
+      
+      <button type="button" class="menu-item" (click)="triggerFullCreate()">
+        <span style="font-weight: 600; color: var(--accent-color, #1976D2);">Create Detailed...</span>
+        <span>➕</span>
       </button>
     }
-    
-    <div class="menu-divider"></div>
-    
-    <button type="button" class="menu-item" (click)="triggerFullCreate()">
-      <span style="font-weight: 600; color: var(--accent-color, #1976D2);">Create Detailed...</span>
-      <span>➕</span>
-    </button>
   </div>
 }

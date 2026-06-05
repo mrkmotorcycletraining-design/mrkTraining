@@ -1,7 +1,7 @@
 import { Component, inject, computed, HostListener, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CalendarStateService } from '../../services/calendar-state.service';
-import { CalendarEvent, CalendarResource } from '../../models/calendar.types';
+import { CalendarEvent, CalendarResource, DragMutationEvent } from '../../models/calendar.types';
 
 @Component({
   selector: 'app-month-view',
@@ -14,6 +14,7 @@ export class MonthViewComponent {
   private readonly state = inject(CalendarStateService);
 
   @Output() readonly eventContextMenu = new EventEmitter<{ x: number; y: number; event: CalendarEvent }>();
+  @Output() readonly eventChanged = new EventEmitter<DragMutationEvent>();
 
   // Bind properties to state service signals
   protected readonly selectedDate = this.state.selectedDate;
@@ -125,7 +126,7 @@ export class MonthViewComponent {
       x: event.clientX,
       y: event.clientY,
       resourceId,
-      time
+      startTime: new Date()
     });
   }
 
@@ -150,7 +151,7 @@ export class MonthViewComponent {
         x: clientX,
         y: clientY,
         resourceId,
-        time
+        startTime: new Date()
       });
     }, 600); // 600ms hold
   }
@@ -171,6 +172,45 @@ export class MonthViewComponent {
     event.preventDefault();
     event.stopPropagation();
     this.eventContextMenu.emit({ x: event.clientX, y: event.clientY, event: calEvent });
+  }
+
+  protected onDragStart(event: DragEvent, calEvent: CalendarEvent) {
+    if (this.readOnly()) return;
+    event.dataTransfer?.setData('text/plain', String(calEvent.id));
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+    }
+  }
+
+  protected onDrop(event: DragEvent, targetDate: Date) {
+    if (this.readOnly()) return;
+    event.preventDefault();
+    const eventId = event.dataTransfer?.getData('text/plain');
+    if (!eventId) return;
+
+    const calEvent = this.filteredEvents().find(e => String(e.id) === String(eventId));
+    if (!calEvent) return;
+
+    // Shift date but maintain hours
+    const originalStart = new Date(calEvent.startTime);
+    const originalEnd = new Date(calEvent.endTime);
+    const duration = originalEnd.getTime() - originalStart.getTime();
+
+    const newStart = new Date(targetDate);
+    newStart.setHours(originalStart.getHours(), originalStart.getMinutes(), originalStart.getSeconds(), originalStart.getMilliseconds());
+    const newEnd = new Date(newStart.getTime() + duration);
+
+    // Verify change and prompt user
+    const formattedDate = targetDate.toLocaleDateString();
+    if (confirm(`Move event "${calEvent.title}" to ${formattedDate}?`)) {
+      this.eventChanged.emit({
+        eventId: calEvent.id,
+        targetResourceId: calEvent.resourceId,
+        originalResourceId: calEvent.resourceId,
+        newStartTime: newStart,
+        newEndTime: newEnd
+      });
+    }
   }
 
   private formatDateKey(date: Date): string {

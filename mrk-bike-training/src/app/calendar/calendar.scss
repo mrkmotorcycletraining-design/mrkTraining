@@ -1,24 +1,24 @@
 :host {
-  /* Design Tokens - Light Theme Default */
-  --canvas-bg: #FAF9F6; /* Soft warm cream */
+  /* Design Tokens - Light Theme (Google Calendar/Outlook inspired) */
+  --canvas-bg: #FFFFFF;
   --canvas-content: #FFFFFF;
-  --canvas-sidebar: rgba(255, 255, 255, 0.45);
-  --canvas-header: rgba(0, 0, 0, 0.02);
-  --canvas-gutter: rgba(0, 0, 0, 0.015);
+  --canvas-sidebar: #F8F9FA;
+  --canvas-header: #FFFFFF;
+  --canvas-gutter: #E8EAED;
   --canvas-card: #FFFFFF;
   --canvas-input: #FFFFFF;
-  --canvas-overlay: rgba(255, 255, 255, 0.85);
-  --canvas-weekend: rgba(0, 0, 0, 0.008);
+  --canvas-overlay: rgba(255, 255, 255, 0.95);
+  --canvas-weekend: #F8F9FA;
   --border-color: #E0E0E0;
-  --border-color-light: rgba(0, 0, 0, 0.05);
-  --text-color: #2C3E50; /* Deep slate */
-  --text-muted: #7F8C8D;
-  --accent-color: #1976D2;
-  --accent-color-dark: #1565C0;
-  --accent-color-light: rgba(25, 118, 210, 0.08);
-  --accent-hover-bg: rgba(25, 118, 210, 0.1);
-  --row-hover-bg: rgba(0, 0, 0, 0.02);
-  --today-bg: rgba(25, 118, 210, 0.03);
+  --border-color-light: #F1F3F4;
+  --text-color: #202124;
+  --text-muted: #5F6368;
+  --accent-color: #1A73E8;
+  --accent-color-dark: #1557B0;
+  --accent-color-light: #E8F0FE;
+  --accent-hover-bg: #F1F3F4;
+  --row-hover-bg: #F1F3F4;
+  --today-bg: #E8F0FE;
 
   display: flex;
   flex-direction: column;
@@ -26,7 +26,7 @@
   height: 100%;
   background-color: var(--canvas-bg);
   color: var(--text-color);
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: "Roboto", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   overflow: hidden;
   box-sizing: border-box;
 }

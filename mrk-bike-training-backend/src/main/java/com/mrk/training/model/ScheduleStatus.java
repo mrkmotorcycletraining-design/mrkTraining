@@ -1,5 +1,5 @@
 package com.mrk.training.model;
 
 public enum ScheduleStatus {
-    SCHEDULED, CONFIRMED, CANCELLED
+    PENDING, ACTIVE, SCHEDULED, CONFIRMED, CANCELLED
 }

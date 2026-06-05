@@ -64,7 +64,8 @@
               "buildTarget": "mrk-bike-training:build:production"
             },
             "development": {
-              "buildTarget": "mrk-bike-training:build:development"
+              "buildTarget": "mrk-bike-training:build:development",
+              "proxyConfig": "proxy.conf.json"
             }
           },
           "defaultConfiguration": "development"

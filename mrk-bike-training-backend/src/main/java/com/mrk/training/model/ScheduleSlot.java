@@ -1,17 +1,8 @@
 package com.mrk.training.model;
 
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "schedule_slots")
@@ -26,7 +17,7 @@ public class ScheduleSlot {
     private ClientCourseEnrollment enrollment;
 
     @Column(name = "resource_id")
-    private String resourceId; // points to asset id
+    private String resourceId;
 
     @ManyToOne
     @JoinColumn(name = "trainer_id")
@@ -36,9 +27,8 @@ public class ScheduleSlot {
     @JoinColumn(name = "client_id")
     private ClientProfile client;
 
-    @ManyToOne
-    @JoinColumn(name = "branch_id")
-    private Branch branch;
+    @Column(name = "branch_id")
+    private String branchId;
 
     private String title;
 
@@ -56,6 +46,9 @@ public class ScheduleSlot {
     @Column(columnDefinition = "schedule_status_enum")
     private ScheduleStatus status;
 
+    @Column(name = "rejection_reason")
+    private String rejectionReason;
+
     public ScheduleSlot() {}
 
     public Long getId() { return id; }
@@ -68,8 +61,8 @@ public class ScheduleSlot {
     public void setTrainer(TrainerProfile trainer) { this.trainer = trainer; }
     public ClientProfile getClient() { return client; }
     public void setClient(ClientProfile client) { this.client = client; }
-    public Branch getBranch() { return branch; }
-    public void setBranch(Branch branch) { this.branch = branch; }
+    public String getBranchId() { return branchId; }
+    public void setBranchId(String branchId) { this.branchId = branchId; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public LocalDateTime getStartDateTime() { return startDateTime; }
@@ -80,4 +73,6 @@ public class ScheduleSlot {
     public void setType(ScheduleType type) { this.type = type; }
     public ScheduleStatus getStatus() { return status; }
     public void setStatus(ScheduleStatus status) { this.status = status; }
+    public String getRejectionReason() { return rejectionReason; }
+    public void setRejectionReason(String rejectionReason) { this.rejectionReason = rejectionReason; }
 }

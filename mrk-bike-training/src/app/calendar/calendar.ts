@@ -157,7 +157,7 @@ export class CalendarComponent implements OnInit, OnChanges {
     this.selectedDate.set(new Date());
   }
 
-  protected setView(mode: 'month' | 'week' | 'day' | 'resource') {
+  public setView(mode: 'month' | 'week' | 'day' | 'resource') {
     this.selectedView.set(mode);
     this.closeDrawers();
   }
@@ -235,6 +235,13 @@ export class CalendarComponent implements OnInit, OnChanges {
 
   protected onEventContextMenu(payload: { x: number; y: number; event: CalendarEvent }) {
     this.eventContextMenuRequest.emit(payload);
+    this.state.quickMenu.set({
+      x: payload.x,
+      y: payload.y,
+      resourceId: payload.event.resourceId,
+      startTime: new Date(payload.event.startTime),
+      event: payload.event
+    });
   }
 
   // --- Mobile Drawer Controls ---

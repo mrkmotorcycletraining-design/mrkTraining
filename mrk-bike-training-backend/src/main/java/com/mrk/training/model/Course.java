@@ -1,11 +1,6 @@
 package com.mrk.training.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "courses")
@@ -29,6 +24,12 @@ public class Course {
     @Column(name = "preferred_days_of_week", columnDefinition = "text")
     private String preferredDaysOfWeek; // JSON array or CSV
 
+    @Column(name = "buffer_days")
+    private Integer bufferDays = 0;
+
+    @Column(name = "image_url")
+    private String imageUrl;
+
     public Course() {}
 
     public String getId() { return id; }
@@ -43,4 +44,8 @@ public class Course {
     public void setTotalDays(Integer totalDays) { this.totalDays = totalDays; }
     public String getPreferredDaysOfWeek() { return preferredDaysOfWeek; }
     public void setPreferredDaysOfWeek(String preferredDaysOfWeek) { this.preferredDaysOfWeek = preferredDaysOfWeek; }
+    public Integer getBufferDays() { return bufferDays; }
+    public void setBufferDays(Integer bufferDays) { this.bufferDays = bufferDays; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
 }

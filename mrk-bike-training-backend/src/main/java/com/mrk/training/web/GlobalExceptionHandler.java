@@ -1,7 +1,10 @@
 package com.mrk.training.web;
 
+import com.mrk.training.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,7 +16,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    /** Bean validation errors → 400 with field-level messages */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, String> fieldErrors = new HashMap<>();
@@ -27,21 +29,70 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(body);
     }
 
-    /** Business rule violations (duplicate email, branch not found, etc.) */
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Map<String, Object>> handleBusiness(IllegalArgumentException ex) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("status", 409);
-        body.put("error", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(body);
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<Map<String, Object>> handleBadCredentials(BadCredentialsException ex) {
+        return error(HttpStatus.UNAUTHORIZED, "Invalid credentials");
     }
 
-    /** Catch-all */
+    @ExceptionHandler(AccountDisabledException.class)
+    public ResponseEntity<Map<String, Object>> handleDisabled(AccountDisabledException ex) {
+        return error(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler({JwtExpiredException.class, JwtInvalidException.class})
+    public ResponseEntity<Map<String, Object>> handleJwt(RuntimeException ex) {
+        return error(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        return error(HttpStatus.FORBIDDEN, ex.getMessage() != null ? ex.getMessage() : "Access denied");
+    }
+
+    @ExceptionHandler(DuplicateUsernameException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateUsername(DuplicateUsernameException ex) {
+        return error(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateUniqueIdException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateUniqueId(DuplicateUniqueIdException ex) {
+        return error(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(AvailabilityConflictException.class)
+    public ResponseEntity<Map<String, Object>> handleAvailabilityConflict(AvailabilityConflictException ex) {
+        return error(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(EnrollmentLimitException.class)
+    public ResponseEntity<Map<String, Object>> handleEnrollmentLimit(EnrollmentLimitException ex) {
+        return error(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+    }
+
+    @ExceptionHandler(ScheduleContinuityException.class)
+    public ResponseEntity<Map<String, Object>> handleContinuity(ScheduleContinuityException ex) {
+        return error(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+    }
+
+    @ExceptionHandler(InvalidStartDateException.class)
+    public ResponseEntity<Map<String, Object>> handleInvalidStartDate(InvalidStartDateException ex) {
+        return error(HttpStatus.UNPROCESSABLE_ENTITY, ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleBusiness(IllegalArgumentException ex) {
+        return error(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
+        return error(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error: " + ex.getMessage());
+    }
+
+    private ResponseEntity<Map<String, Object>> error(HttpStatus status, String message) {
         Map<String, Object> body = new HashMap<>();
-        body.put("status", 500);
-        body.put("error", "Internal server error: " + ex.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        body.put("status", status.value());
+        body.put("error", message);
+        return ResponseEntity.status(status).body(body);
     }
 }

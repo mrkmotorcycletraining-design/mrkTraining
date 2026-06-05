@@ -37,7 +37,14 @@ export class BookingFormModalComponent implements OnInit {
 
   // Filter list of selectable child resources/assets (exclude folder categories)
   protected readonly selectableResources = computed(() => {
-    return this.resources().filter(r => r.parentId && r.status !== 'DISABLED');
+    const filtered = this.resources().filter(r => r.parentId && r.status !== 'DISABLED');
+    // Get branchId from form if available
+    const branchId = this.bookingForm?.get('branchId')?.value;
+    // If branchId is selected, filter resources by branch
+    if (branchId) {
+      return filtered.filter(r => r.customProperties?.['branchId'] === branchId);
+    }
+    return filtered;
   });
 
   ngOnInit() {

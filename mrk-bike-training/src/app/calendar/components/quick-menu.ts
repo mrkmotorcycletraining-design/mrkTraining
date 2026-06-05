@@ -1,7 +1,7 @@
 import { Component, inject, Output, EventEmitter, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CalendarStateService } from '../services/calendar-state.service';
-import { QuickCreateEvent } from '../models/calendar.types';
+import { CalendarEvent, QuickCreateEvent } from '../models/calendar.types';
 
 export interface QuickTemplate {
   title: string;
@@ -27,6 +27,8 @@ export class QuickMenuComponent {
   ];
 
   @Output() readonly quickCreate = new EventEmitter<QuickCreateEvent>();
+  @Output() readonly editRequest = new EventEmitter<CalendarEvent>();
+  @Output() readonly deleteRequest = new EventEmitter<string | number>();
 
   protected readonly menuState = this.state.quickMenu;
 
@@ -59,7 +61,7 @@ export class QuickMenuComponent {
     const s = this.menuState();
     if (!s) return;
 
-    const startTime = s.time;
+    const startTime = s.startTime;
     const endTime = new Date(startTime.getTime() + template.durationMinutes * 60 * 1000);
 
     this.quickCreate.emit({
@@ -75,14 +77,38 @@ export class QuickMenuComponent {
 
   protected triggerFullCreate() {
     const s = this.menuState();
-    if (!s) return;
+    if (!s || !s.startTime || !s.resourceId) return;
 
     // Set active create slot to trigger the formal creation form modal
     this.state.activeCreateSlot.set({
       resourceId: s.resourceId,
-      time: s.time
+      time: s.startTime
     });
 
+    this.closeMenu();
+  }
+
+  protected viewEvent() {
+    const s = this.menuState();
+    if (s && s.event) {
+      this.state.selectedEvent.set(s.event);
+    }
+    this.closeMenu();
+  }
+
+  protected editEvent() {
+    const s = this.menuState();
+    if (s && s.event) {
+      this.editRequest.emit(s.event);
+    }
+    this.closeMenu();
+  }
+
+  protected deleteEvent() {
+    const s = this.menuState();
+    if (s && s.event && confirm('Are you sure you want to delete this scheduled task?')) {
+      this.deleteRequest.emit(s.event.id);
+    }
     this.closeMenu();
   }
 }

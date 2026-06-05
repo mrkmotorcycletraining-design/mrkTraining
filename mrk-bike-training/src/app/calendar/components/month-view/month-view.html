@@ -18,6 +18,8 @@
         (contextmenu)="onCellRightClick($event, date)"
         (touchstart)="onTouchStart($event, date)"
         (touchend)="onTouchEnd()"
+        (dragover)="$event.preventDefault()"
+        (drop)="onDrop($event, date)"
       >
         <div class="day-header">
           <span class="day-number">{{ date.getDate() }}</span>
@@ -39,6 +41,8 @@
               [style.background-color]="getResourceThemeColor(event.resourceId) + '12'"
               [style.border-left-color]="getResourceThemeColor(event.resourceId)"
               [style.color]="getResourceThemeColor(event.resourceId)"
+              draggable="true"
+              (dragstart)="onDragStart($event, event)"
               (click)="selectEvent($event, event)"
               (contextmenu)="onEventRightClick($event, event)"
             >

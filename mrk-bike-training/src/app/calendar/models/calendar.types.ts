@@ -64,7 +64,7 @@ export interface CloneRequestEvent {
 
 export interface QuickCreateEvent {
   resourceId: string | number;
-  startTime: Date;
+  startTime: Date | undefined;
   endTime: Date;
   title: string;
   metadata?: Record<string, any>;

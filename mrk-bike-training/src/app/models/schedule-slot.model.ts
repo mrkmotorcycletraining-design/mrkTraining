@@ -1,5 +1,5 @@
 export type ScheduleType = 'REGULAR_TRAINING' | 'BUFFER_SESSION' | 'TRIP' | 'MAINTENANCE';
-export type ScheduleStatus = 'SCHEDULED' | 'CONFIRMED' | 'CANCELLED';
+export type ScheduleStatus = 'PENDING' | 'ACTIVE' | 'CANCELLED';
 
 export interface ScheduleSlotModel {
   id: number;

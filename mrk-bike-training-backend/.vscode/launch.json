@@ -2,11 +2,11 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Spring Boot-ArchPilotApplication<ArchPilotBackend>",
+            "name": "Spring Boot-MrkBikeTrainingApplication<MrkBikeTrainingBackend>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
-            "mainClass": "com.archpilot.ArchPilotApplication",
-            "projectName": "ArchPilotBackend",
+            "mainClass": "com.mrkBikeTraining.MrkBikeTrainingApplication",
+            "projectName": "MrkBikeTrainingBackend",
             "args": "",
             "envFile": "${workspaceFolder}/.env"
         }

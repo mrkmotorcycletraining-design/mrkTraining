@@ -1,33 +1,27 @@
 package com.mrk.training.web.controller;
 
-import java.net.URI;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.mrk.training.dto.AssetTypeConfigDto;
 import com.mrk.training.model.AssetInfo;
-import com.mrk.training.model.AssetType;
 import com.mrk.training.service.AssetService;
+import com.mrk.training.service.ReconcilerService;
 import com.mrk.training.web.request.AssetRequest;
-
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/vehicles")
+@RequestMapping({"/api/vehicles", "/api/assets"})
 public class AssetController {
 
     private final AssetService service;
+    private final ReconcilerService reconcilerService;
 
-    public AssetController(AssetService service) {
+    public AssetController(AssetService service, ReconcilerService reconcilerService) {
         this.service = service;
+        this.reconcilerService = reconcilerService;
     }
 
     /**
@@ -47,7 +41,33 @@ public class AssetController {
     }
 
     @GetMapping
-    public List<AssetInfo> list() {
+    public List<AssetInfo> list(
+            @RequestParam(required = false) String branchId,
+            @RequestParam(required = false) String type) {
+        if (branchId != null && type != null) {
+            return service.listByBranchAndType(branchId, type);
+        }
+        if (branchId != null) {
+            return service.listByBranch(branchId);
+        }
         return service.listAll();
+    }
+
+    @GetMapping("/{id}")
+    public AssetInfo get(@PathVariable String id) {
+        return service.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    //    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public AssetInfo update(@PathVariable String id, @Valid @RequestBody AssetRequest req) {
+        return service.update(id, req);
+    }
+
+    @PutMapping("/{id}/maintenance")
+    //    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public ResponseEntity<Void> setMaintenance(@PathVariable String id) {
+        reconcilerService.handleAssetMaintenance(id);
+        return ResponseEntity.noContent().build();
     }
 }

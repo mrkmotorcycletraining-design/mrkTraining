@@ -18,11 +18,11 @@
           />
         </div>
 
-        <!-- Resource Target Selector -->
+        <!-- Vehicle Target Selector -->
         <div class="form-group">
-          <label for="resourceId">Assign Resource</label>
+          <label for="resourceId">Assign Vehicle</label>
           <select id="resourceId" formControlName="resourceId">
-            <option value="" disabled>-- Select Resource --</option>
+            <option value="" disabled>-- Select Vehicle --</option>
             @for (res of selectableResources(); track res.id) {
               <option [value]="res.id">{{ res.name }}</option>
             }

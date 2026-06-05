@@ -1,21 +1,14 @@
 package com.mrk.training.web.controller;
 
-import java.net.URI;
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.mrk.training.model.Branch;
 import com.mrk.training.service.BranchService;
 import com.mrk.training.web.request.BranchRequest;
-
 import jakarta.validation.Valid;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/branches")
@@ -28,6 +21,7 @@ public class BranchController {
     }
 
     @PostMapping
+//    //    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<Branch> create(@Valid @RequestBody BranchRequest req) {
         Branch b = new Branch();
         b.setId(req.getId().trim());
