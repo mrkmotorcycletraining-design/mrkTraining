@@ -40,4 +40,10 @@ public class BranchController {
     public ResponseEntity<Branch> getById(@PathVariable String id) {
         return ResponseEntity.ok(service.findById(id));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Branch> update(@PathVariable String id, @RequestBody BranchRequest req) {
+        Branch updated = service.update(id, req.getName(), req.getLocationAddress());
+        return ResponseEntity.ok(updated);
+    }
 }

@@ -61,7 +61,7 @@ import { ScheduleSlotApi, TrainerApi, AssetApi } from '../core/models/api.models
                   <select [(ngModel)]="selectedAsset[s.id]" class="action-select">
                     <option value="">-- Select Vehicle --</option>
                     @for (a of assets(); track a.id) {
-                      <option [value]="a.id">{{ a.name ?? a.id }} ({{ a.type }})</option>
+                      <option [value]="a.id">{{ a.name ?? a.id }} ({{ a.vehicleType?.label || a.vehicleType?.type }})</option>
                     }
                   </select>
                 </div>

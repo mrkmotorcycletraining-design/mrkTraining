@@ -39,7 +39,7 @@ export class CalendarStateService {
   readonly quickMenu = signal<{ x: number; y: number; resourceId: string | number; startTime: Date; event?: CalendarEvent } | null>(null);
   readonly activeCloneEvent = signal<CalendarEvent | null>(null);
   readonly activeEditEvent = signal<CalendarEvent | null>(null); // For custom booking modal
-  readonly activeCreateSlot = signal<{ resourceId: string | number; time: Date } | null>(null); // For triggering creation from grid double-click or empty slots
+  readonly activeCreateSlot = signal<{ resourceId: string | number; time: Date; endTime?: Date; title?: string; metadata?: Record<string, any> } | null>(null); // For triggering creation from grid double-click or empty slots
 
   // Collision detection state during dragging
   readonly collisionStatus = computed<'vacant' | 'collision' | 'invalid' | null>(() => {

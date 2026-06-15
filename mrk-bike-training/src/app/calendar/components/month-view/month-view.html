@@ -23,36 +23,32 @@
       >
         <div class="day-header">
           <span class="day-number">{{ date.getDate() }}</span>
-          
-          @if (getEventsForDate(date).length > 0) {
-            <span 
-              class="density-badge"
-              [class.high]="getEventsForDate(date).length > 4"
-            >
-              {{ getEventsForDate(date).length }}
-            </span>
-          }
         </div>
 
         <div class="day-events">
-          @for (event of getEventsForDate(date).slice(0, 3); track event.id) {
+          @for (event of getEventsForDate(date).slice(0, 4); track event.id) {
             <div 
-              class="month-event-strip {{ event.status | lowercase }}"
-              [style.background-color]="getResourceThemeColor(event.resourceId) + '12'"
-              [style.border-left-color]="getResourceThemeColor(event.resourceId)"
-              [style.color]="getResourceThemeColor(event.resourceId)"
+              class="event-chip"
+              [class.pending]="event.status === 'PENDING'"
+              [class.cancelled]="event.status === 'CANCELLED'"
+              [style.background-color]="getEventColor(event).bg"
+              [style.border-left-color]="getEventColor(event).border"
+              [style.color]="getEventColor(event).text"
               draggable="true"
               (dragstart)="onDragStart($event, event)"
               (click)="selectEvent($event, event)"
               (contextmenu)="onEventRightClick($event, event)"
+              [title]="event.title + '\n' + formatEventTime(event) + ' · ' + getResourceName(event.resourceId)"
             >
-              <span class="title-text">{{ event.title }}</span>
+              <span class="event-dot" [style.background-color]="getEventColor(event).border"></span>
+              <span class="event-time">{{ formatEventTime(event) }}</span>
+              <span class="event-title">{{ event.title }}</span>
             </div>
           }
 
-          @if (getEventsForDate(date).length > 3) {
-            <div class="more-indicator">
-              +{{ getEventsForDate(date).length - 3 }} more
+          @if (getEventsForDate(date).length > 4) {
+            <div class="more-indicator" (click)="selectDate(date); $event.stopPropagation()">
+              +{{ getEventsForDate(date).length - 4 }} more
             </div>
           }
         </div>

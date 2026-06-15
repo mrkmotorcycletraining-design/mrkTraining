@@ -45,6 +45,28 @@ import { TrainingApiService } from '../core/services/training-api.service';
         </div>
 
         <div class="form-group">
+          <label>Start Date</label>
+          <input 
+            [(ngModel)]="form.startDate" 
+            name="startDate" 
+            type="date" 
+            placeholder="Start date" 
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Salary</label>
+          <input 
+            [(ngModel)]="form.salary" 
+            name="salary" 
+            type="number" 
+            min="0" 
+            step="0.01"
+            placeholder="Monthly salary" 
+          />
+        </div>
+
+        <div class="form-group">
           <label>Default Branch</label>
           <input 
             [(ngModel)]="form.defaultBranchId" 
@@ -196,6 +218,8 @@ export class TrainerAddComponent {
     name: '',
     emailUsername: '',
     password: '',
+    startDate: '',
+    salary: null as number | null,
     defaultBranchId: '',
     active: true
   };
@@ -214,6 +238,8 @@ export class TrainerAddComponent {
       name: this.form.name.trim(),
       emailUsername: this.form.emailUsername.trim(),
       password: this.form.password,
+      startDate: this.form.startDate || null,
+      salary: this.form.salary ?? null,
       defaultBranchId: this.form.defaultBranchId.trim() || null,
       active: this.form.active
     };

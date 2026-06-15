@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { TrainingApiService } from '../core/services/training-api.service';
 import { BranchApi, AssetApi, CourseApi } from '../core/models/api.models';
 
@@ -9,7 +10,7 @@ type TabKey = 'branches' | 'vehicles' | 'courses';
 @Component({
   selector: 'app-site-management',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, RouterLink],
   template: `
     <div class="page-header">
       <h2>🏢 Site Management</h2>
@@ -71,9 +72,33 @@ type TabKey = 'branches' | 'vehicles' | 'courses';
                     <div class="item-detail">📍 {{ b.locationAddress }}</div>
                   }
                 </div>
+                <div class="item-actions">
+                  <button type="button" class="btn-secondary-sm" (click)="startEditBranch(b)" title="Edit Branch">✏️ Edit</button>
+                </div>
               </div>
             }
           </div>
+
+          <!-- Edit Branch Inline Form -->
+          @if (editingBranch()) {
+            <div class="form-card" style="margin-top: 1rem;">
+              <h3>Update Branch: {{ editingBranch()!.id }}</h3>
+              <form (ngSubmit)="saveEditBranch()">
+                <div class="form-field">
+                  <label>Branch Name</label>
+                  <input [(ngModel)]="editBranchName" name="ebn" [placeholder]="editingBranch()!.name ?? ''" required />
+                </div>
+                <div class="form-field">
+                  <label>Address</label>
+                  <textarea [(ngModel)]="editBranchAddr" name="eba" rows="3" [placeholder]="editingBranch()!.locationAddress ?? ''" required></textarea>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button type="submit" class="btn-primary">Save</button>
+                  <button type="button" class="btn-primary" style="background: #757575;" (click)="cancelEditBranch()">Cancel</button>
+                </div>
+              </form>
+            </div>
+          }
         </div>
       </div>
     }
@@ -81,42 +106,12 @@ type TabKey = 'branches' | 'vehicles' | 'courses';
     <!-- Vehicles Tab -->
     @if (activeTab() === 'vehicles') {
       <div class="section-layout">
-        <!-- Add Vehicle Form -->
-        <div class="form-card">
-          <h3>Add Vehicle</h3>
-          <form (ngSubmit)="addAsset()" #vehicleForm="ngForm">
-            <div class="form-field">
-              <label>Vehicle ID</label>
-              <input [(ngModel)]="assetId" name="aid" placeholder="e.g., KA01MX1234" required />
-            </div>
-            <div class="form-field">
-              <label>Vehicle Name</label>
-              <input [(ngModel)]="assetName" name="an" placeholder="e.g., Honda Activa 6G" required />
-            </div>
-            <div class="form-field">
-              <label>Vehicle Type</label>
-              <select [(ngModel)]="assetType" name="at" required>
-                <option value="">-- Select Type --</option>
-                <option value="GEARED">Geared</option>
-                <option value="NON_GEARED">Non-Geared / Scooter</option>
-              </select>
-            </div>
-            <div class="form-field">
-              <label>Branch</label>
-              <select [(ngModel)]="assetBranch" name="ab" required>
-                <option value="">-- Select Branch --</option>
-                @for (b of branches(); track b.id) {
-                  <option [value]="b.id">{{ b.name }}</option>
-                }
-              </select>
-            </div>
-            <button type="submit" class="btn-primary" [disabled]="!vehicleForm.valid">Add Vehicle</button>
-          </form>
-        </div>
-
         <!-- Vehicle List -->
         <div class="list-section">
-          <h3>Vehicles ({{ assets().length }})</h3>
+          <div class="section-header">
+            <h3>Vehicles ({{ assets().length }})</h3>
+            <button type="button" class="btn-primary" routerLink="/admin/vehicles-add">+ Add Vehicle</button>
+          </div>
           @if (assets().length === 0) {
             <div class="empty-hint">No vehicles added yet.</div>
           }
@@ -128,7 +123,7 @@ type TabKey = 'branches' | 'vehicles' | 'courses';
                   <div class="item-name">{{ a.name ?? a.id }}</div>
                   <div class="item-id">ID: {{ a.id }}</div>
                   <div class="item-detail">
-                    <span class="type-badge" [class]="'type-' + (a.type ?? '').toLowerCase()">{{ a.type }}</span>
+                    <span class="type-badge" [class]="'type-' + (a.vehicleType?.type ?? '').toLowerCase()">{{ a.vehicleType?.label || a.vehicleType?.type }}</span>
                     @if (a.currentBranch?.name) {
                       <span class="branch-label">@ {{ a.currentBranch?.name }}</span>
                     }
@@ -343,6 +338,18 @@ type TabKey = 'branches' | 'vehicles' | 'courses';
     .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
     /* List section */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .section-header h3 {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #333;
+    }
     .list-section h3 {
       margin: 0 0 1rem;
       font-size: 1rem;
@@ -489,10 +496,9 @@ export class SiteManagementComponent implements OnInit {
   branchId = '';
   branchName = '';
   branchAddr = '';
-  assetId = '';
-  assetType = '';
-  assetName = '';
-  assetBranch = '';
+  editingBranch = signal<BranchApi | null>(null);
+  editBranchName = '';
+  editBranchAddr = '';
   courseId = '';
   courseName = '';
   courseCategory = '';
@@ -527,19 +533,27 @@ export class SiteManagementComponent implements OnInit {
       });
   }
 
-  addAsset() {
-    this.api
-      .createAsset({ id: this.assetId, type: this.assetType, name: this.assetName, branchId: this.assetBranch })
+  startEditBranch(branch: BranchApi) {
+    this.editingBranch.set(branch);
+    this.editBranchName = branch.name ?? '';
+    this.editBranchAddr = branch.locationAddress ?? '';
+  }
+
+  saveEditBranch() {
+    const b = this.editingBranch();
+    if (!b) return;
+    this.api.updateBranch(b.id, { name: this.editBranchName, locationAddress: this.editBranchAddr })
       .subscribe({
         next: () => {
+          this.editingBranch.set(null);
           this.reload();
-          this.assetId = '';
-          this.assetType = '';
-          this.assetName = '';
-          this.assetBranch = '';
         },
-        error: (e: any) => alert(e.error?.error ?? 'Failed to add vehicle')
+        error: (e) => alert(e.error?.error ?? 'Failed to update branch')
       });
+  }
+
+  cancelEditBranch() {
+    this.editingBranch.set(null);
   }
 
   addCourse() {

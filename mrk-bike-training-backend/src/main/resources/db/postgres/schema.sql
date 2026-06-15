@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS schedule_slots CASCADE;
 DROP TABLE IF EXISTS client_course_enrollments CASCADE;
 DROP TABLE IF EXISTS courses CASCADE;
 DROP TABLE IF EXISTS assets CASCADE;
-DROP TABLE IF EXISTS asset_type_config CASCADE;
+DROP TABLE IF EXISTS vehicle_type_config CASCADE;
 DROP TABLE IF EXISTS branches CASCADE;
 DROP TABLE IF EXISTS client_profiles CASCADE;
 DROP TABLE IF EXISTS trainer_profiles CASCADE;
@@ -27,7 +27,6 @@ DROP TYPE IF EXISTS financial_type_enum;
 
 -- Create types
 CREATE TYPE role_enum AS ENUM ('SUPER_ADMIN','ADMIN','TRAINER','CLIENT');
-CREATE TYPE asset_type_enum AS ENUM ('NON_GEARED','CRUISER','SPORTS','GEARED','OWN_ASSET','CLASSROOM');
 CREATE TYPE course_category_enum AS ENUM ('NORMAL','PREMIUM','TRIP','OTHER');
 CREATE TYPE schedule_type_enum AS ENUM ('REGULAR_TRAINING','BUFFER_SESSION','TRIP','MAINTENANCE');
 -- PENDING:   client submitted a training request, awaiting Admin/SuperAdmin approval
@@ -78,33 +77,41 @@ CREATE TABLE IF NOT EXISTS branches (
     location_address TEXT NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS asset_type_config (
-    type VARCHAR(255) PRIMARY KEY,
-    min_height_req INTEGER,
-    max_weight_req INTEGER,
-    description VARCHAR(255)
+CREATE TABLE IF NOT EXISTS vehicle_type_config (
+    type_id BIGSERIAL PRIMARY KEY,
+    type VARCHAR(255) NOT NULL UNIQUE,
+    label VARCHAR(255),
+    min_ht INTEGER,
+    max_ht INTEGER,
+    min_wt INTEGER,
+    max_wt INTEGER,
+    engine_cc INTEGER,
+    is_electric BOOLEAN DEFAULT FALSE,
+    mileage INTEGER,
+    maintenance_interval_km INTEGER
 );
 
-INSERT INTO asset_type_config (type, min_height_req, max_weight_req, description) VALUES
-    ('ACTIVA', 150, 70, '4.11-5.4 feet, 45-70kg'),
-    ('Geared', 161, 85, '5.3-5.10 feet, 55-85kg'),
-    ('CruiserAvenger', 150, 100, '4.11 feet onward, 50-100kg'),
-    ('Cruiser', 170, 125, '5.6-7 feet, 60-125kg')
+INSERT INTO vehicle_type_config (type, label, min_ht, max_ht, min_wt, max_wt, engine_cc, is_electric, mileage, maintenance_interval_km) VALUES
+    ('NON_GEARED', 'Non-Geared (Scooter/Activa)', 145, 170, 40, 70, 110, FALSE, 50, 5000),
+    ('GEARED', 'Geared Motorcycle', 155, 185, 50, 85, 150, FALSE, 45, 6000),
+    ('CRUISER', 'Cruiser', 160, 195, 55, 125, 220, FALSE, 30, 8000),
+    ('SPORTS', 'Sports Bike', 160, 190, 55, 100, 200, FALSE, 35, 5000),
+    ('ELECTRIC', 'Electric Scooter', 145, 180, 40, 90, NULL, TRUE, 80, 10000),
+    ('CLASSROOM', 'Classroom / Training Room', NULL, NULL, NULL, NULL, NULL, FALSE, NULL, NULL)
 ON CONFLICT (type) DO NOTHING;
 
-CREATE TABLE IF NOT EXISTS assets (
+CREATE TABLE IF NOT EXISTS vehicles (
     id VARCHAR(255) PRIMARY KEY,
-    type VARCHAR(255) NOT NULL,
+    type_id BIGINT NOT NULL,
     name VARCHAR(255),
-    cc INTEGER,
     color VARCHAR(100),
     next_maintenance_date DATE,
-    min_height_req INTEGER,
-    min_weight_req INTEGER,
+    is_active BOOLEAN DEFAULT TRUE,
     client_vehicle BOOLEAN DEFAULT FALSE,
     client_vehicle_details VARCHAR(255),
     current_branch_id VARCHAR(255),
-    CONSTRAINT fk_asset_branch FOREIGN KEY (current_branch_id) REFERENCES branches(id)
+    CONSTRAINT fk_vehicle_type FOREIGN KEY (type_id) REFERENCES vehicle_type_config(type_id),
+    CONSTRAINT fk_vehicle_branch FOREIGN KEY (current_branch_id) REFERENCES branches(id)
 );
 
 CREATE TABLE IF NOT EXISTS courses (
@@ -134,7 +141,7 @@ CREATE TABLE IF NOT EXISTS client_course_enrollments (
     CONSTRAINT fk_enroll_course FOREIGN KEY (course_id) REFERENCES courses(id),
     CONSTRAINT fk_enroll_branch FOREIGN KEY (branch_id) REFERENCES branches(id),
     CONSTRAINT fk_enroll_trainer FOREIGN KEY (trainer_id) REFERENCES trainer_profiles(id),
-    CONSTRAINT fk_enroll_asset FOREIGN KEY (asset_id) REFERENCES assets(id)
+    CONSTRAINT fk_enroll_asset FOREIGN KEY (asset_id) REFERENCES vehicles(id)
 );
 
 CREATE TABLE IF NOT EXISTS schedule_slots (
@@ -182,7 +189,7 @@ CREATE TABLE IF NOT EXISTS financial_ledger (
     amount NUMERIC(12,2),
     transaction_date DATE,
     CONSTRAINT fk_fin_branch FOREIGN KEY (branch_id) REFERENCES branches(id),
-    CONSTRAINT fk_fin_asset FOREIGN KEY (asset_id) REFERENCES assets(id),
+    CONSTRAINT fk_fin_asset FOREIGN KEY (asset_id) REFERENCES vehicles(id),
     CONSTRAINT fk_fin_trainer FOREIGN KEY (trainer_id) REFERENCES trainer_profiles(id)
 );
 

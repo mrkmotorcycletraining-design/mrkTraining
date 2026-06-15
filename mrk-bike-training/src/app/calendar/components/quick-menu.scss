@@ -61,6 +61,20 @@
       color: var(--text-muted, #888);
       font-weight: 400;
     }
+
+    &.create-item {
+      font-weight: 600;
+      color: var(--accent-color, #1976D2);
+    }
+
+    &.delete-item {
+      color: #ff5252;
+
+      &:hover {
+        background: #ff5252;
+        color: #FFF;
+      }
+    }
   }
 
   .menu-divider {

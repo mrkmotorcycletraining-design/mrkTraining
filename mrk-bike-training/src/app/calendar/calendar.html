@@ -80,6 +80,7 @@
   <div class="canvas-wrapper" (click)="closeDrawers()">
     @if (selectedView() === 'month') {
       <app-month-view
+        [colorGroupingKeys]="colorGroupingKeys"
         (eventContextMenu)="onEventContextMenu($event)"
         (eventChanged)="onEventDragChange($event)"
       ></app-month-view>

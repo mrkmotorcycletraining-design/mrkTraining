@@ -1,10 +1,11 @@
 package com.mrk.training.web.controller;
 
-import com.mrk.training.dto.AssetTypeConfigDto;
+import com.mrk.training.dto.VehicleTypeConfigDto;
 import com.mrk.training.model.AssetInfo;
 import com.mrk.training.service.AssetService;
 import com.mrk.training.service.ReconcilerService;
 import com.mrk.training.web.request.AssetRequest;
+import com.mrk.training.web.request.VehicleTypeConfigRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,12 +27,21 @@ public class AssetController {
 
     /**
      * GET /api/vehicles/types
-     * Returns all configured asset types with their default height/weight requirements.
-     * Kept on this controller so the UI only needs one base URL for vehicle operations.
+     * Returns all vehicle type configurations from the database.
      */
     @GetMapping("/types")
-    public List<AssetTypeConfigDto> listTypes() {
+    public List<VehicleTypeConfigDto> listTypes() {
         return service.listTypeConfigs();
+    }
+
+    /**
+     * POST /api/vehicles/types
+     * Creates a new vehicle type configuration.
+     */
+    @PostMapping("/types")
+    public ResponseEntity<VehicleTypeConfigDto> createType(@Valid @RequestBody VehicleTypeConfigRequest req) {
+        VehicleTypeConfigDto saved = service.createTypeConfig(req);
+        return ResponseEntity.created(URI.create("/api/vehicles/types/" + saved.getTypeId())).body(saved);
     }
 
     @PostMapping
@@ -59,13 +69,11 @@ public class AssetController {
     }
 
     @PutMapping("/{id}")
-    //    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public AssetInfo update(@PathVariable String id, @Valid @RequestBody AssetRequest req) {
         return service.update(id, req);
     }
 
     @PutMapping("/{id}/maintenance")
-    //    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<Void> setMaintenance(@PathVariable String id) {
         reconcilerService.handleAssetMaintenance(id);
         return ResponseEntity.noContent().build();

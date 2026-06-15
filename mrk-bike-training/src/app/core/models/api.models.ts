@@ -53,10 +53,29 @@ export interface BranchApi {
   locationAddress?: string;
 }
 
+export interface VehicleTypeConfigApi {
+  typeId: number;
+  type: string;
+  label?: string;
+  minHt?: number;
+  maxHt?: number;
+  minWt?: number;
+  maxWt?: number;
+  engineCc?: number;
+  isElectric?: boolean;
+  mileage?: number;
+  maintenanceIntervalKm?: number;
+}
+
 export interface AssetApi {
   id: string;
-  type: string;
+  vehicleType?: VehicleTypeConfigApi;
   name?: string;
+  color?: string;
+  nextMaintenanceDate?: string;
+  isActive?: boolean;
+  clientVehicle?: boolean;
+  clientVehicleDetails?: string;
   currentBranch?: BranchApi;
   status?: string;
 }

@@ -122,7 +122,9 @@ public class ReconcilerService {
         var asset = assetRepository.findById(assetId).orElseThrow();
         for (ScheduleSlot slot : futureSlots) {
             var replacement = assetRepository.findAll().stream()
-                    .filter(a -> a.getType().equals(asset.getType())
+                    .filter(a -> a.getVehicleType() != null
+                            && asset.getVehicleType() != null
+                            && a.getVehicleType().getTypeId().equals(asset.getVehicleType().getTypeId())
                             && a.getCurrentBranch() != null
                             && slot.getBranchId() != null
                             && a.getCurrentBranch().getId().equals(slot.getBranchId())

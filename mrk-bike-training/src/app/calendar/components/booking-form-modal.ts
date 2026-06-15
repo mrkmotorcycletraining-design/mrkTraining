@@ -37,14 +37,16 @@ export class BookingFormModalComponent implements OnInit {
 
   // Filter list of selectable child resources/assets (exclude folder categories)
   protected readonly selectableResources = computed(() => {
-    const filtered = this.resources().filter(r => r.parentId && r.status !== 'DISABLED');
-    // Get branchId from form if available
-    const branchId = this.bookingForm?.get('branchId')?.value;
-    // If branchId is selected, filter resources by branch
-    if (branchId) {
-      return filtered.filter(r => r.customProperties?.['branchId'] === branchId);
-    }
-    return filtered;
+    const allResources = this.resources();
+    // Show all non-category, non-disabled resources (categories have no parentId or have isCategory flag)
+    return allResources.filter(r => {
+      // Exclude category/group nodes
+      if (r.customProperties?.['isCategory']) return false;
+      // Exclude disabled resources
+      if (r.status === 'DISABLED') return false;
+      // Include all leaf resources (assets)
+      return true;
+    });
   });
 
   ngOnInit() {
@@ -86,15 +88,21 @@ export class BookingFormModalComponent implements OnInit {
       });
     } else if (createSlot) {
       this.isEdit = false;
+      title = (createSlot as any).title || '';
       resourceId = String(createSlot.resourceId);
       dateStr = this.formatDate(createSlot.time);
       startStr = this.formatTime(createSlot.time);
 
-      const endTime = new Date(createSlot.time.getTime() + 60 * 60 * 1000); // Default 1 hour duration
+      // Use endTime from template if provided, otherwise default to 1 hour
+      const endTime = (createSlot as any).endTime
+        ? new Date((createSlot as any).endTime)
+        : new Date(createSlot.time.getTime() + 60 * 60 * 1000);
       endStr = this.formatTime(endTime);
 
+      // Pre-fill metadata from template if available
+      const slotMetadata = (createSlot as any).metadata || {};
       this.metadataFields.forEach(f => {
-        metadataValues[f.key] = '';
+        metadataValues[f.key] = slotMetadata[f.key] || '';
       });
     }
 

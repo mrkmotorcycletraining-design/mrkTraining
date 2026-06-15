@@ -60,6 +60,16 @@ export const ADMIN_ROUTES: Routes = [
         path: 'site',
         loadComponent: () =>
           import('./site-management.component').then((m) => m.SiteManagementComponent)
+      },
+      {
+        path: 'vehicles-add',
+        loadComponent: () =>
+          import('./vehicle-add-page.component').then((m) => m.VehicleAddPageComponent)
+      },
+      {
+        path: 'vehicles-config-add',
+        loadComponent: () =>
+          import('./vehicle-config-add-page.component').then((m) => m.VehicleConfigAddPageComponent)
       }
     ]
   }

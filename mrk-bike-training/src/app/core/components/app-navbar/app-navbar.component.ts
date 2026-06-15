@@ -79,24 +79,52 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
                       <span class="badge-count">Pending</span>
                     }
                   </a>
+                  <a routerLink="/admin/schedule" [queryParams]="{action: 'set-client'}" (click)="closeMenu()">Set Schedule for Client</a>
+                  <a routerLink="/admin/schedule" [queryParams]="{action: 'set-trainer'}" (click)="closeMenu()">Set Schedule for Trainer</a>
                 </div>
               </div>
               <div class="nav-dropdown">
                 <button class="dropdown-trigger">Client ▼</button>
                 <div class="dropdown-content">
-                  <a routerLink="/admin/clients" (click)="closeMenu()">Manage Clients</a>
                   <a routerLink="/admin/clients-add" (click)="closeMenu()">Add Client</a>
+                  <a routerLink="/admin/clients" [queryParams]="{action: 'mark-absent'}" (click)="closeMenu()">Mark Absent</a>
+                  <a routerLink="/admin/clients" [queryParams]="{action: 'pause-training'}" (click)="closeMenu()">Pause Training</a>
+                  <a routerLink="/admin/clients" [queryParams]="{action: 'update-password'}" (click)="closeMenu()">Update Client Password</a>
+                  <a routerLink="/admin/clients" [queryParams]="{action: 'delete'}" (click)="closeMenu()">Delete Client</a>
+                  <a routerLink="/admin/clients" [queryParams]="{action: 'deactivate'}" (click)="closeMenu()">Deactivate Client</a>
                 </div>
               </div>
               <div class="nav-dropdown">
                 <button class="dropdown-trigger">Trainer ▼</button>
                 <div class="dropdown-content">
-                  <a routerLink="/admin/trainers" (click)="closeMenu()">Manage Trainers</a>
-                  <a routerLink="/admin/trainers-add" (click)="closeMenu()">Add Trainer</a>
-                  <a (click)="comingSoon('Switch Trainer Branch'); closeMenu()" class="clickable">Switch Branch (coming soon)</a>
+                  <a routerLink="/admin/trainers-add" (click)="closeMenu()" *ngIf="currentRole() === 'SUPER_ADMIN'">Add Trainer</a>
+                  <a routerLink="/admin/trainers" [queryParams]="{action: 'mark-absence'}" (click)="closeMenu()">Mark Absence</a>
+                  <a routerLink="/admin/trainers" [queryParams]="{action: 'switch-branch'}" (click)="closeMenu()">Switch Trainer Branch</a>
+                  <a routerLink="/admin/trainers" [queryParams]="{action: 'update-password'}" (click)="closeMenu()">Update Trainer Password</a>
+                  <a routerLink="/admin/trainers" [queryParams]="{action: 'delete'}" (click)="closeMenu()">Delete Trainer</a>
+                  <a routerLink="/admin/trainers" [queryParams]="{action: 'deactivate'}" (click)="closeMenu()">Deactivate Trainer</a>
                 </div>
               </div>
-              <a class="nav-link-item" routerLink="/admin/site" (click)="closeMenu()">Site Management</a>
+              <div class="nav-dropdown">
+                <button class="dropdown-trigger">Vehicle ▼</button>
+                <div class="dropdown-content">
+                  <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles'}" (click)="closeMenu()">View Vehicle Info</a>
+                  <a routerLink="/admin/vehicles-add" (click)="closeMenu()">Add Vehicle</a>
+                  <a routerLink="/admin/vehicles-config-add" (click)="closeMenu()">Add Vehicle Config</a>
+                  <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles', action: 'maintenance'}" (click)="closeMenu()">Add Maintenance</a>
+                  <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles', action: 'switch-branch'}" (click)="closeMenu()">Switch Vehicle Branch</a>
+                  <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles', action: 'delete'}" (click)="closeMenu()">Delete Vehicle</a>
+                  <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles', action: 'deactivate'}" (click)="closeMenu()">Deactivate Vehicle</a>
+                </div>
+              </div>
+              <div class="nav-dropdown">
+                <button class="dropdown-trigger">Site Management ▼</button>
+                <div class="dropdown-content">
+                  <a routerLink="/admin/site" [queryParams]="{tab: 'branches'}" (click)="closeMenu()">Add New Branch</a>
+                  <a routerLink="/admin/site" [queryParams]="{tab: 'courses'}" (click)="closeMenu()">Update Training Template</a>
+                  <a routerLink="/admin/site" [queryParams]="{tab: 'courses'}" (click)="closeMenu()">Add New Training</a>
+                </div>
+              </div>
             </ng-container>
 
             <!-- SITE DATA ADMIN ROLE -->

@@ -8,6 +8,7 @@
     (contextmenu)="$event.preventDefault()"
   >
     @if (menu.event; as ev) {
+      <!-- Context menu for existing events -->
       <div class="menu-header">Task Options</div>
       
       <button type="button" class="menu-item" (click)="viewEvent()">
@@ -20,24 +21,13 @@
       
       <div class="menu-divider"></div>
       
-      <button type="button" class="menu-item" (click)="deleteEvent()">
-        <span style="color: #ff5252;">🗑️ Delete Schedule</span>
+      <button type="button" class="menu-item delete-item" (click)="deleteEvent()">
+        <span>🗑️ Delete Schedule</span>
       </button>
     } @else {
-      <div class="menu-header">Quick Schedule</div>
-      
-      @for (tpl of templates; track tpl.title) {
-        <button type="button" class="menu-item" (click)="selectTemplate(tpl)">
-          <span>{{ tpl.title }}</span>
-          <span class="duration">{{ tpl.durationMinutes }}m</span>
-        </button>
-      }
-      
-      <div class="menu-divider"></div>
-      
-      <button type="button" class="menu-item" (click)="triggerFullCreate()">
-        <span style="font-weight: 600; color: var(--accent-color, #1976D2);">Create Detailed...</span>
-        <span>➕</span>
+      <!-- Context menu for empty day/time slot -->
+      <button type="button" class="menu-item create-item" (click)="triggerFullCreate()">
+        <span>➕ Add New Schedule</span>
       </button>
     }
   </div>

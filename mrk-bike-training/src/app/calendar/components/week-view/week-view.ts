@@ -312,9 +312,12 @@ export class WeekViewComponent implements AfterViewInit {
     const activeRes = this.resources().find(r => r.parentId && r.status === 'ACTIVE');
     const resourceId = activeRes ? activeRes.id : '';
 
-    this.state.activeCreateSlot.set({
+    // Show context menu with "Add New Schedule" option (consistent with month view)
+    this.state.quickMenu.set({
+      x: event.clientX,
+      y: event.clientY,
       resourceId,
-      time: clickedTime
+      startTime: clickedTime
     });
   }
 
@@ -322,12 +325,15 @@ export class WeekViewComponent implements AfterViewInit {
     if (this.readOnly()) return;
     event.preventDefault();
 
+    if (this.isShadedHour(hour)) return;
+
     const clickedTime = new Date(date);
     clickedTime.setHours(hour, 0, 0, 0);
 
     const activeRes = this.resources().find(r => r.parentId && r.status === 'ACTIVE');
     const resourceId = activeRes ? activeRes.id : '';
 
+    // Show context menu with "Add New Schedule" option
     this.state.quickMenu.set({
       x: event.clientX,
       y: event.clientY,

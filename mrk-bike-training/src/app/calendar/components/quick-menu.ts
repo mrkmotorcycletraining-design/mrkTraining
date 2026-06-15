@@ -64,24 +64,25 @@ export class QuickMenuComponent {
     const startTime = s.startTime;
     const endTime = new Date(startTime.getTime() + template.durationMinutes * 60 * 1000);
 
-    this.quickCreate.emit({
+    // Open the booking form pre-filled with template data instead of creating blindly
+    this.state.activeCreateSlot.set({
       resourceId: s.resourceId,
-      startTime,
+      time: startTime,
       endTime,
       title: template.title,
       metadata: template.metadata || {}
-    });
+    } as any);
 
     this.closeMenu();
   }
 
   protected triggerFullCreate() {
     const s = this.menuState();
-    if (!s || !s.startTime || !s.resourceId) return;
+    if (!s || !s.startTime) return;
 
     // Set active create slot to trigger the formal creation form modal
     this.state.activeCreateSlot.set({
-      resourceId: s.resourceId,
+      resourceId: s.resourceId || '',
       time: s.startTime
     });
 

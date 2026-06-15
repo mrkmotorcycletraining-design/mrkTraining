@@ -8,7 +8,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const auth = inject(AuthService);
   const router = inject(Router);
 
-  const token = auth.token();
+  // Don't attach token to auth endpoints (login doesn't need it)
+  const isAuthEndpoint = req.url.includes('/api/auth/');
+  const token = isAuthEndpoint ? null : auth.token();
+
   // Debug: log whether token exists and which URL is being requested
   try {
     // avoid revealing full token in logs, show prefix

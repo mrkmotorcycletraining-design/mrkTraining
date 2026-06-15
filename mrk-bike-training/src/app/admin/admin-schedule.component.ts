@@ -194,7 +194,7 @@ export class AdminScheduleComponent implements OnInit {
     });
     // Derive asset types from assets endpoint for filter options
     this.api.listAssets().subscribe((a) => {
-      const types = Array.from(new Set(a.map((x) => x.type).filter(Boolean)));
+      const types = Array.from(new Set(a.map((x) => x.vehicleType?.type).filter(Boolean)));
       this.assetTypes.set(types as string[]);
     });
   }

@@ -17,6 +17,7 @@ import {
   TimeIntervalApi,
   TrainerApi,
   TrainerAvailabilityApi,
+  VehicleTypeConfigApi,
   EnrollmentStatus,
   ScheduleStatus
 } from '../models/api.models';
@@ -87,6 +88,9 @@ export class TrainingApiService {
   listBranches() {
     return this.http.get<BranchApi[]>('/api/branches');
   }
+  getBranch(id: string) {
+    return this.http.get<BranchApi>(`/api/branches/${id}`);
+  }
   createBranch(body: BranchApi) {
     // Fallback: attach Authorization header explicitly if available
     try {
@@ -97,23 +101,49 @@ export class TrainingApiService {
       return this.http.post<BranchApi>('/api/branches', body);
     }
   }
+  updateBranch(id: string, body: { name?: string; locationAddress?: string }) {
+    return this.http.put<BranchApi>(`/api/branches/${id}`, { id, ...body });
+  }
   listAssets(branchId?: string, type?: string) {
     let params = new HttpParams();
     if (branchId) params = params.set('branchId', branchId);
     if (type) params = params.set('type', type);
-    return this.http.get<AssetApi[]>('/api/assets', { params });
+    return this.http.get<AssetApi[]>('/api/vehicles', { params });
   }
-  createAsset(body: { id: string; type: string; name: string; branchId: string }) {
-    return this.http.post<AssetApi>('/api/assets', body);
+  createAsset(body: {
+    id: string;
+    typeId: number;
+    name?: string;
+    currentBranchId?: string;
+    color?: string | null;
+    nextMaintenanceDate?: string | null;
+    clientVehicle?: boolean;
+    clientVehicleDetails?: string | null;
+  }) {
+    return this.http.post<AssetApi>('/api/vehicles', body);
   }
-  updateAsset(id: string, body: { type?: string; name?: string; branchId?: string }) {
-    return this.http.put<AssetApi>(`/api/assets/${id}`, body);
+  updateAsset(id: string, body: { typeId?: number; name?: string; currentBranchId?: string }) {
+    return this.http.put<AssetApi>(`/api/vehicles/${id}`, body);
   }
   setAssetMaintenance(id: string) {
-    return this.http.put<void>(`/api/assets/${id}/maintenance`, {});
+    return this.http.put<void>(`/api/vehicles/${id}/maintenance`, {});
   }
-  listAssetTypes() {
-    return this.http.get<{ id: string; name: string; defaultHeight?: number; defaultWeight?: number }[]>('/api/assets/types');
+  listVehicleTypes() {
+    return this.http.get<VehicleTypeConfigApi[]>('/api/vehicles/types');
+  }
+  createVehicleType(body: {
+    type: string;
+    label?: string;
+    minHt?: number | null;
+    maxHt?: number | null;
+    minWt?: number | null;
+    maxWt?: number | null;
+    engineCc?: number | null;
+    isElectric?: boolean;
+    mileage?: number | null;
+    maintenanceIntervalKm?: number | null;
+  }) {
+    return this.http.post<VehicleTypeConfigApi>('/api/vehicles/types', body);
   }
   listCourses() {
     return this.http.get<CourseApi[]>('/api/courses');

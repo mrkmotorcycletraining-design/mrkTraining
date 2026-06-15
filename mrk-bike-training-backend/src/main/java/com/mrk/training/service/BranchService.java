@@ -1,10 +1,11 @@
 package com.mrk.training.service;
 
-import com.mrk.training.model.Branch;
-import com.mrk.training.repository.BranchRepository;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.mrk.training.model.Branch;
+import com.mrk.training.repository.BranchRepository;
 
 @Service
 public class BranchService {
@@ -33,5 +34,19 @@ public class BranchService {
     public Branch findById(String id) {
         return repo.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Branch not found: " + id));
+    }
+
+    /**
+     * Update an existing branch's name and/or address.
+     */
+    public Branch update(String id, String name, String locationAddress) {
+        Branch branch = findById(id);
+        if (name != null && !name.isBlank()) {
+            branch.setName(name.trim());
+        }
+        if (locationAddress != null && !locationAddress.isBlank()) {
+            branch.setLocationAddress(locationAddress.trim());
+        }
+        return repo.save(branch);
     }
 }

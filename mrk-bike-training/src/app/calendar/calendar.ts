@@ -45,6 +45,9 @@ export class CalendarComponent implements OnInit, OnChanges {
   @Input() metadataFormFields: MetadataFieldConfig[] = [];
   @Input() quickTemplates: QuickTemplate[] = [];
 
+  /** Configurable keys for unique color grouping in month view. Default: client + trainer + vehicle */
+  @Input() colorGroupingKeys: string[] = ['metadata.clientId', 'metadata.trainerId', 'resourceId'];
+
   // When set from outside, opens the booking form for the given event id
   @Input() set editEventId(id: string | number | null) {
     if (id !== null && id !== undefined) {
