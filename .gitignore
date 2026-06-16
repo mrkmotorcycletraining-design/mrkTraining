@@ -43,6 +43,9 @@ dist/
 out-tsc/
 tmp/
 coverage/
+**/*.lock
+*.class
+.gradle/*
 
 # Lock files
 package-lock.json
@@ -86,3 +89,5 @@ Thumbs.db
 .nyc_output/
 coverage/
 *.lcov
+mrk-bike-training-backend/build/tmp/compileJava/previous-compilation-data.bin
+mrk-bike-training-backend/.gradle/9.3.1/checksums/checksums.lock
