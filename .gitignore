@@ -1,0 +1,88 @@
+# Java/Gradle
+*.class
+*.jar
+*.war
+*.ear
+*.nar
+*.zip
+*.tar.gz
+*.rar
+hs_err_pid*
+replay_pid*
+
+# Gradle
+.gradle/
+build/
+bin/
+gradle-app.setting
+!gradle-wrapper.jar
+.gradletasknamecache
+gradle.lockfile
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Angular/Node.js
+node_modules/
+dist/
+.angular/
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+out-tsc/
+tmp/
+coverage/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*.lnk
+
+# Build artifacts
+*.tgz
+*.so
+*.dylib
+*.dll
+
+# Testing
+.nyc_output/
+coverage/
+*.lcov
