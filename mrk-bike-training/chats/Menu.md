@@ -43,7 +43,7 @@ Menu(Navigation Bar) should be on top with blue color. On small screens like mob
     - Update Trainer password
     - Delete Trainer
     - Deactivate Trainer
-- Site Management
+- Admin
     - Add New Branch
     - Update Training Template
     - Add New Training

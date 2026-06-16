@@ -2,7 +2,7 @@
 
 ## Overview
 
-This plan converts the full design into incremental coding tasks ordered so that foundational layers are built first: DB schema migrations → Spring Security / JWT → core domain services → REST controllers → Angular auth shell → role-based lazy modules → enrollment flow → reconciliation protocols → notifications → site management → financial ledger. Each top-level task builds on the previous ones. All twelve correctness properties from the design document have a dedicated jqwik property-test sub-task placed immediately after the implementation sub-task it validates.
+This plan converts the full design into incremental coding tasks ordered so that foundational layers are built first: DB schema migrations → Spring Security / JWT → core domain services → REST controllers → Angular auth shell → role-based lazy modules → enrollment flow → reconciliation protocols → notifications → Admin → financial ledger. Each top-level task builds on the previous ones. All twelve correctness properties from the design document have a dedicated jqwik property-test sub-task placed immediately after the implementation sub-task it validates.
 
 Tasks marked with `*` are optional (test sub-tasks) and can be skipped for a faster MVP. Core implementation tasks are never optional.
 
@@ -299,7 +299,7 @@ Tasks marked with `*` are optional (test sub-tasks) and can be skipped for a fas
     - `GET /api/trainers/{id}` — ADMIN, SUPER_ADMIN, TRAINER (own only)
     - `GET /api/trainers/me` — TRAINER
     - _Requirements: (trainer management foundations for scheduling)_
-  - [x] 12.3 Implement Site Management controllers
+  - [x] 12.3 Implement Admin controllers
     - `BranchController`: `POST`, `GET /api/branches`, `GET /api/branches/{id}` — all authenticated for GET; ADMIN/SUPER_ADMIN for POST; 409 on duplicate branch ID
     - `AssetController`: full CRUD as per API table; `PUT /api/assets/{id}/maintenance` calls `ReconcilerService.handleAssetMaintenance`
     - `CourseController`: `POST`, `GET`, `PUT /api/courses`, `PUT /api/courses/{id}/image` — image stored as URL/path in `profile_picture`-style column

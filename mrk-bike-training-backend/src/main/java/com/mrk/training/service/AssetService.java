@@ -34,7 +34,7 @@ public class AssetService {
         return typeConfigRepo.findAll().stream()
                 .map(c -> new VehicleTypeConfigDto(
                         c.getTypeId(), c.getType(), c.getLabel(),
-                        c.getMinHt(), c.getMaxHt(),
+                        c.getMinHtFt(), c.getMaxHtFt(),
                         c.getMinWt(), c.getMaxWt(),
                         c.getEngineCc(), c.getIsElectric(),
                         c.getMileage(), c.getMaintenanceIntervalKm()))
@@ -52,8 +52,8 @@ public class AssetService {
         VehicleTypeConfig config = new VehicleTypeConfig();
         config.setType(req.getType().trim().toUpperCase());
         config.setLabel(req.getLabel());
-        config.setMinHt(req.getMinHt());
-        config.setMaxHt(req.getMaxHt());
+        config.setMinHtFt(req.getMinHtFt());
+        config.setMaxHtFt(req.getMaxHtFt());
         config.setMinWt(req.getMinWt());
         config.setMaxWt(req.getMaxWt());
         config.setEngineCc(req.getEngineCc());
@@ -64,7 +64,7 @@ public class AssetService {
         VehicleTypeConfig saved = typeConfigRepo.save(config);
         return new VehicleTypeConfigDto(
                 saved.getTypeId(), saved.getType(), saved.getLabel(),
-                saved.getMinHt(), saved.getMaxHt(),
+                saved.getMinHtFt(), saved.getMaxHtFt(),
                 saved.getMinWt(), saved.getMaxWt(),
                 saved.getEngineCc(), saved.getIsElectric(),
                 saved.getMileage(), saved.getMaintenanceIntervalKm());

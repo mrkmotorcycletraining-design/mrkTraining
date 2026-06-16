@@ -7,7 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TrainingApiService } from '../core/services/training-api.service';
-import { FormBgTemplateComponent } from '../form-bg-template/form-bg-template';
+import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-template';
 
 @Component({
   selector: 'app-vehicle-config-add-page',
@@ -59,29 +59,67 @@ import { FormBgTemplateComponent } from '../form-bg-template/form-bg-template';
           <mat-icon matSuffix>label</mat-icon>
         </mat-form-field>
 
+        <!-- Min Height in Feet & Inches -->
+        <div class="height-section-label">Min Height</div>
         <div class="field-row">
           <mat-form-field appearance="outline">
-            <mat-label>Min Height (cm)</mat-label>
+            <mat-label>Feet</mat-label>
             <input
               matInput
-              name="minHt"
+              name="minHtFeet"
               type="number"
               min="0"
-              placeholder="e.g. 145"
-              [(ngModel)]="minHt"
+              max="8"
+              placeholder="e.g. 4"
+              [(ngModel)]="minHtFeet"
             />
+            <span matSuffix class="unit-suffix">ft</span>
           </mat-form-field>
 
           <mat-form-field appearance="outline">
-            <mat-label>Max Height (cm)</mat-label>
+            <mat-label>Inches</mat-label>
             <input
               matInput
-              name="maxHt"
+              name="minHtInches"
               type="number"
               min="0"
-              placeholder="e.g. 185"
-              [(ngModel)]="maxHt"
+              max="11"
+              placeholder="e.g. 9"
+              [(ngModel)]="minHtInches"
             />
+            <span matSuffix class="unit-suffix">in</span>
+          </mat-form-field>
+        </div>
+
+        <!-- Max Height in Feet & Inches -->
+        <div class="height-section-label">Max Height</div>
+        <div class="field-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Feet</mat-label>
+            <input
+              matInput
+              name="maxHtFeet"
+              type="number"
+              min="0"
+              max="8"
+              placeholder="e.g. 5"
+              [(ngModel)]="maxHtFeet"
+            />
+            <span matSuffix class="unit-suffix">ft</span>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Inches</mat-label>
+            <input
+              matInput
+              name="maxHtInches"
+              type="number"
+              min="0"
+              max="11"
+              placeholder="e.g. 7"
+              [(ngModel)]="maxHtInches"
+            />
+            <span matSuffix class="unit-suffix">in</span>
           </mat-form-field>
         </div>
 
@@ -195,10 +233,23 @@ import { FormBgTemplateComponent } from '../form-bg-template/form-bg-template';
       border: 1px solid rgba(255, 255, 255, 0.4);
     }
 
+    .height-section-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.9);
+      margin-top: 0.25rem;
+    }
+
     .field-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 0.75rem;
+    }
+
+    .unit-suffix {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+      margin-right: 4px;
     }
 
     .checkbox-row {
@@ -270,8 +321,10 @@ export class VehicleConfigAddPageComponent {
 
   type = '';
   label = '';
-  minHt: number | null = null;
-  maxHt: number | null = null;
+  minHtFeet: number | null = null;
+  minHtInches: number | null = null;
+  maxHtFeet: number | null = null;
+  maxHtInches: number | null = null;
   minWt: number | null = null;
   maxWt: number | null = null;
   engineCc: number | null = null;
@@ -281,6 +334,17 @@ export class VehicleConfigAddPageComponent {
 
   loading = signal(false);
   error = signal<string | null>(null);
+
+  /**
+   * Converts feet + inches to decimal feet format (e.g. 4ft 11in = 4.11).
+   * The decimal part is the inches value (not a fraction), so 5ft 7in = 5.07.
+   */
+  private toFeetDecimal(feet: number | null, inches: number | null): number | null {
+    if (feet == null && inches == null) return null;
+    const ft = Number(feet) || 0;
+    const inc = Number(inches) || 0;
+    return parseFloat(`${ft}.${inc.toString().padStart(2, '0')}`);
+  }
 
   submit(form: NgForm) {
     if (form.invalid) {
@@ -295,8 +359,8 @@ export class VehicleConfigAddPageComponent {
       .createVehicleType({
         type: this.type.trim().toUpperCase(),
         label: this.label.trim() || undefined,
-        minHt: this.minHt,
-        maxHt: this.maxHt,
+        minHtFt: this.toFeetDecimal(this.minHtFeet, this.minHtInches),
+        maxHtFt: this.toFeetDecimal(this.maxHtFeet, this.maxHtInches),
         minWt: this.minWt,
         maxWt: this.maxWt,
         engineCc: this.engineCc,
@@ -305,7 +369,7 @@ export class VehicleConfigAddPageComponent {
         maintenanceIntervalKm: this.maintenanceIntervalKm
       })
       .subscribe({
-        next: () => this.router.navigate(['/admin/site']),
+        next: () => this.router.navigate(['/admin/vehicles-config-list']),
         error: (e) => {
           this.error.set(e.error?.error ?? 'Failed to create vehicle config');
           this.loading.set(false);
@@ -314,6 +378,6 @@ export class VehicleConfigAddPageComponent {
   }
 
   cancel() {
-    this.router.navigate(['/admin/site']);
+    this.router.navigate(['/admin/vehicles-config-list']);
   }
 }

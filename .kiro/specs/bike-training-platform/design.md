@@ -14,7 +14,7 @@ The system serves four roles — `CLIENT`, `TRAINER`, `ADMIN`, `SUPER_ADMIN` —
 6. **Reconciliation Protocols** — Buffer Exhaustion, Morning Sickness, Retroactive Asset Maintenance.
 7. **Notification Service** — in-app (DB-backed) + optional email (SMTP).
 8. **Client Self-Service Profile** — password, picture, physical data.
-9. **Site Management** — branches, assets, course templates.
+9. **Admin** — branches, assets, course templates.
 10. **Financial Ledger** — auto-logged income rows, manual expense entries.
 
 ---

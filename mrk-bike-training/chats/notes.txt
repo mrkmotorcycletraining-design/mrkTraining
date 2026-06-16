@@ -3,3 +3,26 @@ The Java Spring Boot backend should use BCrypt (BCryptPasswordEncoder) to hash p
 Rule 3: Store any sensitive application-wide keys (like JWT signing secrets) securely outside your codebase using System Environment Variables or an .env file managed via Spring Profiles (application.yml), never hardcoded in GitHub.
 
 Use PostgreSQL, but install it via Docker directly on your application server.
+
+TO init DB
+psql -U postgres -d mrktraining -f "d:\MrkBikeTraining\mrk-bike-training-backend\src\main\resources\db\postgres\schema.sql"
+
+admin
+rohan rohan0202
+
+client
+mkarora@123.com mkarora123
+
+ToDo
+1. Add trainer
+2. Add client
+3. Create Menu item Course
+4. Add course type 
+5. Add course
+6. View course type
+7. View course
+8. login as client
+9. Update client profile
+10. Apply for training
+11. Schedule training
+12. Login as Admin and approve training

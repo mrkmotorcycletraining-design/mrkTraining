@@ -4,7 +4,7 @@
 
 The MRK Bike Training Platform is a full-stack scheduling and operations system for a motorcycle training school. It is built on PostgreSQL, Spring Boot (`mrk-bike-training-backend`), and Angular 21 (`mrk-bike-training`).
 
-The system supports four user roles — CLIENT, TRAINER, ADMIN, and SUPER_ADMIN — each with a tailored UI and distinct operational permissions. Core capabilities include role-based authentication, client onboarding, multi-step training enrollment with a conflict-free calendar engine, automated schedule reconciliation (buffer exhaustion, trainer absence substitution, asset hot-swap), and admin override workflows. The platform also covers site management (branches, assets, training templates) and financial ledger tracking.
+The system supports four user roles — CLIENT, TRAINER, ADMIN, and SUPER_ADMIN — each with a tailored UI and distinct operational permissions. Core capabilities include role-based authentication, client onboarding, multi-step training enrollment with a conflict-free calendar engine, automated schedule reconciliation (buffer exhaustion, trainer absence substitution, asset hot-swap), and admin override workflows. The platform also covers Admin (branches, assets, training templates) and financial ledger tracking.
 
 **What is already built:**
 - PostgreSQL schema with all core tables (`users`, `trainer_profiles`, `client_profiles`, `branches`, `assets`, `asset_type_config`, `courses`, `client_course_enrollments`, `schedule_slots`, `attendance_logs`, `financial_ledger`)
@@ -22,7 +22,7 @@ The system supports four user roles — CLIENT, TRAINER, ADMIN, and SUPER_ADMIN 
 - Automated reconciliation protocols (Buffer Exhaustion, Morning Sickness, Retroactive Asset Maintenance)
 - Notification service (in-app + optional email/SMS)
 - Client profile self-service (password, picture, height, weight, DOB)
-- Site management module (new branch, training template updates, new training)
+- Admin module (new branch, training template updates, new training)
 
 ---
 
@@ -80,7 +80,7 @@ The system supports four user roles — CLIENT, TRAINER, ADMIN, and SUPER_ADMIN 
 
 1. WHEN a CLIENT logs in, THE System SHALL display the following top-level navigation items: **Trainings** (Apply New Training, View Past Trainings, View Training Request Status) and **Schedule** (See Current Schedule, Request Absence, Request Pause).
 2. WHEN a TRAINER logs in, THE System SHALL display the following top-level navigation items: **Profile** (view/update) and **Schedule** (See Current Schedule, Request Absence, Add New Slots, Remove Existing Slots).
-3. WHEN an ADMIN or SUPER_ADMIN logs in, THE System SHALL display the following top-level navigation items: **Schedule**, **Client**, **Trainer** (future spec placeholder, visible but disabled), and **Site Management**.
+3. WHEN an ADMIN or SUPER_ADMIN logs in, THE System SHALL display the following top-level navigation items: **Schedule**, **Client**, **Trainer** (future spec placeholder, visible but disabled), and **Admin**.
 4. THE Angular application SHALL use route guards so that navigating directly to a role-restricted URL redirects the user to the login page if unauthenticated or to their default dashboard if unauthorised.
 5. WHEN there are one or more `PENDING` ScheduleSlots awaiting approval, THE System SHALL display a red badge on the **Schedule** menu item for ADMIN and SUPER_ADMIN users.
 
@@ -119,7 +119,7 @@ The system supports four user roles — CLIENT, TRAINER, ADMIN, and SUPER_ADMIN 
 
 ---
 
-### Requirement 5: Branch and Asset Management (Site Management)
+### Requirement 5: Branch and Asset Management (Admin)
 
 **User Story:** As an Admin or SuperAdmin, I want to manage branches and assets, so that the system always reflects the current operational infrastructure.
 

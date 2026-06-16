@@ -1,5 +1,6 @@
 package com.mrk.training.web.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -12,8 +13,12 @@ public class VehicleTypeConfigRequest {
     @Size(max = 255)
     private String label;
 
-    private Integer minHt;
-    private Integer maxHt;
+    @JsonProperty("minHtFt")
+    private Double minHtFt;
+
+    @JsonProperty("maxHtFt")
+    private Double maxHtFt;
+
     private Integer minWt;
     private Integer maxWt;
     private Integer engineCc;
@@ -25,10 +30,10 @@ public class VehicleTypeConfigRequest {
     public void setType(String type) { this.type = type; }
     public String getLabel() { return label; }
     public void setLabel(String label) { this.label = label; }
-    public Integer getMinHt() { return minHt; }
-    public void setMinHt(Integer minHt) { this.minHt = minHt; }
-    public Integer getMaxHt() { return maxHt; }
-    public void setMaxHt(Integer maxHt) { this.maxHt = maxHt; }
+    public Double getMinHtFt() { return minHtFt; }
+    public void setMinHtFt(Double minHtFt) { this.minHtFt = minHtFt; }
+    public Double getMaxHtFt() { return maxHtFt; }
+    public void setMaxHtFt(Double maxHtFt) { this.maxHtFt = maxHtFt; }
     public Integer getMinWt() { return minWt; }
     public void setMinWt(Integer minWt) { this.minWt = minWt; }
     public Integer getMaxWt() { return maxWt; }

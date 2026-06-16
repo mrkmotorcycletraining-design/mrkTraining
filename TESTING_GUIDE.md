@@ -36,7 +36,7 @@
   - ✓ Schedule
   - ✓ Client (with submenu: View Clients, Add Client)
   - ✓ Trainer (with submenu: View Trainers, Add Trainer)
-  - ✓ Site Management
+  - ✓ Admin
   - ✓ Pending Approvals (with badge if pending)
   - ✓ Logout button
 - [ ] NO duplicate top navbar (Branch, Vehicle, etc.)
@@ -83,8 +83,8 @@ Monitor Network tab in DevTools:
 - [ ] Can select trainer and asset from dropdowns
 - [ ] Can approve or reject
 
-### 8. Site Management
-- [ ] Click "Site Management"
+### 8. Admin
+- [ ] Click "Admin"
 - [ ] Should show:
   - ✓ Branches (add new branch form)
   - ✓ Assets/Vehicles list

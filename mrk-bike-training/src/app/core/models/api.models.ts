@@ -57,8 +57,8 @@ export interface VehicleTypeConfigApi {
   typeId: number;
   type: string;
   label?: string;
-  minHt?: number;
-  maxHt?: number;
+  minHtFt?: number;
+  maxHtFt?: number;
   minWt?: number;
   maxWt?: number;
   engineCc?: number;

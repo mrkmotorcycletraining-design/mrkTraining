@@ -21,11 +21,11 @@ public class VehicleTypeConfig {
 
     private String label;
 
-    @Column(name = "min_ht")
-    private Integer minHt;
+    @Column(name = "min_ht_ft")
+    private Double minHtFt;
 
-    @Column(name = "max_ht")
-    private Integer maxHt;
+    @Column(name = "max_ht_ft")
+    private Double maxHtFt;
 
     @Column(name = "min_wt")
     private Integer minWt;
@@ -52,10 +52,10 @@ public class VehicleTypeConfig {
     public void setType(String type) { this.type = type; }
     public String getLabel() { return label; }
     public void setLabel(String label) { this.label = label; }
-    public Integer getMinHt() { return minHt; }
-    public void setMinHt(Integer minHt) { this.minHt = minHt; }
-    public Integer getMaxHt() { return maxHt; }
-    public void setMaxHt(Integer maxHt) { this.maxHt = maxHt; }
+    public Double getMinHtFt() { return minHtFt; }
+    public void setMinHtFt(Double minHtFt) { this.minHtFt = minHtFt; }
+    public Double getMaxHtFt() { return maxHtFt; }
+    public void setMaxHtFt(Double maxHtFt) { this.maxHtFt = maxHtFt; }
     public Integer getMinWt() { return minWt; }
     public void setMinWt(Integer minWt) { this.minWt = minWt; }
     public Integer getMaxWt() { return maxWt; }

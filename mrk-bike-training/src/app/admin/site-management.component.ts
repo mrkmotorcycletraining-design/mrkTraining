@@ -13,7 +13,7 @@ type TabKey = 'branches' | 'vehicles' | 'courses';
   imports: [FormsModule, CommonModule, RouterLink],
   template: `
     <div class="page-header">
-      <h2>🏢 Site Management</h2>
+      <h2>🏢 Admin</h2>
     </div>
 
     <!-- Tab Navigation -->

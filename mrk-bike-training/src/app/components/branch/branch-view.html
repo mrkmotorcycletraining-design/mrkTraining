@@ -1,35 +1,10 @@
 <div class="panel">
   <div class="panel-header">
     <h3>Branches</h3>
-    <button class="btn-secondary" (click)="load()" [disabled]="loading()">
-      {{ loading() ? 'Loading…' : '↻ Refresh' }}
-    </button>
   </div>
 
-  @if (errorMsg()) {
-    <div class="alert alert-error">⚠️ {{ errorMsg() }}</div>
-  }
-
-  @if (branches().length === 0 && !loading()) {
-    <p class="empty-state">No branches found. Add one using the Branch → Add menu.</p>
-  } @else {
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Address</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (b of branches(); track b.id) {
-          <tr>
-            <td><code>{{ b.id }}</code></td>
-            <td>{{ b.name }}</td>
-            <td>{{ b.locationAddress || '—' }}</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  }
+  <app-custom-grid
+    apiUrl="/api/branches"
+    [columnDefs]="columnDefs">
+  </app-custom-grid>
 </div>

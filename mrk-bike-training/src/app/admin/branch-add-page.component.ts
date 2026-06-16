@@ -9,7 +9,7 @@ import { TrainingApiService } from '../core/services/training-api.service';
 import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-template';
 
 @Component({
-  selector: 'app-client-add-page',
+  selector: 'app-branch-add-page',
   standalone: true,
   imports: [
     FormsModule,
@@ -22,107 +22,67 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
   template: `
     <app-form-bg-template>
       <form #f="ngForm" (ngSubmit)="submit(f)" novalidate>
-        <h3 class="form-title">Add Client</h3>
+        <h3 class="form-title">Add Branch</h3>
 
         @if (error()) {
           <div class="alert alert-error">⚠️ {{ error() }}</div>
         }
 
         <mat-form-field appearance="outline">
-          <mat-label>Full Name</mat-label>
+          <mat-label>Branch ID</mat-label>
           <input
             matInput
-            name="name"
-            placeholder="e.g. John Doe"
+            name="branchId"
+            placeholder="Pin Code"
+            maxlength="6"
+            required
+            [(ngModel)]="branchId"
+            #idCtrl="ngModel"
+          />
+          <mat-icon matSuffix>tag</mat-icon>
+          @if (idCtrl.touched && idCtrl.errors?.['required']) {
+            <mat-error>Branch ID is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Branch Name</mat-label>
+          <input
+            matInput
+            name="branchName"
+            placeholder="e.g. MRK Bangalore Central"
             maxlength="255"
             required
-            [(ngModel)]="name"
+            [(ngModel)]="branchName"
             #nameCtrl="ngModel"
           />
-          <mat-icon matSuffix>person</mat-icon>
+          <mat-icon matSuffix>business</mat-icon>
           @if (nameCtrl.touched && nameCtrl.errors?.['required']) {
-            <mat-error>Name is required</mat-error>
+            <mat-error>Branch Name is required</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Username</mat-label>
-          <input
+          <mat-label>Address</mat-label>
+          <textarea
             matInput
-            name="uniqueId"
-            placeholder="e.g. johndoe123"
-            maxlength="255"
+            name="branchAddress"
+            placeholder="Full address"
+            rows="3"
+            maxlength="500"
             required
-            [(ngModel)]="uniqueId"
-            #uidCtrl="ngModel"
-          />
-          <mat-icon matSuffix>badge</mat-icon>
-          @if (uidCtrl.touched && uidCtrl.errors?.['required']) {
-            <mat-error>Username is required</mat-error>
+            [(ngModel)]="branchAddress"
+            #addrCtrl="ngModel"
+          ></textarea>
+          <mat-icon matSuffix>location_on</mat-icon>
+          @if (addrCtrl.touched && addrCtrl.errors?.['required']) {
+            <mat-error>Address is required</mat-error>
           }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
-          <input
-            matInput
-            name="email"
-            type="email"
-            placeholder="client&#64;example.com"
-            maxlength="255"
-            required
-            email
-            [(ngModel)]="email"
-            #emailCtrl="ngModel"
-          />
-          <mat-icon matSuffix>email</mat-icon>
-          @if (emailCtrl.touched && emailCtrl.errors?.['required']) {
-            <mat-error>Email is required</mat-error>
-          }
-          @if (emailCtrl.touched && emailCtrl.errors?.['email']) {
-            <mat-error>Enter a valid email address</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Password</mat-label>
-          <input
-            matInput
-            name="password"
-            type="password"
-            placeholder="Min 6 characters"
-            minlength="6"
-            maxlength="255"
-            required
-            [(ngModel)]="password"
-            #pwdCtrl="ngModel"
-          />
-          <mat-icon matSuffix>lock</mat-icon>
-          @if (pwdCtrl.touched && pwdCtrl.errors?.['required']) {
-            <mat-error>Password is required</mat-error>
-          }
-          @if (pwdCtrl.touched && pwdCtrl.errors?.['minlength']) {
-            <mat-error>Password must be at least 6 characters</mat-error>
-          }
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Allowed Trainings</mat-label>
-          <input
-            matInput
-            name="allowed"
-            type="number"
-            min="2"
-            placeholder="2"
-            [(ngModel)]="allowed"
-          />
-          <mat-icon matSuffix>fitness_center</mat-icon>
-          <mat-hint>Number of training sessions this client can book</mat-hint>
         </mat-form-field>
 
         <div class="form-actions">
           <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
-            {{ loading() ? 'Creating…' : 'Create Client' }}
+            {{ loading() ? 'Creating…' : 'Create Branch' }}
           </button>
         </div>
       </form>
@@ -176,11 +136,13 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
     }
 
     ::ng-deep .mat-mdc-form-field input.mat-mdc-input-element,
-    ::ng-deep .mat-mdc-form-field .mat-mdc-input-element {
+    ::ng-deep .mat-mdc-form-field .mat-mdc-input-element,
+    ::ng-deep .mat-mdc-form-field textarea.mat-mdc-input-element {
       color: #fff !important;
     }
 
-    ::ng-deep .mat-mdc-form-field input::placeholder {
+    ::ng-deep .mat-mdc-form-field input::placeholder,
+    ::ng-deep .mat-mdc-form-field textarea::placeholder {
       color: rgba(255, 255, 255, 0.5) !important;
     }
 
@@ -205,15 +167,13 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
     }
   `
 })
-export class ClientAddPageComponent {
+export class BranchAddPageComponent {
   private readonly api = inject(TrainingApiService);
   private readonly router = inject(Router);
 
-  name = '';
-  email = '';
-  uniqueId = '';
-  password = '';
-  allowed = 2;
+  branchId = '';
+  branchName = '';
+  branchAddress = '';
 
   loading = signal(false);
   error = signal<string | null>(null);
@@ -228,23 +188,17 @@ export class ClientAddPageComponent {
     this.error.set(null);
 
     this.api
-      .createClient({
-        name: this.name.trim(),
-        emailUsername: this.email.trim(),
-        uniqueId: this.uniqueId.trim(),
-        password: this.password,
-        allowedNumOfTrainings: this.allowed
+      .createBranch({
+        id: this.branchId.trim(),
+        name: this.branchName.trim(),
+        locationAddress: this.branchAddress.trim()
       })
       .subscribe({
-        next: (c) => this.router.navigate(['/admin/clients', c.id]),
+        next: () => this.router.navigate(['/admin/branches-view']),
         error: (e) => {
-          this.error.set(e.error?.error ?? 'Failed to create client');
+          this.error.set(e.error?.error ?? 'Failed to create branch');
           this.loading.set(false);
         }
       });
-  }
-
-  cancel() {
-    this.router.navigate(['/admin/clients']);
   }
 }

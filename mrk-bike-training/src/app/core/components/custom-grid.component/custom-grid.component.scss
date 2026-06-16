@@ -1,0 +1,37 @@
+// Targets our grid container class
+.grid-container {
+  width: 100%;
+  height: 500px;
+
+  // Target the AG Grid base theme and inject custom CSS variables
+  ::ng-deep .ag-theme-quartz {
+    // Primary brand blues
+    --ag-active-color: #0066cc;                // Checkboxes, focus borders, active lines
+    --ag-range-selection-background-color: rgba(0, 102, 204, 0.15);
+
+    // Header styling
+    --ag-header-background-color: #e6f0fa;     // Very soft light blue header
+    --ag-header-foreground-color: #003366;     // Deep navy text for contrast
+    --ag-header-cell-hover-background-color: #d0e4f7;
+
+    // Row interaction
+    --ag-row-hover-color: #f2f7fc;             // Subtly highlights rows on hover
+    --ag-selected-row-background-color: #d9ecfb; // Clear blue background for clicked rows
+    
+    // Borders and subtle grids
+    --ag-border-color: #cbdbe1;                // Clean blueish-gray line borders
+    --ag-row-border-color: #e1ebf0;
+
+    // Font color tweaks
+    --ag-data-color: #1c2d3d;                  // Dark steel color for standard grid cell text
+
+    /* Optional cosmetic upgrades */
+    --ag-border-radius: 6px;                   // Rounds corners of outer grid edges
+    --ag-card-radius: 4px;
+    
+    // Style adjustments for the header text weight
+    .ag-header-cell-label {
+      font-weight: 600;
+    }
+  }
+}

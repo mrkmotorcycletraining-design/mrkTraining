@@ -134,8 +134,8 @@ export class TrainingApiService {
   createVehicleType(body: {
     type: string;
     label?: string;
-    minHt?: number | null;
-    maxHt?: number | null;
+    minHtFt?: number | null;
+    maxHtFt?: number | null;
     minWt?: number | null;
     maxWt?: number | null;
     engineCc?: number | null;

@@ -40,6 +40,37 @@ body {
 @import 'ag-grid-community/styles/ag-grid.css';
 @import 'ag-grid-community/styles/ag-theme-alpine.css';
 
+// ─── AG Grid Blue Theme Overrides ────────────────────────────────────────────
+.custom-grid-blue,
+.custom-grid-blue ag-grid-angular,
+.custom-grid-blue [class*="ag-theme-"] {
+  --ag-header-background-color: #1565c0 !important;
+  --ag-header-foreground-color: #fff !important;
+  --ag-header-cell-hover-background-color: #1976d2 !important;
+  --ag-row-hover-color: #e3f2fd !important;
+  --ag-selected-row-background-color: #bbdefb !important;
+  --ag-border-color: #90caf9 !important;
+  --ag-row-border-color: #e0e0e0 !important;
+  --ag-header-column-separator-display: block !important;
+  --ag-header-column-separator-color: rgba(255, 255, 255, 0.4) !important;
+  --ag-header-column-separator-width: 1px !important;
+  --ag-header-column-separator-height: 60% !important;
+  --ag-internal-row-border-width: 1px !important;
+}
+
+.custom-grid-blue .ag-header {
+  background-color: #1565c0 !important;
+  color: #fff !important;
+}
+
+.custom-grid-blue .ag-header-cell {
+  border-right: 1px solid rgba(255, 255, 255, 0.3) !important;
+}
+
+.custom-grid-blue .ag-cell {
+  border-right: 1px solid #e0e0e0 !important;
+}
+
 // ─── Shared form card ────────────────────────────────────────────────────────
 .form-card {
   background: var(--card-bg, #fff);

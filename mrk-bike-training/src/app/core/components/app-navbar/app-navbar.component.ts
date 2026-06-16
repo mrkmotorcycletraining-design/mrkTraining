@@ -86,6 +86,7 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
               <div class="nav-dropdown">
                 <button class="dropdown-trigger">Client ▼</button>
                 <div class="dropdown-content">
+                  <a routerLink="/admin/clients-view" (click)="closeMenu()">View Clients</a>
                   <a routerLink="/admin/clients-add" (click)="closeMenu()">Add Client</a>
                   <a routerLink="/admin/clients" [queryParams]="{action: 'mark-absent'}" (click)="closeMenu()">Mark Absent</a>
                   <a routerLink="/admin/clients" [queryParams]="{action: 'pause-training'}" (click)="closeMenu()">Pause Training</a>
@@ -97,6 +98,7 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
               <div class="nav-dropdown">
                 <button class="dropdown-trigger">Trainer ▼</button>
                 <div class="dropdown-content">
+                  <a routerLink="/admin/trainers-view" (click)="closeMenu()">View Trainers</a>
                   <a routerLink="/admin/trainers-add" (click)="closeMenu()" *ngIf="currentRole() === 'SUPER_ADMIN'">Add Trainer</a>
                   <a routerLink="/admin/trainers" [queryParams]="{action: 'mark-absence'}" (click)="closeMenu()">Mark Absence</a>
                   <a routerLink="/admin/trainers" [queryParams]="{action: 'switch-branch'}" (click)="closeMenu()">Switch Trainer Branch</a>
@@ -108,7 +110,8 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
               <div class="nav-dropdown">
                 <button class="dropdown-trigger">Vehicle ▼</button>
                 <div class="dropdown-content">
-                  <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles'}" (click)="closeMenu()">View Vehicle Info</a>
+                  <a routerLink="/admin/vehicles-list" (click)="closeMenu()">View All Vehicles</a>
+                  <a routerLink="/admin/vehicles-config-list" (click)="closeMenu()">View Vehicle Configs</a>
                   <a routerLink="/admin/vehicles-add" (click)="closeMenu()">Add Vehicle</a>
                   <a routerLink="/admin/vehicles-config-add" (click)="closeMenu()">Add Vehicle Config</a>
                   <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles', action: 'maintenance'}" (click)="closeMenu()">Add Maintenance</a>
@@ -118,9 +121,10 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
                 </div>
               </div>
               <div class="nav-dropdown">
-                <button class="dropdown-trigger">Site Management ▼</button>
+                <button class="dropdown-trigger">Admin ▼</button>
                 <div class="dropdown-content">
-                  <a routerLink="/admin/site" [queryParams]="{tab: 'branches'}" (click)="closeMenu()">Add New Branch</a>
+                  <a routerLink="/admin/branches-view" (click)="closeMenu()">View Branches</a>
+                  <a routerLink="/admin/branches-add" (click)="closeMenu()">Add New Branch</a>
                   <a routerLink="/admin/site" [queryParams]="{tab: 'courses'}" (click)="closeMenu()">Update Training Template</a>
                   <a routerLink="/admin/site" [queryParams]="{tab: 'courses'}" (click)="closeMenu()">Add New Training</a>
                 </div>

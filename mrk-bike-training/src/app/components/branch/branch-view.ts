@@ -1,34 +1,18 @@
-import { Component, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { apiGet } from '../../services/api.service';
-import { BranchModel } from '../../models/branch.model';
+import { Component } from '@angular/core';
+import { ColDef } from 'ag-grid-community';
+import { CustomGridComponent } from '../../core/components/custom-grid.component/custom-grid.component';
 
 @Component({
   selector: 'branch-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CustomGridComponent],
   templateUrl: './branch-view.html',
   styleUrls: ['./branch-view.scss']
 })
-export class BranchView implements OnInit {
-  branches = signal<BranchModel[]>([]);
-  loading = signal(false);
-  errorMsg = signal<string | null>(null);
-
-  async ngOnInit() {
-    await this.load();
-  }
-
-  async load() {
-    this.loading.set(true);
-    this.errorMsg.set(null);
-    try {
-      const data = await apiGet<BranchModel[]>('/api/branches');
-      this.branches.set(data || []);
-    } catch (err: unknown) {
-      this.errorMsg.set(err instanceof Error ? err.message : String(err));
-    } finally {
-      this.loading.set(false);
-    }
-  }
+export class BranchView {
+  columnDefs: ColDef[] = [
+    { field: 'id', headerName: 'ID', flex: 1 },
+    { field: 'name', headerName: 'Name', flex: 1.5 },
+    { field: 'locationAddress', headerName: 'Address', flex: 2, valueFormatter: params => params.value || '—' }
+  ];
 }

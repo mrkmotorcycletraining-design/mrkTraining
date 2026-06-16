@@ -1,31 +1,20 @@
-import { Component, signal, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { apiGet } from '../../services/api.service';
+import { Component } from '@angular/core';
+import { ColDef } from 'ag-grid-community';
+import { CustomGridComponent } from '../../core/components/custom-grid.component/custom-grid.component';
 
 @Component({
   selector: 'client-view',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CustomGridComponent],
   templateUrl: './client-view.html',
   styleUrls: ['./client-view.scss']
 })
-export class ClientView implements OnInit {
-  clients = signal<any[]>([]);
-  loading = signal(false);
-  errorMsg = signal<string | null>(null);
-
-  async ngOnInit() { await this.load(); }
-
-  async load() {
-    this.loading.set(true);
-    this.errorMsg.set(null);
-    try {
-      const data = await apiGet<any[]>('/api/clients');
-      this.clients.set(data || []);
-    } catch (err: unknown) {
-      this.errorMsg.set(err instanceof Error ? err.message : String(err));
-    } finally {
-      this.loading.set(false);
-    }
-  }
+export class ClientView {
+  columnDefs: ColDef[] = [
+    { field: 'id', headerName: 'ID', flex: 0.5 },
+    { field: 'name', headerName: 'Name', flex: 1.5 },
+    { field: 'emailUsername', headerName: 'Email', flex: 1.5 },
+    { field: 'heightCm', headerName: 'Height (cm)', flex: 1, valueFormatter: params => params.value ?? '—' },
+    { field: 'weightKg', headerName: 'Weight (kg)', flex: 1, valueFormatter: params => params.value ?? '—' }
+  ];
 }

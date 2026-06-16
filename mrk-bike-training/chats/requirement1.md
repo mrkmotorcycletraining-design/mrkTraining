@@ -53,7 +53,7 @@ Our first landing page should be a login page. Base upon the login type UI funct
     - Update Trainer password
     - Delete Trainer
     - Deactivate Trainer
-- Site Management
+- Admin
     - Add New Branch
     - Update Training Template
     - Add New Training

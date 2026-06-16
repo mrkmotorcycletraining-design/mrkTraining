@@ -134,7 +134,7 @@ Our first landing page should be a login page. Based upon the login type, UI fun
 
 
 
-* **Site Management**
+* **Admin**
 
 * Add New Branch
 
