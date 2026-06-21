@@ -1,9 +1,11 @@
-import { Component, Input, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnInit, ViewEncapsulation, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
-import { ColDef, GridReadyEvent } from 'ag-grid-community';
+import { ColDef, GridReadyEvent, RowClickedEvent } from 'ag-grid-community';
 import { Observable } from 'rxjs';
 import { AgGridAngular } from 'ag-grid-angular';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { RowDetailDialogComponent } from './row-detail-dialog.component';
 
 @Component({
   selector: 'app-custom-grid',
@@ -11,12 +13,15 @@ import { AgGridAngular } from 'ag-grid-angular';
   templateUrl: './custom-grid.component.html',
   styleUrls: ['./custom-grid.component.scss'],
   encapsulation: ViewEncapsulation.None,
-  imports: [AgGridAngular, AsyncPipe]
+  imports: [AgGridAngular, AsyncPipe, MatDialogModule]
 })
 export class CustomGridComponent implements OnInit {
   @Input() apiUrl!: string;
   @Input() columnDefs: ColDef[] = [];
   @Input() theme = 'ag-theme-alpine';
+  @Input() enableRowClick = false;
+
+  private readonly dialog = inject(MatDialog);
 
   rowData$!: Observable<any[]>;
 
@@ -36,4 +41,16 @@ export class CustomGridComponent implements OnInit {
   }
 
   onGridReady(_params: GridReadyEvent) {}
+
+  onRowClicked(event: RowClickedEvent) {
+    if (!this.enableRowClick || !event.data) return;
+
+    this.dialog.open(RowDetailDialogComponent, {
+      data: { row: event.data, columnDefs: this.columnDefs },
+      width: '90vw',
+      maxWidth: '700px',
+      maxHeight: '90vh',
+      panelClass: 'row-detail-dialog'
+    });
+  }
 }

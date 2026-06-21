@@ -6,9 +6,9 @@ import jakarta.validation.constraints.Positive;
 
 public record ClientCreateRequest(
         @NotBlank String name,
-        @NotBlank String emailUsername,
-        @NotBlank String uniqueId,
+        @NotBlank String username,
+        String email,
         @NotBlank String password,
         @NotNull @Positive Integer allowedNumOfTrainings,
-        Integer heightCm,
+        @NotNull Double heightFt,
         Integer weightKg) {}

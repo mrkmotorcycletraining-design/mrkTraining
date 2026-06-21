@@ -1,8 +1,17 @@
 package com.mrk.training.model;
 
-import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "attendance_logs")
@@ -20,14 +29,14 @@ public class AttendanceLog {
     private String personId; // client or trainer id as string
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "person_type", columnDefinition = "person_type_enum")
+    @Column(name = "person_type")
     private PersonType personType;
 
     @Column(name = "date_time")
     private LocalDateTime dateTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "attendance_status_enum")
+    @Column(name = "status")
     private AttendanceStatus status;
 
     public AttendanceLog() {}

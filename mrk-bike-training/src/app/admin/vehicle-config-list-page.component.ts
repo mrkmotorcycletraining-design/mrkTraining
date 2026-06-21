@@ -48,6 +48,7 @@ export class VehicleConfigListPageComponent {
     { field: 'engineCc', headerName: 'Engine CC' },
     { field: 'isElectric', headerName: 'Electric' },
     { field: 'mileage', headerName: 'Mileage (km/l)' },
-    { field: 'maintenanceIntervalKm', headerName: 'Maint. Interval (km)' }
+    { field: 'maintenanceIntervalKm', headerName: 'Maint. Interval (km)' },
+    { field: 'status', headerName: 'Active', valueFormatter: (params) => params.value === true ? 'Yes' : params.value === false ? 'No' : '—' }
   ];
 }

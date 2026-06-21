@@ -347,7 +347,7 @@ export class VehicleAddPageComponent implements OnInit {
         nextMaintenanceDate: this.nextMaintenanceDate || null
       })
       .subscribe({
-        next: () => this.router.navigate(['/admin/site']),
+        next: () => this.router.navigate(['/admin/vehicles-list']),
         error: (e) => {
           this.error.set(e.error?.error ?? 'Failed to create vehicle');
           this.loading.set(false);

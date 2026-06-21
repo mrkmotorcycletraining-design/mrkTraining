@@ -1,0 +1,82 @@
+<div class="range-multiselect-wrapper">
+  <!-- Single visible input using mat-form-field to match other fields -->
+  <mat-form-field appearance="outline" class="range-trigger-field" (click)="onInputClick()">
+    <mat-label>{{ label }}</mat-label>
+    <input
+      matInput
+      [placeholder]="placeholder"
+      readonly
+      class="range-input"
+    />
+    <mat-icon matSuffix>event</mat-icon>
+  </mat-form-field>
+
+  <!-- Chips container below the input -->
+  @if (ranges().length > 0) {
+    <div class="chips-box">
+      @for (chip of ranges(); track $index) {
+        <div class="range-chip">
+          <span class="chip-text">{{ chip }}</span>
+          <mat-icon class="chip-remove" (click)="removeChip($index)">close</mat-icon>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Hidden date range picker (dateOnly or datetime mode) -->
+  @if (!timeOnly) {
+    <div class="hidden-picker">
+      <mat-date-range-input [rangePicker]="rangePicker" [min]="minDate">
+        <input matStartDate [(ngModel)]="dateRangeStart" placeholder="Start">
+        <input matEndDate [(ngModel)]="dateRangeEnd" placeholder="End">
+      </mat-date-range-input>
+      <mat-date-range-picker
+        #rangePicker
+        (closed)="onDateRangeClosed()"
+      ></mat-date-range-picker>
+    </div>
+  }
+
+  <!-- Hidden time pickers (timeOnly or datetime mode) -->
+  @if (!dateOnly) {
+    <div class="hidden-picker">
+      <input
+        [ngxMatTimepicker]="fromTimePicker"
+        [format]="12"
+        readonly
+        class="hidden-time-input"
+      />
+      <ngx-mat-timepicker
+        #fromTimePicker
+        [format]="12"
+        [timepickerClass]="'from-time-picker'"
+        [enableKeyboardInput]="true"
+        (timeSet)="onFromTimeSet($event)"
+        [editableHintTmpl]="fromTimeLabel"
+      ></ngx-mat-timepicker>
+
+      <ng-template #fromTimeLabel>
+        <div class="clock-dialog-title">Select From Time</div>
+      </ng-template>
+
+      <input
+        [ngxMatTimepicker]="toTimePicker"
+        [format]="12"
+        readonly
+        class="hidden-time-input"
+      />
+      <ngx-mat-timepicker
+        #toTimePicker
+        [format]="12"
+        [timepickerClass]="'to-time-picker'"
+        [enableKeyboardInput]="true"
+        [editableHintTmpl]="toTimeLabel"
+        (timeSet)="onToTimeSet($event)"
+      ></ngx-mat-timepicker>
+
+      <ng-template #toTimeLabel>
+        <div class="clock-dialog-title">Select To Time</div>
+      </ng-template>
+    </div>
+  }
+</div>

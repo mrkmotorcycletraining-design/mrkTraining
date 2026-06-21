@@ -44,7 +44,12 @@ export interface CourseApi {
   totalDays?: number;
   preferredDaysOfWeek?: string;
   bufferDays?: number;
-  imageUrl?: string;
+  templateImage?: string;
+  startDate?: string;
+  startTime?: string;
+  endDate?: string;
+  endTime?: string;
+  status?: string;
 }
 
 export interface BranchApi {
@@ -65,6 +70,7 @@ export interface VehicleTypeConfigApi {
   isElectric?: boolean;
   mileage?: number;
   maintenanceIntervalKm?: number;
+  status?: boolean;
 }
 
 export interface AssetApi {
@@ -73,25 +79,24 @@ export interface AssetApi {
   name?: string;
   color?: string;
   nextMaintenanceDate?: string;
-  isActive?: boolean;
+  status?: string;
   clientVehicle?: boolean;
   clientVehicleDetails?: string;
   currentBranch?: BranchApi;
-  status?: string;
 }
 
 export interface ClientProfileApi {
   id: number;
   name?: string;
-  emailUsername?: string;
-  heightCm?: number;
+  username?: string;
+  email?: string;
+  heightFt?: number;
   weightKg?: number;
   dateOfBirth?: string;
   profilePicture?: string;
 }
 
 export interface AdminClientApi extends ClientProfileApi {
-  uniqueId?: string;
   allowedNumOfTrainings?: number;
   active?: boolean;
 }
@@ -99,7 +104,7 @@ export interface AdminClientApi extends ClientProfileApi {
 export interface TrainerApi {
   id: number;
   name?: string;
-  emailUsername?: string;
+  username?: string;
   startDate?: string;
   salary?: number;
   available?: boolean;
@@ -107,6 +112,12 @@ export interface TrainerApi {
   active?: boolean;
   /** current branch assignment, if any */
   currentBranch?: BranchApi | null;
+  /** Comma-separated 2-letter day codes: Mo,Tu,We,Th,Fr,Sa,Su */
+  preferredDays?: string;
+  /** HH:mm format */
+  preferredTime?: string;
+  /** Comma-separated location/branch references */
+  preferredLocations?: string;
 }
 
 export interface TrainerAvailabilityApi {

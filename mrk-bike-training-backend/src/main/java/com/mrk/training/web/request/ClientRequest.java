@@ -1,38 +1,44 @@
 package com.mrk.training.web.request;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 public class ClientRequest {
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Must be a valid email address")
+    @NotBlank(message = "Username is required")
     @Size(max = 255)
-    private String emailUsername;
+    private String username;
+
+    private String email;
 
     @NotBlank(message = "Password is required")
     @Size(min = 6, max = 255, message = "Password must be at least 6 characters")
-    private String passwordHash;
+    private String password;
 
     @NotBlank(message = "Name is required")
     @Size(max = 255)
     private String name;
 
-    @Min(value = 50, message = "Height must be at least 50 cm")
-    @Max(value = 250, message = "Height must be at most 250 cm")
-    private Integer heightCm;
+    @NotNull(message = "Height is required")
+    private Double heightFt;
 
     @Min(value = 20, message = "Weight must be at least 20 kg")
     @Max(value = 300, message = "Weight must be at most 300 kg")
     private Integer weightKg;
 
-    public String getEmailUsername() { return emailUsername; }
-    public void setEmailUsername(String emailUsername) { this.emailUsername = emailUsername; }
-    public String getPasswordHash() { return passwordHash; }
-    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public Integer getHeightCm() { return heightCm; }
-    public void setHeightCm(Integer heightCm) { this.heightCm = heightCm; }
+    public Double getHeightFt() { return heightFt; }
+    public void setHeightFt(Double heightFt) { this.heightFt = heightFt; }
     public Integer getWeightKg() { return weightKg; }
     public void setWeightKg(Integer weightKg) { this.weightKg = weightKg; }
 }

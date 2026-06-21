@@ -12,8 +12,8 @@ import { AuthService } from './auth.service';
       <form [formGroup]="form" (ngSubmit)="submit()">
         <h1>MRK Bike Training</h1>
         <label>
-          Email / Username
-          <input type="text" formControlName="emailUsername" autocomplete="username" />
+          Username
+          <input type="text" formControlName="username" autocomplete="username" />
         </label>
         <label>
           Password
@@ -82,7 +82,7 @@ export class LoginComponent {
   protected readonly error = signal<string | null>(null);
 
   protected readonly form = this.fb.nonNullable.group({
-    emailUsername: ['', Validators.required],
+    username: ['', Validators.required],
     password: ['', Validators.required]
   });
 

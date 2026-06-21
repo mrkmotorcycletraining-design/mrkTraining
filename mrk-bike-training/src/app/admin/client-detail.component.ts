@@ -11,7 +11,7 @@ import { AdminClientApi } from '../core/models/api.models';
   template: `
     @if (client(); as c) {
       <h2>{{ c.name }}</h2>
-      <p>Username: {{ c.emailUsername }} | Unique ID: {{ c.uniqueId }}</p>
+      <p>Username: {{ c.username }}</p>
       <p>Trainings allowed: {{ c.allowedNumOfTrainings }} | Active: {{ c.active }}</p>
       <label>New allowance <input type="number" [(ngModel)]="allowance" name="a" /></label>
       <button type="button" (click)="saveAllowance()">Update allowance</button>

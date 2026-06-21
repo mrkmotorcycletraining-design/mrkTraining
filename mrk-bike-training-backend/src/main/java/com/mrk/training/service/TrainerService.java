@@ -1,5 +1,13 @@
 package com.mrk.training.service;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.mrk.training.dto.TrainerDto;
 import com.mrk.training.exception.DuplicateUsernameException;
 import com.mrk.training.model.Role;
@@ -8,13 +16,6 @@ import com.mrk.training.model.User;
 import com.mrk.training.repository.TrainerRepository;
 import com.mrk.training.repository.UserRepository;
 import com.mrk.training.web.request.TrainerRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class TrainerService {
@@ -34,12 +35,12 @@ public class TrainerService {
 
     @Transactional
     public TrainerDto create(TrainerRequest req) {
-        if (userRepo.existsByEmailUsername(req.getEmailUsername())) {
-            throw new DuplicateUsernameException(req.getEmailUsername());
+        if (userRepo.existsByUsername(req.getUsername())) {
+            throw new DuplicateUsernameException(req.getUsername());
         }
 
         User user = new User();
-        user.setEmailUsername(req.getEmailUsername());
+        user.setUsername(req.getUsername());
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
         user.setRole(Role.TRAINER);
         user.setActive(true);
@@ -51,6 +52,9 @@ public class TrainerService {
         profile.setStartDate(req.getStartDate() != null ? LocalDate.parse(req.getStartDate()) : LocalDate.now());
         profile.setSalary(req.getSalary());
         profile.setAvailable(true);
+        profile.setPreferredDays(req.getPreferredDays());
+        profile.setPreferredTime(req.getPreferredTime());
+        profile.setPreferredLocations(req.getPreferredLocations());
         profile = trainerRepo.save(profile);
         return toDto(profile);
     }
@@ -88,6 +92,15 @@ public class TrainerService {
     }
 
     @Transactional
+    public void activate(Long id) {
+        TrainerProfile profile = trainerRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Trainer not found"));
+        if (profile.getUser() != null) {
+            profile.getUser().setActive(true);
+            userRepo.save(profile.getUser());
+        }
+    }
+
+    @Transactional
     public void resetPassword(Long id, String newPassword) {
         TrainerProfile profile = trainerRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Trainer not found"));
         if (profile.getUser() != null) {
@@ -96,14 +109,25 @@ public class TrainerService {
         }
     }
 
+    @Transactional
+    public void switchBranch(Long id, String branchId) {
+        TrainerProfile profile = trainerRepo.findById(id).orElseThrow(() -> new IllegalArgumentException("Trainer not found"));
+        // Update preferred locations to the new branch
+        profile.setPreferredLocations(branchId);
+        trainerRepo.save(profile);
+    }
+
     private TrainerDto toDto(TrainerProfile p) {
         TrainerDto dto = new TrainerDto();
         dto.setId(p.getId());
         dto.setName(p.getName());
-        dto.setEmailUsername(p.getUser() != null ? p.getUser().getEmailUsername() : null);
+        dto.setUsername(p.getUser() != null ? p.getUser().getUsername() : null);
         dto.setStartDate(p.getStartDate() != null ? p.getStartDate().toString() : null);
         dto.setSalary(p.getSalary());
         dto.setAvailable(p.isAvailable());
+        dto.setPreferredDays(p.getPreferredDays());
+        dto.setPreferredTime(p.getPreferredTime());
+        dto.setPreferredLocations(p.getPreferredLocations());
         return dto;
     }
 }

@@ -1,14 +1,15 @@
 package com.mrk.training.service;
 
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
 import com.mrk.training.dto.auth.JwtResponse;
 import com.mrk.training.dto.auth.LoginRequest;
 import com.mrk.training.exception.AccountDisabledException;
 import com.mrk.training.model.User;
 import com.mrk.training.repository.UserRepository;
 import com.mrk.training.security.JwtUtil;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AuthService {
@@ -24,7 +25,7 @@ public class AuthService {
     }
 
     public JwtResponse login(LoginRequest request) {
-        User user = userRepository.findByEmailUsername(request.emailUsername())
+        User user = userRepository.findByUsername(request.username())
                 .orElseThrow(() -> new BadCredentialsException("Invalid credentials"));
         if (!user.isActive()) {
             throw new AccountDisabledException();

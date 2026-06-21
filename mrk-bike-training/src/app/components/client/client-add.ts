@@ -14,6 +14,7 @@ import { ClientModel } from '../../models/client.model';
 export class ClientAdd {
   readonly created = output<ClientModel>();
 
+  username = signal('');
   email = signal('');
   password = signal('');
   confirmPassword = signal('');
@@ -45,16 +46,18 @@ export class ClientAdd {
 
     try {
       const client = await apiPost<ClientModel>('/api/clients', {
-        emailUsername: this.email().trim(),
-        passwordHash: this.password(),
+        username: this.username().trim(),
+        email: this.email().trim() || null,
+        password: this.password(),
         name: this.name().trim(),
-        heightCm: this.height(),
-        weightKg: this.weight()
+        heightFt: this.height(),
+        weightKg: this.weight(),
+        allowedNumOfTrainings: 1
       });
       this.successMsg.set(`Client "${client.name}" created successfully.`);
       this.created.emit(client);
       form.resetForm();
-      this.email.set(''); this.password.set(''); this.confirmPassword.set('');
+      this.username.set(''); this.email.set(''); this.password.set(''); this.confirmPassword.set('');
       this.name.set(''); this.height.set(null); this.weight.set(null);
     } catch (err: unknown) {
       this.errorMsg.set(err instanceof Error ? err.message : String(err));

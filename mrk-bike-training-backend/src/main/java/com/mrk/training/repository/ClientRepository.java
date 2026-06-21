@@ -1,11 +1,16 @@
 package com.mrk.training.repository;
 
-import com.mrk.training.model.ClientProfile;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import com.mrk.training.model.ClientProfile;
 
 @Repository
 public interface ClientRepository extends JpaRepository<ClientProfile, Long> {
 
-    boolean existsByUniqueId(String uniqueId);
+    boolean existsByUsername(String username);
+
+    Optional<ClientProfile> findByUsername(String username);
 }

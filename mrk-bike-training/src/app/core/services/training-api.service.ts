@@ -28,7 +28,7 @@ export class TrainingApiService {
   private readonly auth = inject(AuthService);
 
   // Auth handled by interceptor
-  login(body: { emailUsername: string; password: string }) {
+  login(body: { username: string; password: string }) {
     return this.http.post<{ token: string; role: string; userId: number }>('/api/auth/login', body);
   }
 
@@ -57,6 +57,12 @@ export class TrainingApiService {
   deactivateClient(id: number) {
     return this.http.put<void>(`/api/clients/${id}/deactivate`, {});
   }
+  activateClient(id: number) {
+    return this.http.put<void>(`/api/clients/${id}/activate`, {});
+  }
+  deleteClient(id: number) {
+    return this.http.delete<void>(`/api/clients/${id}`);
+  }
   resetClientPassword(id: number, password: string) {
     return this.http.put<void>(`/api/clients/${id}/reset-password`, { password });
   }
@@ -80,8 +86,14 @@ export class TrainingApiService {
   deactivateTrainer(id: number) {
     return this.http.put<void>(`/api/trainers/${id}/deactivate`, {});
   }
+  activateTrainer(id: number) {
+    return this.http.put<void>(`/api/trainers/${id}/activate`, {});
+  }
   resetTrainerPassword(id: number, password: string) {
     return this.http.put<void>(`/api/trainers/${id}/reset-password`, { password });
+  }
+  switchTrainerBranch(id: number, branchId: string) {
+    return this.http.put<void>(`/api/trainers/${id}/switch-branch`, { branchId });
   }
 
   // Branches & assets & courses
@@ -128,6 +140,18 @@ export class TrainingApiService {
   setAssetMaintenance(id: string) {
     return this.http.put<void>(`/api/vehicles/${id}/maintenance`, {});
   }
+  deactivateVehicle(id: string) {
+    return this.http.put<void>(`/api/vehicles/${id}/deactivate`, {});
+  }
+  activateVehicle(id: string) {
+    return this.http.put<void>(`/api/vehicles/${id}/activate`, {});
+  }
+  deleteVehicle(id: string) {
+    return this.http.delete<void>(`/api/vehicles/${id}`);
+  }
+  switchVehicleBranch(id: string, branchId: string) {
+    return this.http.put<void>(`/api/vehicles/${id}/switch-branch`, { branchId });
+  }
   listVehicleTypes() {
     return this.http.get<VehicleTypeConfigApi[]>('/api/vehicles/types');
   }
@@ -145,17 +169,47 @@ export class TrainingApiService {
   }) {
     return this.http.post<VehicleTypeConfigApi>('/api/vehicles/types', body);
   }
-  listCourses() {
-    return this.http.get<CourseApi[]>('/api/courses');
+  listCourses(status?: string) {
+    let params = new HttpParams();
+    if (status && status !== 'All') params = params.set('status', status);
+    return this.http.get<CourseApi[]>('/api/courses', { params });
   }
-  createCourse(body: { id: string; name: string; category: string; hoursPerDay: number; totalDays: number }) {
-    return this.http.post<CourseApi>('/api/courses', body);
+  createCourse(body: {
+    id?: string;
+    name: string;
+    category: string;
+    hoursPerDay: number;
+    totalDays: number;
+    preferredDaysOfWeek?: string;
+    bufferDays?: number;
+    startDate?: string;
+    startTime?: string;
+    endDate?: string;
+    endTime?: string;
+  }, templateImage?: File) {
+    const formData = new FormData();
+    formData.append('course', new Blob([JSON.stringify(body)], { type: 'application/json' }));
+    if (templateImage) {
+      formData.append('templateImage', templateImage);
+    }
+    return this.http.post<CourseApi>('/api/courses', formData);
   }
   updateCourse(id: string, body: Partial<CourseApi>) {
     return this.http.put<CourseApi>(`/api/courses/${id}`, body);
   }
-  updateCourseImage(id: string, imageUrl: string) {
-    return this.http.put<CourseApi>(`/api/courses/${id}/image`, { imageUrl });
+  updateCourseTemplate(id: string, templateImage: File) {
+    const formData = new FormData();
+    formData.append('templateImage', templateImage);
+    return this.http.put<CourseApi>(`/api/courses/${id}/template`, formData);
+  }
+  deactivateCourse(id: string) {
+    return this.http.put<void>(`/api/courses/${id}/deactivate`, {});
+  }
+  activateCourse(id: string) {
+    return this.http.put<void>(`/api/courses/${id}/activate`, {});
+  }
+  deleteCourse(id: string) {
+    return this.http.delete<void>(`/api/courses/${id}`);
   }
 
   // Slots

@@ -1,41 +1,46 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { TrainingApiService } from '../core/services/training-api.service';
 import { TrainerApi } from '../core/models/api.models';
 import { AgGridAngular } from 'ag-grid-angular';
 import { ColDef } from 'ag-grid-community';
+import { TrainerActionsComponent } from './trainer-actions.component';
 
 @Component({
   selector: 'app-trainer-management',
   standalone: true,
-  imports: [RouterLink, AgGridAngular],
+  imports: [RouterLink, AgGridAngular, TrainerActionsComponent],
   template: `
-    <div class="head">
-      <h2>Trainers</h2>
-      <a routerLink="/admin/trainers-add" class="btn">Add Trainer</a>
-    </div>
-    
-    <div class="search-container" style="margin: 1rem 0;">
-      <input 
-        class="search-input"
-        placeholder="Search trainer name or email..." 
-        [value]="q()" 
-        (input)="q.set($any($event.target).value)" 
-        style="width: 100%; max-width: 400px; padding: 0.5rem; border-radius: 6px; border: 1.5px solid #ccc;"
-      />
-    </div>
+    @if (hasAction()) {
+      <app-trainer-actions />
+    } @else {
+      <div class="head">
+        <h2>Trainers</h2>
+        <a routerLink="/admin/trainers-add" class="btn">Add Trainer</a>
+      </div>
+      
+      <div class="search-container" style="margin: 1rem 0;">
+        <input 
+          class="search-input"
+          placeholder="Search trainer name or email..." 
+          [value]="q()" 
+          (input)="q.set($any($event.target).value)" 
+          style="width: 100%; max-width: 400px; padding: 0.5rem; border-radius: 6px; border: 1.5px solid #ccc;"
+        />
+      </div>
 
-    <div style="height: 500px; width: 100%;" class="ag-theme-alpine">
-      <ag-grid-angular
-        style="width: 100%; height: 100%;"
-        [rowData]="filtered()"
-        [columnDefs]="columnDefs"
-        [defaultColDef]="defaultColDef"
-        [pagination]="true"
-        [paginationPageSize]="10"
-      >
-      </ag-grid-angular>
-    </div>
+      <div style="height: 500px; width: 100%;" class="ag-theme-alpine">
+        <ag-grid-angular
+          style="width: 100%; height: 100%;"
+          [rowData]="filtered()"
+          [columnDefs]="columnDefs"
+          [defaultColDef]="defaultColDef"
+          [pagination]="true"
+          [paginationPageSize]="10"
+        >
+        </ag-grid-angular>
+      </div>
+    }
   `,
   styles: `
     .head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -44,12 +49,14 @@ import { ColDef } from 'ag-grid-community';
 })
 export class TrainerManagementComponent implements OnInit {
   private readonly api = inject(TrainingApiService);
+  private readonly route = inject(ActivatedRoute);
   trainers = signal<TrainerApi[]>([]);
   q = signal('');
+  hasAction = signal(false);
 
   columnDefs: ColDef[] = [
     { field: 'name', headerName: 'Name', sortable: true, filter: true, flex: 1.5 },
-    { field: 'emailUsername', headerName: 'Email / Username', sortable: true, filter: true, flex: 1.5 },
+    { field: 'username', headerName: 'Username', sortable: true, filter: true, flex: 1.5 },
     { 
       field: 'active', 
       headerName: 'Active', 
@@ -86,11 +93,14 @@ export class TrainerManagementComponent implements OnInit {
       (t) =>
         !term ||
         t.name?.toLowerCase().includes(term) ||
-        t.emailUsername?.toLowerCase().includes(term)
+        t.username?.toLowerCase().includes(term)
     );
   });
 
   ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      this.hasAction.set(!!params['action']);
+    });
     this.api.listTrainers().subscribe((t) => this.trainers.set(t));
   }
 }

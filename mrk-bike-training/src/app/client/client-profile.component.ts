@@ -11,10 +11,11 @@ import { ClientProfileApi } from '../core/models/api.models';
     <h2>My Profile</h2>
     @if (profile(); as p) {
       <p><strong>Name:</strong> {{ p.name }}</p>
-      <p><strong>Email:</strong> {{ p.emailUsername }}</p>
+      <p><strong>Username:</strong> {{ p.username }}</p>
       <form (ngSubmit)="save()" class="form">
-        <label>Height (cm) <input type="number" [(ngModel)]="heightCm" name="height" /></label>
+        <label>Height (ft) <input type="number" step="0.01" [(ngModel)]="heightFt" name="height" required /></label>
         <label>Weight (kg) <input type="number" [(ngModel)]="weightKg" name="weight" /></label>
+        <label>Email <input type="email" [(ngModel)]="email" name="email" /></label>
         <label>Date of birth <input type="date" [(ngModel)]="dateOfBirth" name="dob" /></label>
         <label>
           Profile picture
@@ -47,8 +48,9 @@ import { ClientProfileApi } from '../core/models/api.models';
 export class ClientProfileComponent implements OnInit {
   private readonly api = inject(TrainingApiService);
   profile = signal<ClientProfileApi | null>(null);
-  heightCm = 0;
+  heightFt: number | null = null;
   weightKg = 0;
+  email = '';
   dateOfBirth = '';
   profilePicture = '';
   currentPassword = '';
@@ -59,8 +61,9 @@ export class ClientProfileComponent implements OnInit {
   ngOnInit() {
     this.api.getClientMe().subscribe((p) => {
       this.profile.set(p);
-      this.heightCm = p.heightCm ?? 0;
+      this.heightFt = p.heightFt ?? null;
       this.weightKg = p.weightKg ?? 0;
+      this.email = p.email ?? '';
       this.dateOfBirth = p.dateOfBirth ?? '';
       this.profilePicture = p.profilePicture ?? '';
     });
@@ -83,8 +86,9 @@ export class ClientProfileComponent implements OnInit {
   save() {
     this.api
       .updateClientMe({
-        heightCm: this.heightCm,
+        heightFt: this.heightFt ?? undefined,
         weightKg: this.weightKg,
+        email: this.email || undefined,
         dateOfBirth: this.dateOfBirth || undefined,
         profilePicture: this.profilePicture || undefined
       })

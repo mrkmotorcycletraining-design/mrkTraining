@@ -1,15 +1,30 @@
 package com.mrk.training.web.controller;
 
-import com.mrk.training.dto.client.*;
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.mrk.training.dto.client.AdminClientProfileResponse;
+import com.mrk.training.dto.client.ClientCreateRequest;
+import com.mrk.training.dto.client.ClientProfileResponse;
+import com.mrk.training.dto.client.ClientUpdateRequest;
+import com.mrk.training.dto.client.PasswordChangeRequest;
+import com.mrk.training.dto.client.PasswordResetRequest;
+import com.mrk.training.dto.client.TrainingsAllowanceUpdateRequest;
 import com.mrk.training.security.SecurityUtils;
 import com.mrk.training.service.ClientService;
 import com.mrk.training.web.request.ClientRequest;
-import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -80,6 +95,13 @@ public class ClientController {
     //    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
     public ResponseEntity<Void> deactivate(@PathVariable Long id) {
         service.deactivate(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/activate")
+    //    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public ResponseEntity<Void> activate(@PathVariable Long id) {
+        service.activate(id);
         return ResponseEntity.noContent().build();
     }
 

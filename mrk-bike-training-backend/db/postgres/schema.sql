@@ -27,25 +27,15 @@ DROP TYPE IF EXISTS person_type_enum;
 DROP TYPE IF EXISTS attendance_status_enum;
 DROP TYPE IF EXISTS financial_type_enum;
 
--- Create types
-CREATE TYPE role_enum AS ENUM ('SUPER_ADMIN','ADMIN','TRAINER','CLIENT');
-CREATE TYPE course_category_enum AS ENUM ('NORMAL','PREMIUM','TRIP','OTHER');
-CREATE TYPE schedule_type_enum AS ENUM ('REGULAR_TRAINING','BUFFER_SESSION','TRIP','MAINTENANCE');
--- PENDING:   client submitted a training request, awaiting Admin/SuperAdmin approval
--- ACTIVE:    Admin/SuperAdmin approved the slot (unified term; replaces old SCHEDULED/CONFIRMED)
--- CANCELLED: slot was rejected by admin or cancelled by client/trainer
-CREATE TYPE schedule_status_enum AS ENUM ('PENDING','ACTIVE','CANCELLED');
-CREATE TYPE enrollment_status_enum AS ENUM ('ACTIVE','PAUSED','COMPLETED','CANCELLED');
-CREATE TYPE person_type_enum AS ENUM ('CLIENT','TRAINER');
-CREATE TYPE attendance_status_enum AS ENUM ('PRESENT','ABSENT');
-CREATE TYPE financial_type_enum AS ENUM ('INCOME_ENROLLMENT','EXPENSE_TRAINER_SALARY','EXPENSE_ASSET_MAINTENANCE','EXPENSE_MISC');
+-- NOTE: All enum columns use VARCHAR instead of custom Postgres enum types
+-- to avoid Hibernate/JPA casting issues. Valid values are enforced at the application layer.
 
 -- Core tables
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
-    email_username VARCHAR(255) UNIQUE NOT NULL,
+    username VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(1024) NOT NULL,
-    role role_enum NOT NULL,
+    role VARCHAR(50) NOT NULL,
     is_active BOOLEAN DEFAULT TRUE
 );
 
@@ -55,22 +45,25 @@ CREATE TABLE IF NOT EXISTS trainer_profiles (
     start_date DATE,
     salary NUMERIC(12,2),
     is_available BOOLEAN DEFAULT TRUE,
+    preferred_days VARCHAR(255),
+    preferred_time VARCHAR(512),
+    preferred_locations TEXT,
     CONSTRAINT fk_trainer_user FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS client_profiles (
-    id BIGINT PRIMARY KEY,
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255),
-    -- unique_id: Admin-defined identifier (can be email or any custom string). Must be unique.
-    unique_id VARCHAR(255) UNIQUE,
+    email VARCHAR(255),
     -- allowed_num_of_trainings: Max concurrent active/pending enrollments a client may hold.
     --   Only Admin/SuperAdmin can set or change this value; not visible to client.
     allowed_num_of_trainings INTEGER DEFAULT 1,
     date_of_birth DATE,
     profile_picture TEXT,
-    height_cm INTEGER,
+    height_ft DOUBLE PRECISION NOT NULL,
     weight_kg INTEGER,
-    CONSTRAINT fk_client_user FOREIGN KEY (id) REFERENCES users(id) ON DELETE CASCADE
+    CONSTRAINT fk_client_user FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS branches (
@@ -90,7 +83,8 @@ CREATE TABLE IF NOT EXISTS vehicle_type_config (
     engine_cc INTEGER,
     is_electric BOOLEAN DEFAULT FALSE,
     mileage INTEGER,
-    maintenance_interval_km INTEGER
+    maintenance_interval_km INTEGER,
+    status BOOLEAN DEFAULT TRUE
 );
 
 INSERT INTO vehicle_type_config (type, label, min_ht_ft, max_ht_ft, min_wt, max_wt, engine_cc, is_electric, mileage, maintenance_interval_km) VALUES
@@ -105,7 +99,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
     name VARCHAR(255),
     color VARCHAR(100),
     next_maintenance_date DATE,
-    is_active BOOLEAN DEFAULT TRUE,
+    status VARCHAR(255) DEFAULT 'ACTIVE',
     client_vehicle BOOLEAN DEFAULT FALSE,
     client_vehicle_details VARCHAR(255),
     current_branch_id VARCHAR(255),
@@ -116,12 +110,17 @@ CREATE TABLE IF NOT EXISTS vehicles (
 CREATE TABLE IF NOT EXISTS courses (
     id VARCHAR(255) PRIMARY KEY,
     name VARCHAR(255),
-    category course_category_enum,
+    category VARCHAR(50),
     hours_per_day INTEGER,
     total_days INTEGER,
     preferred_days_of_week TEXT,
     buffer_days INTEGER DEFAULT 0,
-    image_url TEXT
+    template_image BYTEA,
+    start_date DATE,
+    start_time TIME DEFAULT '00:00:00',
+    end_date DATE,
+    end_time TIME,
+    status VARCHAR(50) DEFAULT 'ACTIVE'
 );
 
 CREATE TABLE IF NOT EXISTS client_course_enrollments (
@@ -133,7 +132,7 @@ CREATE TABLE IF NOT EXISTS client_course_enrollments (
     asset_id VARCHAR(255),
     total_amount_paid NUMERIC(12,2),
     enrollment_date DATE,
-    status enrollment_status_enum,
+    status VARCHAR(50),
     buffer_days_allocated INTEGER,
     buffer_days_used INTEGER,
     CONSTRAINT fk_enroll_client FOREIGN KEY (client_id) REFERENCES client_profiles(id),
@@ -159,8 +158,8 @@ CREATE TABLE IF NOT EXISTS schedule_slots (
     title VARCHAR(512),
     start_date_time TIMESTAMP,
     end_date_time TIMESTAMP,
-    type schedule_type_enum,
-    status schedule_status_enum,
+    type VARCHAR(50),
+    status VARCHAR(50),
     -- rejection_reason: populated by Admin/SuperAdmin when status is set to CANCELLED
     rejection_reason TEXT,
     CONSTRAINT fk_slot_enrollment FOREIGN KEY (enrollment_id) REFERENCES client_course_enrollments(id),
@@ -173,9 +172,9 @@ CREATE TABLE IF NOT EXISTS attendance_logs (
     id BIGSERIAL PRIMARY KEY,
     slot_id BIGINT,
     person_id VARCHAR(255),
-    person_type person_type_enum,
+    person_type VARCHAR(50),
     date_time TIMESTAMP,
-    status attendance_status_enum,
+    status VARCHAR(50),
     CONSTRAINT fk_att_slot FOREIGN KEY (slot_id) REFERENCES schedule_slots(id)
 );
 
@@ -184,7 +183,7 @@ CREATE TABLE IF NOT EXISTS financial_ledger (
     branch_id VARCHAR(255),
     asset_id VARCHAR(255),
     trainer_id BIGINT,
-    type financial_type_enum,
+    type VARCHAR(100),
     amount NUMERIC(12,2),
     transaction_date DATE,
     CONSTRAINT fk_fin_branch FOREIGN KEY (branch_id) REFERENCES branches(id),
@@ -229,6 +228,6 @@ CREATE INDEX IF NOT EXISTS idx_schedule_client ON schedule_slots(client_id);
 
 -- Insert super admin user
 -- Password: rohan0202 (hashed using HMAC-SHA256 with app.password.secret)
-INSERT INTO users (email_username, password_hash, role, is_active) VALUES
+INSERT INTO users (username, password_hash, role, is_active) VALUES
     ('rohan', '40ED3lxolkCp7cHdTJre/+etvk4BletVRVGefxMXpQ0=', 'SUPER_ADMIN', TRUE)
-ON CONFLICT (email_username) DO NOTHING;
+ON CONFLICT (username) DO NOTHING;

@@ -1,19 +1,25 @@
 package com.mrk.training.service;
 
-import com.mrk.training.dto.notification.NotificationResponse;
-import com.mrk.training.event.*;
-import com.mrk.training.model.Notification;
-import com.mrk.training.model.Role;
-import com.mrk.training.repository.NotificationRepository;
-import com.mrk.training.repository.UserRepository;
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import com.mrk.training.dto.notification.NotificationResponse;
+import com.mrk.training.event.AssetSwappedEvent;
+import com.mrk.training.event.BufferExhaustedEvent;
+import com.mrk.training.event.EnrollmentCreatedEvent;
+import com.mrk.training.event.SlotApprovedEvent;
+import com.mrk.training.event.SlotReassignedEvent;
+import com.mrk.training.event.SlotRejectedEvent;
+import com.mrk.training.model.Notification;
+import com.mrk.training.model.Role;
+import com.mrk.training.repository.NotificationRepository;
+import com.mrk.training.repository.UserRepository;
 
 @Service
 public class NotificationService {
@@ -44,7 +50,7 @@ public class NotificationService {
             userRepository.findById(userId).ifPresent(user -> {
                 try {
                     SimpleMailMessage mail = new SimpleMailMessage();
-                    mail.setTo(user.getEmailUsername());
+                    mail.setTo(user.getUsername());
                     mail.setSubject("MRK Bike Training");
                     mail.setText(message);
                     mailSender.send(mail);

@@ -13,7 +13,7 @@ export class TrainerView {
   columnDefs: ColDef[] = [
     { field: 'id', headerName: 'ID', flex: 0.5 },
     { field: 'name', headerName: 'Name', flex: 1.5 },
-    { field: 'emailUsername', headerName: 'Email', flex: 1.5 },
+    { field: 'username', headerName: 'Username', flex: 1.5 },
     { field: 'branchName', headerName: 'Branch', flex: 1, valueFormatter: params => params.value || params.data?.branchId || '—' },
     { field: 'startDate', headerName: 'Start Date', flex: 1, valueFormatter: params => params.value || '—' },
     { field: 'salary', headerName: 'Salary (₹)', flex: 1, valueFormatter: params => params.value != null ? Number(params.value).toLocaleString('en-IN') : '—' },

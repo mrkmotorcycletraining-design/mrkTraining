@@ -3,8 +3,8 @@ package com.mrk.training.dto;
 public class ClientDto {
     private Long id;
     private String name;
-    private String emailUsername;
-    private Integer heightCm;
+    private String username;
+    private Double heightFt;
     private Integer weightKg;
 
     public ClientDto() {}
@@ -13,10 +13,10 @@ public class ClientDto {
     public void setId(Long id) { this.id = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
-    public String getEmailUsername() { return emailUsername; }
-    public void setEmailUsername(String emailUsername) { this.emailUsername = emailUsername; }
-    public Integer getHeightCm() { return heightCm; }
-    public void setHeightCm(Integer heightCm) { this.heightCm = heightCm; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    public Double getHeightFt() { return heightFt; }
+    public void setHeightFt(Double heightFt) { this.heightFt = heightFt; }
     public Integer getWeightKg() { return weightKg; }
     public void setWeightKg(Integer weightKg) { this.weightKg = weightKg; }
 }

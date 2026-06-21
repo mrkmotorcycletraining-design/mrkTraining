@@ -1,0 +1,23 @@
+We have a basic design for CustomRangeDatetimeMultiselectComponent in place and its working.
+Its messy and not what we actually want.
+Requirement:
+This is a multiselect date time range component.
+All selected rages we need to show it in chips format with X to remove selectedRange item
+We will have inputs: dateOnly, timeOnly, endTimeRequired and a 2 way binding selectedRanges
+
+If dateOnly => just like currently what we are doing, we will have 1 put that uses same calender to select the range.
+Only difference is that instead of showing slected value, that value should go and set onto the chips and
+calender should seems to be completely clear for selection of next range. Format for date to be shown and save: DD/MM/YYYY-DD/MM/YYYY
+Else IF timeOnly: currenlty we have 2 inputs from and to, but just like above daterange, we should see only one input, when we click upon it
+it opens first clock to select the from time one selected, it close that one and open another clock to set To time.
+Just like prev one input is cleared. selected time range should come in chips with format HH:MM AM/PM- HH:MM AM/PM
+Else
+Now here we see the input when we click upon it, it first open the calender to select the range, then it opens the clock to select time
+then if endTimeRequired it opens second clock to select the end time. again after selection, value should go inside the chips sleceted ranges.
+Format: endTimeRequired DD/MM/YYYY HH:MM AM/PM-DD/MM/YYYY HH:MM AM/PM or !endTimeRequired DD/MM/YYYY-DD/MM/YYYY HH:MM AM/PM
+
+Note: in any case user should just see only one input and all the selected chips should come just below the input box.
+Chips should be inside the div with box style and scrollable if it goes more than 2 rows. Each chip style should be round corners,
+white border and txt color.
+The input bg should be transparent with black borders. 
+Same transparent bg for clock and calender and white text.

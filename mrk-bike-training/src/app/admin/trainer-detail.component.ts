@@ -21,8 +21,8 @@ import { TrainerApi } from '../core/models/api.models';
             <input [(ngModel)]="trainer()!.name" disabled class="disabled-input" />
           </div>
           <div class="form-group">
-            <label>Email/Username</label>
-            <input [(ngModel)]="trainer()!.emailUsername" disabled class="disabled-input" />
+            <label>Username</label>
+            <input [(ngModel)]="trainer()!.username" disabled class="disabled-input" />
           </div>
           <div class="form-group">
             <label>Current Branch</label>

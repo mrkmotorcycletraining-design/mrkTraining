@@ -100,6 +100,35 @@ export const ADMIN_ROUTES: Routes = [
         path: 'vehicles-config-list',
         loadComponent: () =>
           import('./vehicle-config-list-page.component').then((m) => m.VehicleConfigListPageComponent)
+      },
+
+      // Course / Training Management
+      {
+        path: 'courses-add',
+        loadComponent: () =>
+          import('./course-add-page.component').then((m) => m.CourseAddPageComponent)
+      },
+      {
+        path: 'courses-view',
+        loadComponent: () =>
+          import('./course-list-page.component').then((m) => m.CourseListPageComponent)
+      },
+      {
+        path: 'courses',
+        loadComponent: () =>
+          import('./course-management.component').then((m) => m.CourseManagementComponent)
+      },
+      {
+        path: 'courses-template',
+        loadComponent: () =>
+          import('./course-template-page.component').then((m) => m.CourseTemplatePageComponent)
+      },
+
+      // Vehicle Management Actions
+      {
+        path: 'vehicles-manage',
+        loadComponent: () =>
+          import('./vehicle-management.component').then((m) => m.VehicleManagementComponent)
       }
     ]
   }

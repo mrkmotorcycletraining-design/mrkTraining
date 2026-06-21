@@ -1,8 +1,17 @@
 package com.mrk.training.model;
 
-import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "schedule_slots")
@@ -39,11 +48,11 @@ public class ScheduleSlot {
     private LocalDateTime endDateTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "schedule_type_enum")
+    @Column(name = "type")
     private ScheduleType type;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "schedule_status_enum")
+    @Column(name = "status")
     private ScheduleStatus status;
 
     @Column(name = "rejection_reason")

@@ -204,10 +204,7 @@ type TabKey = 'branches' | 'vehicles' | 'courses';
                   </div>
                 </div>
                 <div class="item-actions">
-                  <div class="image-update">
-                    <input #img class="img-input" placeholder="Image URL" title="Image URL" />
-                    <button type="button" class="btn-secondary-sm" (click)="setImage(c.id, img.value)">🖼 Set</button>
-                  </div>
+                  <a href="/admin/courses-template" class="btn-secondary-sm" style="text-decoration: none;">🖼 Template</a>
                 </div>
               </div>
             }
@@ -589,8 +586,8 @@ export class SiteManagementComponent implements OnInit {
     });
   }
 
-  setImage(courseId: string, imageUrl: string) {
-    if (!imageUrl.trim()) { alert('Please enter an image URL.'); return; }
-    this.api.updateCourseImage(courseId, imageUrl).subscribe(() => this.reload());
+  setImage(_courseId: string, _imageUrl: string) {
+    // Deprecated — use courses-template page for file upload
+    alert('Please use the "Add/Update Training Template" page for uploading templates.');
   }
 }

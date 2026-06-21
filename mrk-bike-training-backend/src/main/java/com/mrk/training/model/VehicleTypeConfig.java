@@ -44,6 +44,9 @@ public class VehicleTypeConfig {
     @Column(name = "maintenance_interval_km")
     private Integer maintenanceIntervalKm;
 
+    @Column(name = "status")
+    private Boolean status = true;
+
     public VehicleTypeConfig() {}
 
     public Long getTypeId() { return typeId; }
@@ -68,4 +71,6 @@ public class VehicleTypeConfig {
     public void setMileage(Integer mileage) { this.mileage = mileage; }
     public Integer getMaintenanceIntervalKm() { return maintenanceIntervalKm; }
     public void setMaintenanceIntervalKm(Integer maintenanceIntervalKm) { this.maintenanceIntervalKm = maintenanceIntervalKm; }
+    public Boolean getStatus() { return status; }
+    public void setStatus(Boolean status) { this.status = status; }
 }

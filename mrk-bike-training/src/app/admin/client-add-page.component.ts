@@ -49,39 +49,31 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
           <mat-label>Username</mat-label>
           <input
             matInput
-            name="uniqueId"
+            name="username"
             placeholder="e.g. johndoe123"
             maxlength="255"
             required
-            [(ngModel)]="uniqueId"
-            #uidCtrl="ngModel"
+            [(ngModel)]="username"
+            #usernameCtrl="ngModel"
           />
           <mat-icon matSuffix>badge</mat-icon>
-          @if (uidCtrl.touched && uidCtrl.errors?.['required']) {
+          <mat-hint>Must be unique. No character restrictions.</mat-hint>
+          @if (usernameCtrl.touched && usernameCtrl.errors?.['required']) {
             <mat-error>Username is required</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Email</mat-label>
+          <mat-label>Email (optional)</mat-label>
           <input
             matInput
             name="email"
             type="email"
             placeholder="client&#64;example.com"
             maxlength="255"
-            required
-            email
             [(ngModel)]="email"
-            #emailCtrl="ngModel"
           />
           <mat-icon matSuffix>email</mat-icon>
-          @if (emailCtrl.touched && emailCtrl.errors?.['required']) {
-            <mat-error>Email is required</mat-error>
-          }
-          @if (emailCtrl.touched && emailCtrl.errors?.['email']) {
-            <mat-error>Enter a valid email address</mat-error>
-          }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
@@ -107,12 +99,47 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
         </mat-form-field>
 
         <mat-form-field appearance="outline">
+          <mat-label>Height (ft)</mat-label>
+          <input
+            matInput
+            name="heightFt"
+            type="number"
+            step="0.01"
+            min="1"
+            max="8"
+            placeholder="e.g. 5.7"
+            required
+            [(ngModel)]="heightFt"
+            #heightCtrl="ngModel"
+          />
+          <mat-icon matSuffix>height</mat-icon>
+          <mat-hint>Height in feet (e.g. 5.7 for 5 feet 7 inches)</mat-hint>
+          @if (heightCtrl.touched && heightCtrl.errors?.['required']) {
+            <mat-error>Height is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Weight (kg)</mat-label>
+          <input
+            matInput
+            name="weightKg"
+            type="number"
+            min="20"
+            max="300"
+            placeholder="e.g. 65"
+            [(ngModel)]="weightKg"
+          />
+          <mat-icon matSuffix>monitor_weight</mat-icon>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
           <mat-label>Allowed Trainings</mat-label>
           <input
             matInput
             name="allowed"
             type="number"
-            min="2"
+            min="1"
             placeholder="2"
             [(ngModel)]="allowed"
           />
@@ -152,6 +179,8 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
       background: rgba(255, 255, 255, 0.15);
       color: #fff;
       border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 0.5rem 0.75rem;
+      border-radius: 4px;
     }
 
     /* Material form field overrides for white-on-blue */
@@ -210,9 +239,11 @@ export class ClientAddPageComponent {
   private readonly router = inject(Router);
 
   name = '';
+  username = '';
   email = '';
-  uniqueId = '';
   password = '';
+  heightFt: number | null = null;
+  weightKg: number | null = null;
   allowed = 2;
 
   loading = signal(false);
@@ -230,10 +261,12 @@ export class ClientAddPageComponent {
     this.api
       .createClient({
         name: this.name.trim(),
-        emailUsername: this.email.trim(),
-        uniqueId: this.uniqueId.trim(),
+        username: this.username.trim(),
+        email: this.email.trim() || null,
         password: this.password,
-        allowedNumOfTrainings: this.allowed
+        allowedNumOfTrainings: this.allowed,
+        heightFt: this.heightFt,
+        weightKg: this.weightKg
       })
       .subscribe({
         next: (c) => this.router.navigate(['/admin/clients', c.id]),

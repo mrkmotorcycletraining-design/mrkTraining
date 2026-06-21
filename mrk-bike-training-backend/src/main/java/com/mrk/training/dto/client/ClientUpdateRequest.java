@@ -3,7 +3,8 @@ package com.mrk.training.dto.client;
 import java.time.LocalDate;
 
 public record ClientUpdateRequest(
-        Integer heightCm,
+        Double heightFt,
         Integer weightKg,
         LocalDate dateOfBirth,
-        String profilePicture) {}
+        String profilePicture,
+        String email) {}

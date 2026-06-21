@@ -26,8 +26,8 @@ public class AssetInfo {
     @Column(name = "next_maintenance_date")
     private LocalDate nextMaintenanceDate;
 
-    @Column(name = "is_active")
-    private Boolean isActive;
+    @Column(name = "status")
+    private String status = "Yes";
 
     @Column(name = "client_vehicle")
     private Boolean clientVehicle;
@@ -51,8 +51,8 @@ public class AssetInfo {
     public void setColor(String color) { this.color = color; }
     public LocalDate getNextMaintenanceDate() { return nextMaintenanceDate; }
     public void setNextMaintenanceDate(LocalDate nextMaintenanceDate) { this.nextMaintenanceDate = nextMaintenanceDate; }
-    public Boolean getIsActive() { return isActive; }
-    public void setIsActive(Boolean isActive) { this.isActive = isActive; }
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
     public Boolean getClientVehicle() { return clientVehicle; }
     public void setClientVehicle(Boolean clientVehicle) { this.clientVehicle = clientVehicle; }
     public String getClientVehicleDetails() { return clientVehicleDetails; }

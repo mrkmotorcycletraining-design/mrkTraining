@@ -23,12 +23,9 @@ import { CommonModule } from '@angular/common';
     .inner-blue-box {
       width: 75%;
       padding: 40px;
-      /* Updated to match the menu bar color from image_69f143.png */
-      background-color: #0499fcff; 
-      opacity: 0.8;
-      backdrop-filter: blur(10px);
+      background-color: rgba(4, 153, 252, 0.8);
       border-radius: 12px;
-      color: white important;
+      color: white;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       border: 1px solid rgba(25, 118, 210, 0.2);
     }

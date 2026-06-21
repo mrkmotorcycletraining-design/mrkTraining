@@ -4,11 +4,15 @@ import { FormsModule, NgForm } from '@angular/forms';
 import { apiGet, apiPost } from '../../services/api.service';
 import { TrainerModel } from '../../models/trainer.model';
 import { BranchModel } from '../../models/branch.model';
+import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatInputModule } from "@angular/material/input";
+import { MatIconModule } from "@angular/material/icon";
+import { NgxMatTimepickerComponent, NgxMatTimepickerDirective } from "ngx-mat-timepicker";
 
 @Component({
   selector: 'trainer-add',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatFormField, MatLabel, MatInputModule, MatIconModule, NgxMatTimepickerComponent, NgxMatTimepickerDirective],
   templateUrl: './trainer-add.html',
   styleUrls: ['./trainer-add.scss']
 })
@@ -17,6 +21,7 @@ export class TrainerAdd implements OnInit {
 
   branches = signal<BranchModel[]>([]);
 
+  username = signal('');
   email = signal('');
   password = signal('');
   confirmPassword = signal('');
@@ -24,6 +29,7 @@ export class TrainerAdd implements OnInit {
   startDate = signal('');
   salary = signal<number | null>(null);
   branchId = signal('');
+  toValue = '';
 
   submitting = signal(false);
   successMsg = signal<string | null>(null);
@@ -58,7 +64,7 @@ export class TrainerAdd implements OnInit {
 
     try {
       const trainer = await apiPost<TrainerModel>('/api/trainers', {
-        emailUsername: this.email().trim(),
+        username: this.username().trim(),
         password: this.password(),
         name: this.name().trim(),
         startDate: this.startDate() || null,
@@ -68,7 +74,7 @@ export class TrainerAdd implements OnInit {
       this.successMsg.set(`Trainer "${trainer.name}" created successfully.`);
       this.created.emit(trainer);
       form.resetForm();
-      this.email.set(''); this.password.set(''); this.confirmPassword.set('');
+      this.username.set(''); this.email.set(''); this.password.set(''); this.confirmPassword.set('');
       this.name.set(''); this.startDate.set(''); this.salary.set(null); this.branchId.set('');
     } catch (err: unknown) {
       this.errorMsg.set(err instanceof Error ? err.message : String(err));

@@ -5,8 +5,9 @@ import java.time.LocalDate;
 public record ClientProfileResponse(
         Long id,
         String name,
-        String emailUsername,
-        Integer heightCm,
+        String username,
+        String email,
+        Double heightFt,
         Integer weightKg,
         LocalDate dateOfBirth,
         String profilePicture) {}

@@ -92,7 +92,7 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
                   <a routerLink="/admin/clients" [queryParams]="{action: 'pause-training'}" (click)="closeMenu()">Pause Training</a>
                   <a routerLink="/admin/clients" [queryParams]="{action: 'update-password'}" (click)="closeMenu()">Update Client Password</a>
                   <a routerLink="/admin/clients" [queryParams]="{action: 'delete'}" (click)="closeMenu()">Delete Client</a>
-                  <a routerLink="/admin/clients" [queryParams]="{action: 'deactivate'}" (click)="closeMenu()">Deactivate Client</a>
+                  <a routerLink="/admin/clients" [queryParams]="{action: 'deactivate'}" (click)="closeMenu()">Activate/Deactivate Client</a>
                 </div>
               </div>
               <div class="nav-dropdown">
@@ -104,7 +104,7 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
                   <a routerLink="/admin/trainers" [queryParams]="{action: 'switch-branch'}" (click)="closeMenu()">Switch Trainer Branch</a>
                   <a routerLink="/admin/trainers" [queryParams]="{action: 'update-password'}" (click)="closeMenu()">Update Trainer Password</a>
                   <a routerLink="/admin/trainers" [queryParams]="{action: 'delete'}" (click)="closeMenu()">Delete Trainer</a>
-                  <a routerLink="/admin/trainers" [queryParams]="{action: 'deactivate'}" (click)="closeMenu()">Deactivate Trainer</a>
+                  <a routerLink="/admin/trainers" [queryParams]="{action: 'deactivate'}" (click)="closeMenu()">Activate/Deactivate Trainer</a>
                 </div>
               </div>
               <div class="nav-dropdown">
@@ -114,10 +114,20 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
                   <a routerLink="/admin/vehicles-config-list" (click)="closeMenu()">View Vehicle Configs</a>
                   <a routerLink="/admin/vehicles-add" (click)="closeMenu()">Add Vehicle</a>
                   <a routerLink="/admin/vehicles-config-add" (click)="closeMenu()">Add Vehicle Config</a>
-                  <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles', action: 'maintenance'}" (click)="closeMenu()">Add Maintenance</a>
-                  <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles', action: 'switch-branch'}" (click)="closeMenu()">Switch Vehicle Branch</a>
-                  <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles', action: 'delete'}" (click)="closeMenu()">Delete Vehicle</a>
-                  <a routerLink="/admin/site" [queryParams]="{tab: 'vehicles', action: 'deactivate'}" (click)="closeMenu()">Deactivate Vehicle</a>
+                  <a routerLink="/admin/vehicles-manage" [queryParams]="{action: 'maintenance'}" (click)="closeMenu()">Add Maintenance</a>
+                  <a routerLink="/admin/vehicles-manage" [queryParams]="{action: 'switch-branch'}" (click)="closeMenu()">Switch Vehicle Branch</a>
+                  <a routerLink="/admin/vehicles-manage" [queryParams]="{action: 'delete'}" (click)="closeMenu()">Delete Vehicle</a>
+                  <a routerLink="/admin/vehicles-manage" [queryParams]="{action: 'deactivate'}" (click)="closeMenu()">Activate/Deactivate Vehicle</a>
+                </div>
+              </div>
+              <div class="nav-dropdown">
+                <button class="dropdown-trigger">Course ▼</button>
+                <div class="dropdown-content">
+                  <a routerLink="/admin/courses-add" (click)="closeMenu()">Add Training</a>
+                  <a routerLink="/admin/courses-template" (click)="closeMenu()">Add/Update Training Template</a>
+                  <a routerLink="/admin/courses-view" (click)="closeMenu()">View All Training</a>
+                  <a routerLink="/admin/courses" [queryParams]="{action: 'deactivate'}" (click)="closeMenu()">Activate/Deactivate Training</a>
+                  <a routerLink="/admin/courses" [queryParams]="{action: 'delete'}" (click)="closeMenu()">Delete Training</a>
                 </div>
               </div>
               <div class="nav-dropdown">
@@ -125,8 +135,6 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
                 <div class="dropdown-content">
                   <a routerLink="/admin/branches-view" (click)="closeMenu()">View Branches</a>
                   <a routerLink="/admin/branches-add" (click)="closeMenu()">Add New Branch</a>
-                  <a routerLink="/admin/site" [queryParams]="{tab: 'courses'}" (click)="closeMenu()">Update Training Template</a>
-                  <a routerLink="/admin/site" [queryParams]="{tab: 'courses'}" (click)="closeMenu()">Add New Training</a>
                 </div>
               </div>
             </ng-container>

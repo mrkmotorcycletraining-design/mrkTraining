@@ -1,0 +1,237 @@
+:host {
+  display: block;
+}
+
+.range-multiselect-wrapper {
+  width: 100%;
+}
+
+/* Make the mat-form-field full width and clickable */
+.range-trigger-field {
+  width: 100%;
+  cursor: pointer;
+
+  input.range-input {
+    cursor: pointer;
+  }
+}
+
+.clock-dialog-title {
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Match the white-on-blue styling from the parent form (same as other fields) */
+::ng-deep .range-trigger-field.mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: rgba(255, 255, 255, 0.7);
+  --mdc-outlined-text-field-hover-outline-color: #fff;
+  --mdc-outlined-text-field-focus-outline-color: #fff;
+  --mdc-outlined-text-field-label-text-color: #fff;
+  --mdc-outlined-text-field-focus-label-text-color: #fff;
+  --mdc-outlined-text-field-hover-label-text-color: #fff;
+  --mdc-outlined-text-field-input-text-color: #fff;
+  --mdc-outlined-text-field-input-text-placeholder-color: rgba(255, 255, 255, 0.5);
+  --mdc-outlined-text-field-caret-color: #fff;
+  --mat-form-field-state-layer-color: transparent;
+}
+
+::ng-deep .range-trigger-field .mdc-floating-label,
+::ng-deep .range-trigger-field .mdc-floating-label--float-above,
+::ng-deep .range-trigger-field .mat-mdc-floating-label,
+::ng-deep .range-trigger-field label {
+  color: #fff !important;
+}
+
+::ng-deep .range-trigger-field input.mat-mdc-input-element {
+  color: #fff !important;
+}
+
+::ng-deep .range-trigger-field input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+::ng-deep .range-trigger-field .mat-mdc-form-field-icon-suffix {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Chips box */
+.chips-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: -0.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  max-height: 5.5rem; /* ~2 rows */
+  overflow-y: auto;
+  background: transparent;
+
+  /* Scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 2px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* Individual chip */
+.range-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.6rem;
+  border: 1px solid #fff;
+  border-radius: 16px;
+  color: #fff;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.chip-text {
+  line-height: 1.4;
+}
+
+.chip-remove {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: opacity 0.15s;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+/* Hidden elements for pickers */
+.hidden-picker {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hidden-time-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* Override date range picker overlay to have transparent bg + white text */
+::ng-deep .mat-datepicker-content {
+  background: rgba(30, 30, 30, 0.95) !important;
+  color: #fff !important;
+  border-radius: 12px;
+}
+
+::ng-deep .mat-datepicker-content .mat-calendar {
+  color: #fff !important;
+}
+
+::ng-deep .mat-datepicker-content .mat-calendar-header {
+  color: #fff !important;
+}
+
+::ng-deep .mat-datepicker-content .mat-calendar-body-cell-content {
+  color: #fff !important;
+}
+
+::ng-deep .mat-datepicker-content .mat-calendar-body-selected {
+  background-color: rgba(66, 133, 244, 0.8) !important;
+  color: #fff !important;
+}
+
+::ng-deep .mat-datepicker-content .mat-calendar-body-in-range::before {
+  background: rgba(66, 133, 244, 0.3) !important;
+}
+
+::ng-deep .mat-datepicker-content .mat-calendar-table-header,
+::ng-deep .mat-datepicker-content .mat-calendar-table-header th {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+::ng-deep .mat-datepicker-content .mat-calendar-arrow {
+  fill: #fff !important;
+}
+
+::ng-deep .mat-datepicker-content .mat-calendar-previous-button,
+::ng-deep .mat-datepicker-content .mat-calendar-next-button {
+  color: #fff !important;
+}
+
+::ng-deep .mat-datepicker-content .mat-calendar-period-button {
+  color: #fff !important;
+}
+
+/* Override ngx-mat-timepicker overlay */
+::ng-deep .ngx-mat-timepicker-overlay {
+  background: rgba(0, 0, 0, 0.5) !important;
+}
+
+::ng-deep .ngx-mat-timepicker-container {
+  background: rgba(30, 30, 30, 0.95) !important;
+  color: #fff !important;
+  border-radius: 12px !important;
+}
+
+/* From/To labels on timepicker header */
+::ng-deep .from-time-picker .timepicker__header::before {
+  content: 'From Time';
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.5px;
+}
+
+::ng-deep .to-time-picker .timepicker__header::before {
+  content: 'To Time';
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 0.25rem;
+  letter-spacing: 0.5px;
+}
+
+::ng-deep .ngx-mat-timepicker-container .clock-face {
+  background: rgba(50, 50, 50, 0.9) !important;
+}
+
+::ng-deep .ngx-mat-timepicker-container .clock-face__number > span {
+  color: #fff !important;
+}
+
+::ng-deep .ngx-mat-timepicker-container .clock-face__clock-hand {
+  background-color: rgba(66, 133, 244, 0.8) !important;
+}
+
+::ng-deep .ngx-mat-timepicker-container .clock-face__clock-hand_minute::before {
+  background-color: rgba(66, 133, 244, 0.8) !important;
+}
+
+::ng-deep .ngx-mat-timepicker-container .timepicker-button {
+  color: #fff !important;
+}
+
+::ng-deep .ngx-mat-timepicker-container .timepicker__header {
+  background: rgba(40, 40, 40, 0.9) !important;
+  color: #fff !important;
+}
+
+::ng-deep .ngx-mat-timepicker-container .clock-face__inner--active {
+  background-color: rgba(66, 133, 244, 0.8) !important;
+}

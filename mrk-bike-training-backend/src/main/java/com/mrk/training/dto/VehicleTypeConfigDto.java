@@ -24,6 +24,7 @@ public class VehicleTypeConfigDto {
     private Boolean isElectric;
     private Integer mileage;
     private Integer maintenanceIntervalKm;
+    private Boolean status;
 
     public VehicleTypeConfigDto() {}
 
@@ -31,7 +32,8 @@ public class VehicleTypeConfigDto {
                                  Double minHtFt, Double maxHtFt,
                                  Integer minWt, Integer maxWt,
                                  Integer engineCc, Boolean isElectric,
-                                 Integer mileage, Integer maintenanceIntervalKm) {
+                                 Integer mileage, Integer maintenanceIntervalKm,
+                                 Boolean status) {
         this.typeId = typeId;
         this.type = type;
         this.label = label;
@@ -43,6 +45,7 @@ public class VehicleTypeConfigDto {
         this.isElectric = isElectric;
         this.mileage = mileage;
         this.maintenanceIntervalKm = maintenanceIntervalKm;
+        this.status = status;
     }
 
     public Long getTypeId() { return typeId; }
@@ -67,4 +70,6 @@ public class VehicleTypeConfigDto {
     public void setMileage(Integer mileage) { this.mileage = mileage; }
     public Integer getMaintenanceIntervalKm() { return maintenanceIntervalKm; }
     public void setMaintenanceIntervalKm(Integer maintenanceIntervalKm) { this.maintenanceIntervalKm = maintenanceIntervalKm; }
+    public Boolean getStatus() { return status; }
+    public void setStatus(Boolean status) { this.status = status; }
 }

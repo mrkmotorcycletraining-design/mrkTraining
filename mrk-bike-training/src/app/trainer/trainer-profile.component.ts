@@ -9,7 +9,7 @@ import { TrainerApi } from '../core/models/api.models';
     <h2>My Profile</h2>
     @if (trainer(); as t) {
       <p><strong>Name:</strong> {{ t.name }}</p>
-      <p><strong>Email:</strong> {{ t.emailUsername }}</p>
+      <p><strong>Username:</strong> {{ t.username }}</p>
       <p><strong>Available:</strong> {{ t.available ? 'Yes' : 'No' }}</p>
     }
   `

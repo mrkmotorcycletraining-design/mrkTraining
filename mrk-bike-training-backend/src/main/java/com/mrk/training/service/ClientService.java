@@ -1,10 +1,16 @@
 package com.mrk.training.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.mrk.training.dto.client.AdminClientProfileResponse;
 import com.mrk.training.dto.client.ClientCreateRequest;
 import com.mrk.training.dto.client.ClientProfileResponse;
 import com.mrk.training.dto.client.ClientUpdateRequest;
-import com.mrk.training.exception.DuplicateUniqueIdException;
 import com.mrk.training.exception.DuplicateUsernameException;
 import com.mrk.training.model.ClientProfile;
 import com.mrk.training.model.Role;
@@ -14,12 +20,6 @@ import com.mrk.training.repository.ClientRepository;
 import com.mrk.training.repository.ScheduleSlotRepository;
 import com.mrk.training.repository.UserRepository;
 import com.mrk.training.web.request.ClientRequest;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ClientService {
@@ -42,28 +42,28 @@ public class ClientService {
 
     @Transactional
     public AdminClientProfileResponse create(ClientCreateRequest req) {
-        if (userRepo.existsByEmailUsername(req.emailUsername())) {
-            throw new DuplicateUsernameException(req.emailUsername());
-        }
-        if (clientRepo.existsByUniqueId(req.uniqueId())) {
-            throw new DuplicateUniqueIdException(req.uniqueId());
+        if (userRepo.existsByUsername(req.username())) {
+            throw new DuplicateUsernameException(req.username());
         }
 
         User user = new User();
-        user.setEmailUsername(req.emailUsername());
+        user.setUsername(req.username());
         user.setPasswordHash(passwordEncoder.encode(req.password()));
         user.setRole(Role.CLIENT);
         user.setActive(true);
         user = userRepo.save(user);
 
         ClientProfile profile = new ClientProfile();
-        profile.setUser(user);
+        profile.setUsername(req.username());
         profile.setName(req.name());
-        profile.setUniqueId(req.uniqueId());
+        profile.setEmail(req.email());
         profile.setAllowedNumOfTrainings(req.allowedNumOfTrainings());
-        profile.setHeightCm(req.heightCm());
+        profile.setHeightFt(req.heightFt());
         profile.setWeightKg(req.weightKg());
         profile = clientRepo.save(profile);
+
+        // Set user reference for DTO mapping
+        profile.setUser(user);
         return toAdminDto(profile);
     }
 
@@ -71,18 +71,18 @@ public class ClientService {
     public com.mrk.training.dto.ClientDto createLegacy(ClientRequest req) {
         ClientCreateRequest create = new ClientCreateRequest(
                 req.getName(),
-                req.getEmailUsername(),
-                req.getEmailUsername(),
-                req.getPasswordHash(),
+                req.getUsername(),
+                req.getEmail(),
+                req.getPassword(),
                 1,
-                req.getHeightCm(),
+                req.getHeightFt(),
                 req.getWeightKg());
         AdminClientProfileResponse admin = create(create);
         com.mrk.training.dto.ClientDto dto = new com.mrk.training.dto.ClientDto();
         dto.setId(admin.id());
         dto.setName(admin.name());
-        dto.setEmailUsername(admin.emailUsername());
-        dto.setHeightCm(admin.heightCm());
+        dto.setUsername(admin.username());
+        dto.setHeightFt(admin.heightFt());
         dto.setWeightKg(admin.weightKg());
         return dto;
     }
@@ -96,16 +96,21 @@ public class ClientService {
     }
 
     public ClientProfileResponse getMe(Long userId) {
-        return toClientDto(clientRepo.findById(userId).orElseThrow(() -> new IllegalArgumentException("Client not found.")));
+        User user = userRepo.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found."));
+        ClientProfile profile = clientRepo.findByUsername(user.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Client not found."));
+        return toClientDto(profile);
     }
 
     @Transactional
     public ClientProfileResponse updateMe(Long userId, ClientUpdateRequest req) {
-        ClientProfile profile = clientRepo.findById(userId).orElseThrow();
-        if (req.heightCm() != null) profile.setHeightCm(req.heightCm());
+        User user = userRepo.findById(userId).orElseThrow();
+        ClientProfile profile = clientRepo.findByUsername(user.getUsername()).orElseThrow();
+        if (req.heightFt() != null) profile.setHeightFt(req.heightFt());
         if (req.weightKg() != null) profile.setWeightKg(req.weightKg());
         if (req.dateOfBirth() != null) profile.setDateOfBirth(req.dateOfBirth());
         if (req.profilePicture() != null) profile.setProfilePicture(req.profilePicture());
+        if (req.email() != null) profile.setEmail(req.email());
         return toClientDto(clientRepo.save(profile));
     }
 
@@ -119,8 +124,9 @@ public class ClientService {
     @Transactional
     public void deactivate(Long id) {
         ClientProfile profile = clientRepo.findById(id).orElseThrow();
-        profile.getUser().setActive(false);
-        userRepo.save(profile.getUser());
+        User user = userRepo.findByUsername(profile.getUsername()).orElseThrow();
+        user.setActive(false);
+        userRepo.save(user);
         slotRepository.findFiltered(id, null, null, ScheduleStatus.PENDING, null, null)
                 .forEach(s -> {
                     s.setStatus(ScheduleStatus.CANCELLED);
@@ -129,31 +135,44 @@ public class ClientService {
     }
 
     @Transactional
+    public void activate(Long id) {
+        ClientProfile profile = clientRepo.findById(id).orElseThrow();
+        User user = userRepo.findByUsername(profile.getUsername()).orElseThrow();
+        user.setActive(true);
+        userRepo.save(user);
+    }
+
+    @Transactional
     public void resetPassword(Long id, String newPassword) {
         ClientProfile profile = clientRepo.findById(id).orElseThrow();
-        profile.getUser().setPasswordHash(passwordEncoder.encode(newPassword));
-        userRepo.save(profile.getUser());
+        User user = userRepo.findByUsername(profile.getUsername()).orElseThrow();
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
     }
 
     @Transactional
     public void changePassword(Long userId, String currentPassword, String newPassword) {
-        ClientProfile profile = clientRepo.findById(userId).orElseThrow();
-        if (!passwordEncoder.matches(currentPassword, profile.getUser().getPasswordHash())) {
+        User user = userRepo.findById(userId).orElseThrow();
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
             throw new IllegalArgumentException("Current password is incorrect.");
         }
-        profile.getUser().setPasswordHash(passwordEncoder.encode(newPassword));
-        userRepo.save(profile.getUser());
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepo.save(user);
     }
 
     private AdminClientProfileResponse toAdminDto(ClientProfile p) {
+        User user = p.getUser();
+        if (user == null) {
+            user = userRepo.findByUsername(p.getUsername()).orElse(null);
+        }
         return new AdminClientProfileResponse(
                 p.getId(),
                 p.getName(),
-                p.getUser() != null ? p.getUser().getEmailUsername() : null,
-                p.getUniqueId(),
+                p.getUsername(),
+                p.getEmail(),
                 p.getAllowedNumOfTrainings(),
-                p.getUser() != null && p.getUser().isActive(),
-                p.getHeightCm(),
+                user != null && user.isActive(),
+                p.getHeightFt(),
                 p.getWeightKg(),
                 p.getDateOfBirth(),
                 p.getProfilePicture());
@@ -163,8 +182,9 @@ public class ClientService {
         return new ClientProfileResponse(
                 p.getId(),
                 p.getName(),
-                p.getUser() != null ? p.getUser().getEmailUsername() : null,
-                p.getHeightCm(),
+                p.getUsername(),
+                p.getEmail(),
+                p.getHeightFt(),
                 p.getWeightKg(),
                 p.getDateOfBirth(),
                 p.getProfilePicture());

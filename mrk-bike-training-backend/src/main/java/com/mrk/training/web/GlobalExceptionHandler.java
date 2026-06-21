@@ -1,6 +1,8 @@
 package com.mrk.training.web;
 
-import com.mrk.training.exception.*;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -10,8 +12,14 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.mrk.training.exception.AccountDisabledException;
+import com.mrk.training.exception.AvailabilityConflictException;
+import com.mrk.training.exception.DuplicateUsernameException;
+import com.mrk.training.exception.EnrollmentLimitException;
+import com.mrk.training.exception.InvalidStartDateException;
+import com.mrk.training.exception.JwtExpiredException;
+import com.mrk.training.exception.JwtInvalidException;
+import com.mrk.training.exception.ScheduleContinuityException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -51,11 +59,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(DuplicateUsernameException.class)
     public ResponseEntity<Map<String, Object>> handleDuplicateUsername(DuplicateUsernameException ex) {
-        return error(HttpStatus.CONFLICT, ex.getMessage());
-    }
-
-    @ExceptionHandler(DuplicateUniqueIdException.class)
-    public ResponseEntity<Map<String, Object>> handleDuplicateUniqueId(DuplicateUniqueIdException ex) {
         return error(HttpStatus.CONFLICT, ex.getMessage());
     }
 

@@ -60,7 +60,7 @@ export class VehicleListPageComponent {
       headerName: 'Branch',
       valueGetter: (params) => params.data?.currentBranch?.name || ''
     },
-    { field: 'isActive', headerName: 'Active' },
+    { field: 'status', headerName: 'Status' },
     { field: 'nextMaintenanceDate', headerName: 'Next Maintenance' }
   ];
 }

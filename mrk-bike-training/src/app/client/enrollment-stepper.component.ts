@@ -30,7 +30,7 @@ const DAY_OPTS = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
       <div class="tiles">
         @for (c of courses(); track c.id) {
           <button type="button" class="tile" (click)="selectCourse(c)" [disabled]="!profileActive() || allowedTrainings() < 1">
-            @if (c.imageUrl) { <img [src]="c.imageUrl" alt="" /> }
+            @if (c.templateImage) { <img [src]="'data:image/png;base64,' + c.templateImage" alt="" /> }
             <span>{{ c.name }}</span>
             <small>{{ c.category }}</small>
           </button>

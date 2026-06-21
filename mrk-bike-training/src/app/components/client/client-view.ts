@@ -13,8 +13,8 @@ export class ClientView {
   columnDefs: ColDef[] = [
     { field: 'id', headerName: 'ID', flex: 0.5 },
     { field: 'name', headerName: 'Name', flex: 1.5 },
-    { field: 'emailUsername', headerName: 'Email', flex: 1.5 },
-    { field: 'heightCm', headerName: 'Height (cm)', flex: 1, valueFormatter: params => params.value ?? '—' },
+    { field: 'username', headerName: 'Username', flex: 1.5 },
+    { field: 'heightFt', headerName: 'Height (ft)', flex: 1, valueFormatter: params => params.value ?? '—' },
     { field: 'weightKg', headerName: 'Weight (kg)', flex: 1, valueFormatter: params => params.value ?? '—' }
   ];
 }

@@ -5,11 +5,11 @@ import java.time.LocalDate;
 public record AdminClientProfileResponse(
         Long id,
         String name,
-        String emailUsername,
-        String uniqueId,
+        String username,
+        String email,
         Integer allowedNumOfTrainings,
         boolean active,
-        Integer heightCm,
+        Double heightFt,
         Integer weightKg,
         LocalDate dateOfBirth,
         String profilePicture) {}

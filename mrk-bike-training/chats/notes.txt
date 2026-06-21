@@ -5,7 +5,7 @@ Rule 3: Store any sensitive application-wide keys (like JWT signing secrets) sec
 Use PostgreSQL, but install it via Docker directly on your application server.
 
 TO init DB
-psql -U postgres -d mrktraining -f "d:\MrkBikeTraining\mrk-bike-training-backend\src\main\resources\db\postgres\schema.sql"
+psql -U postgres -d mrktraining -f "d:\MrkBikeTraining\mrk-bike-training-backend\db\postgres\schema.sql"
 
 admin
 rohan rohan0202
@@ -26,3 +26,6 @@ ToDo
 10. Apply for training
 11. Schedule training
 12. Login as Admin and approve training
+
+Problems:
+1. Vehicle id shuold have bike number pattern 

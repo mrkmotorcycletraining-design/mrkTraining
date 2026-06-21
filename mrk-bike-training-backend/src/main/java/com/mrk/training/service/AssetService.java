@@ -1,5 +1,9 @@
 package com.mrk.training.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.mrk.training.dto.VehicleTypeConfigDto;
 import com.mrk.training.model.AssetInfo;
 import com.mrk.training.model.Branch;
@@ -9,9 +13,6 @@ import com.mrk.training.repository.BranchRepository;
 import com.mrk.training.repository.VehicleTypeConfigRepository;
 import com.mrk.training.web.request.AssetRequest;
 import com.mrk.training.web.request.VehicleTypeConfigRequest;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class AssetService {
@@ -29,15 +30,21 @@ public class AssetService {
 
     /**
      * Returns all vehicle type configurations from the database.
+     * Supports optional status filtering (true/false/All).
      */
-    public List<VehicleTypeConfigDto> listTypeConfigs() {
+    public List<VehicleTypeConfigDto> listTypeConfigs(String status) {
         return typeConfigRepo.findAll().stream()
+                .filter(c -> {
+                    if ("All".equalsIgnoreCase(status)) return true;
+                    return Boolean.parseBoolean(status) == Boolean.TRUE.equals(c.getStatus());
+                })
                 .map(c -> new VehicleTypeConfigDto(
                         c.getTypeId(), c.getType(), c.getLabel(),
                         c.getMinHtFt(), c.getMaxHtFt(),
                         c.getMinWt(), c.getMaxWt(),
                         c.getEngineCc(), c.getIsElectric(),
-                        c.getMileage(), c.getMaintenanceIntervalKm()))
+                        c.getMileage(), c.getMaintenanceIntervalKm(),
+                        c.getStatus()))
                 .toList();
     }
 
@@ -67,7 +74,8 @@ public class AssetService {
                 saved.getMinHtFt(), saved.getMaxHtFt(),
                 saved.getMinWt(), saved.getMaxWt(),
                 saved.getEngineCc(), saved.getIsElectric(),
-                saved.getMileage(), saved.getMaintenanceIntervalKm());
+                saved.getMileage(), saved.getMaintenanceIntervalKm(),
+                saved.getStatus());
     }
 
     /**
@@ -88,7 +96,7 @@ public class AssetService {
         v.setName(req.getName());
         v.setColor(req.getColor());
         v.setNextMaintenanceDate(req.getNextMaintenanceDate());
-        v.setIsActive(true);
+        v.setStatus("ACTIVE");
         v.setClientVehicle(Boolean.TRUE.equals(req.getClientVehicle()));
         v.setClientVehicleDetails(req.getClientVehicleDetails());
 
@@ -135,5 +143,26 @@ public class AssetService {
             v.setCurrentBranch(branch);
         }
         return repo.save(v);
+    }
+
+    public void setStatus(String id, String status) {
+        AssetInfo v = findById(id);
+        v.setStatus(status);
+        repo.save(v);
+    }
+
+    public void delete(String id) {
+        if (!repo.existsById(id)) {
+            throw new IllegalArgumentException("Vehicle not found: " + id);
+        }
+        repo.deleteById(id);
+    }
+
+    public void switchBranch(String id, String branchId) {
+        AssetInfo v = findById(id);
+        Branch branch = branchRepo.findById(branchId)
+                .orElseThrow(() -> new IllegalArgumentException("Branch not found: " + branchId));
+        v.setCurrentBranch(branch);
+        repo.save(v);
     }
 }
