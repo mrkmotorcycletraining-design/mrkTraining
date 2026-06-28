@@ -265,10 +265,10 @@ export class BranchAddPageComponent {
     this.loading.set(true);
     this.error.set(null);
 
-    const operatingDays = this.selectedDays.length ? this.selectedDays.join(',') : null;
+    const operatingDays = this.selectedDays.length ? this.selectedDays.join(',') : undefined;
     const operatingTime = this.timeRanges.length
       ? this.timeRanges.map(r => `${r.start}-${r.end}`).join(',')
-      : null;
+      : undefined;
 
     this.api
       .createBranch({
