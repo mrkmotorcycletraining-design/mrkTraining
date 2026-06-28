@@ -88,6 +88,7 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
                 <div class="dropdown-content">
                   <a routerLink="/admin/clients-view" (click)="closeMenu()">View Clients</a>
                   <a routerLink="/admin/clients-add" (click)="closeMenu()">Add Client</a>
+                  <a routerLink="/admin/assign-training" (click)="closeMenu()">Assign Training</a>
                   <a routerLink="/admin/clients" [queryParams]="{action: 'mark-absent'}" (click)="closeMenu()">Mark Absent</a>
                   <a routerLink="/admin/clients" [queryParams]="{action: 'pause-training'}" (click)="closeMenu()">Pause Training</a>
                   <a routerLink="/admin/clients" [queryParams]="{action: 'update-password'}" (click)="closeMenu()">Update Client Password</a>
@@ -100,8 +101,9 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
                 <div class="dropdown-content">
                   <a routerLink="/admin/trainers-view" (click)="closeMenu()">View Trainers</a>
                   <a routerLink="/admin/trainers-add" (click)="closeMenu()" *ngIf="currentRole() === 'SUPER_ADMIN'">Add Trainer</a>
+                  <a routerLink="/admin/trainer-schedule-add" (click)="closeMenu()">Add Trainer Schedule</a>
+                  <a routerLink="/admin/trainer-schedule-view" (click)="closeMenu()">View Trainer Schedules</a>
                   <a routerLink="/admin/trainers" [queryParams]="{action: 'mark-absence'}" (click)="closeMenu()">Mark Absence</a>
-                  <a routerLink="/admin/trainers" [queryParams]="{action: 'switch-branch'}" (click)="closeMenu()">Switch Trainer Branch</a>
                   <a routerLink="/admin/trainers" [queryParams]="{action: 'update-password'}" (click)="closeMenu()">Update Trainer Password</a>
                   <a routerLink="/admin/trainers" [queryParams]="{action: 'delete'}" (click)="closeMenu()">Delete Trainer</a>
                   <a routerLink="/admin/trainers" [queryParams]="{action: 'deactivate'}" (click)="closeMenu()">Activate/Deactivate Trainer</a>
@@ -135,14 +137,16 @@ import { PendingBadgeService } from '../../../auth/pending-badge.service';
                 <div class="dropdown-content">
                   <a routerLink="/admin/branches-view" (click)="closeMenu()">View Branches</a>
                   <a routerLink="/admin/branches-add" (click)="closeMenu()">Add New Branch</a>
+                  <a routerLink="/admin/backup-download" (click)="closeMenu()">Download Backup</a>
+                  <a routerLink="/admin/backup-restore" (click)="closeMenu()">Restore Backup</a>
                 </div>
               </div>
             </ng-container>
 
             <!-- SITE DATA ADMIN ROLE -->
             <ng-container *ngSwitchCase="'SITEDATAADMIN'">
-              <a class="nav-link-item clickable" (click)="triggerBackup(); closeMenu()">Backup</a>
-              <a class="nav-link-item clickable" (click)="triggerRestore(); closeMenu()">Restore</a>
+              <a class="nav-link-item" routerLink="/admin/backup-download" (click)="closeMenu()">Backup</a>
+              <a class="nav-link-item" routerLink="/admin/backup-restore" (click)="closeMenu()">Restore</a>
               <a class="nav-link-item clickable" (click)="comingSoon('Observability Metrics'); closeMenu()">Metrics</a>
             </ng-container>
           </ng-container>
@@ -480,14 +484,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   comingSoon(featureName: string): void {
     alert(`${featureName} feature is coming soon!`);
-  }
-
-  triggerBackup(): void {
-    alert('Backup: System database backup triggered successfully.');
-  }
-
-  triggerRestore(): void {
-    alert('Restore: System database restore sequence initiated.');
   }
 
   logout(): void {

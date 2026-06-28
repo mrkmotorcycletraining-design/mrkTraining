@@ -5,8 +5,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TrainingApiService } from '../core/services/training-api.service';
 import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-template';
+import { CustomRangeDatetimeMultiselectComponent, DateTimeRange } from '../core/components/custom-range-datetime-multiselect/custom-range-datetime-multiselect.component';
+import { DAYS_OF_WEEK } from '../core/models/days.enum';
 
 @Component({
   selector: 'app-branch-add-page',
@@ -17,6 +20,8 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    MatCheckboxModule,
+    CustomRangeDatetimeMultiselectComponent,
     FormBgTemplateComponent
   ],
   template: `
@@ -80,10 +85,33 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
           }
         </mat-form-field>
 
+        <!-- Operating Days -->
+        <div class="field-section">
+          <label class="section-label">Operating Days</label>
+          <div class="days-row">
+            @for (day of allDays; track day.code) {
+              <mat-checkbox
+                [checked]="isDaySelected(day.code)"
+                (change)="toggleDay(day.code, $event.checked)"
+                color="primary"
+              >{{ day.fullName }}</mat-checkbox>
+            }
+          </div>
+        </div>
+
+        <!-- Operating Time Ranges -->
+        <app-custom-range-datetime-multiselect
+          label="Operating Time Ranges"
+          placeholder="Click to add time range"
+          [timeOnly]="true"
+          (rangesChange)="onTimeRangesChange($event)"
+        />
+
         <div class="form-actions">
           <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
             {{ loading() ? 'Creating…' : 'Create Branch' }}
           </button>
+          <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
         </div>
       </form>
     </app-form-bg-template>
@@ -109,6 +137,10 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
     }
 
     .alert-error {
+      padding: 0.6rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
       background: rgba(255, 255, 255, 0.15);
       color: #fff;
       border: 1px solid rgba(255, 255, 255, 0.4);
@@ -165,6 +197,32 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
       gap: 0.75rem;
       margin-top: 0.75rem;
     }
+
+    .field-section {
+      margin-bottom: 0.5rem;
+    }
+
+    .section-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .days-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+    }
+
+    ::ng-deep .days-row .mat-mdc-checkbox .mdc-label {
+      color: #fff !important;
+    }
+
+    ::ng-deep .days-row .mat-mdc-checkbox .mdc-checkbox__background {
+      border-color: rgba(255, 255, 255, 0.7) !important;
+    }
   `
 })
 export class BranchAddPageComponent {
@@ -174,9 +232,29 @@ export class BranchAddPageComponent {
   branchId = '';
   branchName = '';
   branchAddress = '';
+  selectedDays: string[] = [];
+  timeRanges: DateTimeRange[] = [];
+
+  allDays = DAYS_OF_WEEK;
 
   loading = signal(false);
   error = signal<string | null>(null);
+
+  isDaySelected(code: string): boolean {
+    return this.selectedDays.includes(code);
+  }
+
+  toggleDay(code: string, checked: boolean) {
+    if (checked) {
+      this.selectedDays = [...this.selectedDays, code];
+    } else {
+      this.selectedDays = this.selectedDays.filter(d => d !== code);
+    }
+  }
+
+  onTimeRangesChange(ranges: DateTimeRange[]) {
+    this.timeRanges = ranges;
+  }
 
   submit(form: NgForm) {
     if (form.invalid) {
@@ -187,11 +265,18 @@ export class BranchAddPageComponent {
     this.loading.set(true);
     this.error.set(null);
 
+    const operatingDays = this.selectedDays.length ? this.selectedDays.join(',') : null;
+    const operatingTime = this.timeRanges.length
+      ? this.timeRanges.map(r => `${r.start}-${r.end}`).join(',')
+      : null;
+
     this.api
       .createBranch({
         id: this.branchId.trim(),
         name: this.branchName.trim(),
-        locationAddress: this.branchAddress.trim()
+        locationAddress: this.branchAddress.trim(),
+        operatingDays,
+        operatingTime
       })
       .subscribe({
         next: () => this.router.navigate(['/admin/branches-view']),
@@ -200,5 +285,9 @@ export class BranchAddPageComponent {
           this.loading.set(false);
         }
       });
+  }
+
+  cancel() {
+    this.router.navigate(['/admin/branches-view']);
   }
 }

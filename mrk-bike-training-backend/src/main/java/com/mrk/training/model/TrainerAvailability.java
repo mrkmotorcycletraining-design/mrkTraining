@@ -1,10 +1,17 @@
 package com.mrk.training.model;
 
-import jakarta.persistence.*;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "trainer_availability")
@@ -21,8 +28,8 @@ public class TrainerAvailability {
     @Column(name = "branch_id", nullable = false)
     private String branchId;
 
-    @Column(name = "available_days", nullable = false)
-    private String availableDays;
+    @Column(name = "number_of_training_can_take", nullable = false)
+    private Integer numberOfTrainingCanTake;
 
     @Column(name = "slot_start_time", nullable = false)
     private LocalTime slotStartTime;
@@ -35,6 +42,9 @@ public class TrainerAvailability {
 
     @Column(name = "effective_to")
     private LocalDate effectiveTo;
+
+    @Column(name = "preferred_days")
+    private String preferredDays;
 
     @Column(name = "is_active")
     private boolean isActive = true;
@@ -50,8 +60,8 @@ public class TrainerAvailability {
     public void setTrainer(TrainerProfile trainer) { this.trainer = trainer; }
     public String getBranchId() { return branchId; }
     public void setBranchId(String branchId) { this.branchId = branchId; }
-    public String getAvailableDays() { return availableDays; }
-    public void setAvailableDays(String availableDays) { this.availableDays = availableDays; }
+    public Integer getNumberOfTrainingCanTake() { return numberOfTrainingCanTake; }
+    public void setNumberOfTrainingCanTake(Integer numberOfTrainingCanTake) { this.numberOfTrainingCanTake = numberOfTrainingCanTake; }
     public LocalTime getSlotStartTime() { return slotStartTime; }
     public void setSlotStartTime(LocalTime slotStartTime) { this.slotStartTime = slotStartTime; }
     public LocalTime getSlotEndTime() { return slotEndTime; }
@@ -60,6 +70,8 @@ public class TrainerAvailability {
     public void setEffectiveFrom(LocalDate effectiveFrom) { this.effectiveFrom = effectiveFrom; }
     public LocalDate getEffectiveTo() { return effectiveTo; }
     public void setEffectiveTo(LocalDate effectiveTo) { this.effectiveTo = effectiveTo; }
+    public String getPreferredDays() { return preferredDays; }
+    public void setPreferredDays(String preferredDays) { this.preferredDays = preferredDays; }
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
     public LocalDateTime getAuditStartDateTime() { return auditStartDateTime; }

@@ -15,4 +15,8 @@ public interface AssetRepository extends JpaRepository<AssetInfo, String> {
     List<AssetInfo> findByVehicleType_Type(String type);
 
     List<AssetInfo> findByCurrentBranchIdAndVehicleType_Type(String branchId, String type);
+
+    List<AssetInfo> findByVehicleType_TypeId(Long typeId);
+
+    long countByVehicleType_TypeIdAndStatusNot(Long typeId, String status);
 }

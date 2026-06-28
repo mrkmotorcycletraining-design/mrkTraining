@@ -56,6 +56,10 @@ export interface BranchApi {
   id: string;
   name?: string;
   locationAddress?: string;
+  /** Comma-separated 2-letter day codes: Mo,Tu,We,Th,Fr */
+  operatingDays?: string;
+  /** Comma-separated time ranges: 07:00 AM-10:00 AM,05:00 PM-10:00 PM */
+  operatingTime?: string;
 }
 
 export interface VehicleTypeConfigApi {
@@ -123,13 +127,16 @@ export interface TrainerApi {
 export interface TrainerAvailabilityApi {
   id: number;
   trainer?: TrainerApi;
+  trainerId?: number;
   branchId: string;
-  availableDays: string;
+  numberOfTrainingCanTake: number;
   slotStartTime: string;
   slotEndTime: string;
   effectiveFrom: string;
   effectiveTo?: string;
+  preferredDays?: string;
   isActive?: boolean;
+  lastUpdateUser?: number;
 }
 
 export interface TimeIntervalApi {
@@ -148,4 +155,40 @@ export interface LedgerSummaryApi {
   totalIncome: number;
   totalExpense: number;
   byBranch: Record<string, { income: number; expense: number }>;
+}
+
+// ─── Availability Check APIs ───────────────────────────────────────
+
+export interface TrainerAvailabilityResponse {
+  groups: TrainerCoverageGroup[];
+}
+
+export interface TrainerCoverageGroup {
+  fullCoverage: boolean;
+  priority: number;
+  segments: TrainerSegment[];
+  totalDaysCovered: number;
+  totalDaysRequested: number;
+}
+
+export interface TrainerSegment {
+  trainerId: number;
+  trainerName: string;
+  trainerUsername: string;
+  coveredDates: string[];
+  remainingCapacity: number;
+}
+
+export interface VehicleAvailabilityResponse {
+  status: 'AVAILABLE' | 'PARTIAL' | 'NOT_AVAILABLE';
+  days: VehicleDayStatus[];
+  message: string;
+}
+
+export interface VehicleDayStatus {
+  date: string;
+  available: boolean;
+  vehicleId?: string;
+  vehicleName?: string;
+  vehicleColor?: string;
 }

@@ -10,5 +10,6 @@ public record ClientCreateRequest(
         String email,
         @NotBlank String password,
         @NotNull @Positive Integer allowedNumOfTrainings,
-        @NotNull Double heightFt,
-        Integer weightKg) {}
+        Double heightFt,
+        Integer weightKg,
+        String profilePicture) {}

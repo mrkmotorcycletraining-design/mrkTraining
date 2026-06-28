@@ -1,5 +1,19 @@
 package com.mrk.training.service;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
 import com.mrk.training.dto.scheduler.ScheduleQuery;
 import com.mrk.training.dto.scheduler.TimeInterval;
 import com.mrk.training.model.ScheduleSlot;
@@ -7,14 +21,6 @@ import com.mrk.training.model.ScheduleStatus;
 import com.mrk.training.model.TrainerAvailability;
 import com.mrk.training.repository.ScheduleSlotRepository;
 import com.mrk.training.repository.TrainerAvailabilityRepository;
-import org.springframework.stereotype.Service;
-
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class SchedulerService {
@@ -84,7 +90,7 @@ public class SchedulerService {
                 availabilityRepository.findActiveByTrainerIdAndBranchId(trainerId, branchId);
         Map<String, TrainerAvailability> latestByKey = records.stream()
                 .collect(Collectors.toMap(
-                        r -> r.getAvailableDays() + "|" + r.getSlotStartTime() + "|" + r.getSlotEndTime(),
+                        r -> r.getNumberOfTrainingCanTake() + "|" + r.getSlotStartTime() + "|" + r.getSlotEndTime(),
                         r -> r,
                         (a, b) -> a.getAuditStartDateTime().isAfter(b.getAuditStartDateTime()) ? a : b));
         return List.copyOf(latestByKey.values());

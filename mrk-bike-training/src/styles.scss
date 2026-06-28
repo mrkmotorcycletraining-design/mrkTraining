@@ -36,39 +36,122 @@ body {
   margin: 0;
   height: 100%;
 }
-/* Global styles */
+/* Global theme imports */
 @import 'ag-grid-community/styles/ag-grid.css';
-@import 'ag-grid-community/styles/ag-theme-alpine.css';
+@import 'ag-grid-community/styles/ag-theme-quartz.css';
 
-// ─── AG Grid Blue Theme Overrides ────────────────────────────────────────────
-.custom-grid-blue,
-.custom-grid-blue ag-grid-angular,
-.custom-grid-blue [class*="ag-theme-"] {
-  --ag-header-background-color: #1565c0 !important;
-  --ag-header-foreground-color: #fff !important;
-  --ag-header-cell-hover-background-color: #1976d2 !important;
-  --ag-row-hover-color: #e3f2fd !important;
-  --ag-selected-row-background-color: #bbdefb !important;
-  --ag-border-color: #90caf9 !important;
-  --ag-row-border-color: #e0e0e0 !important;
-  --ag-header-column-separator-display: block !important;
-  --ag-header-column-separator-color: rgba(255, 255, 255, 0.4) !important;
-  --ag-header-column-separator-width: 1px !important;
-  --ag-header-column-separator-height: 60% !important;
-  --ag-internal-row-border-width: 1px !important;
+// ─── AG Grid Global Theme Overrides (ag-theme-quartz) ────────────────────────
+.ag-theme-quartz {
+  --ag-header-background-color: #1565c0;
+  --ag-header-foreground-color: #ffffff;
+  --ag-header-cell-hover-background-color: #1976d2;
+  --ag-header-column-separator-display: block;
+  --ag-header-column-separator-color: rgba(255, 255, 255, 0.4);
+  --ag-header-column-separator-width: 1px;
+  --ag-header-column-separator-height: 60%;
+  --ag-row-hover-color: #e3f2fd;
+  --ag-selected-row-background-color: #bbdefb;
+  --ag-row-border-color: #e0e0e0;
+  --ag-border-color: #e0e0e0;
+  --ag-font-size: 0.85rem;
+  --ag-header-font-size: 0.88rem;
+  --ag-header-font-weight: 600;
 }
 
-.custom-grid-blue .ag-header {
+// Force header blue background with direct overrides
+.ag-theme-quartz .ag-header,
+.ag-theme-quartz .ag-header-row,
+.ag-theme-quartz .ag-header-row-column {
   background-color: #1565c0 !important;
   color: #fff !important;
 }
 
-.custom-grid-blue .ag-header-cell {
+.ag-theme-quartz .ag-header-cell {
+  background-color: #1565c0 !important;
+  color: #fff !important;
   border-right: 1px solid rgba(255, 255, 255, 0.3) !important;
 }
 
-.custom-grid-blue .ag-cell {
-  border-right: 1px solid #e0e0e0 !important;
+.ag-theme-quartz .ag-header-cell-text {
+  color: #fff !important;
+  font-weight: 600 !important;
+}
+
+.ag-theme-quartz .ag-header-cell .ag-icon,
+.ag-theme-quartz .ag-header-cell-menu-button,
+.ag-theme-quartz .ag-sort-indicator-icon {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+
+// Floating filter row
+.ag-theme-quartz .ag-header-row-column-filter {
+  background: #e3f2fd !important;
+  border-bottom: 2px solid #90caf9 !important;
+}
+
+.ag-theme-quartz .ag-floating-filter {
+  background: #e3f2fd !important;
+}
+
+.ag-theme-quartz .ag-floating-filter-body input,
+.ag-theme-quartz .ag-input-field-input[type="text"] {
+  border: 1.5px solid #90caf9 !important;
+  border-radius: 6px !important;
+  padding: 3px 8px !important;
+  font-size: 0.82rem !important;
+  background: #fff !important;
+}
+
+.ag-theme-quartz .ag-floating-filter-body input:focus,
+.ag-theme-quartz .ag-input-field-input:focus {
+  border-color: #1565c0 !important;
+  box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.15) !important;
+  outline: none !important;
+}
+
+.ag-theme-quartz .ag-floating-filter-button-button {
+  color: #1565c0 !important;
+}
+
+// Placeholder text for floating filter inputs
+.ag-theme-quartz .ag-floating-filter-body input::placeholder,
+.ag-theme-quartz .ag-input-field-input::placeholder {
+  color: #aaa !important;
+  font-style: italic;
+  font-size: 0.8rem;
+  content: 'Search...';
+}
+
+// Force placeholder attribute on floating filter inputs via CSS
+.ag-theme-quartz .ag-floating-filter-body input[type="text"],
+.ag-theme-quartz .ag-floating-filter-body .ag-input-field-input {
+  &:placeholder-shown::placeholder {
+    visibility: visible !important;
+  }
+}
+
+// Rows
+.ag-theme-quartz .ag-row {
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.ag-theme-quartz .ag-row-odd {
+  background-color: #ffffff !important;
+}
+
+.ag-theme-quartz .ag-row:hover {
+  background: #e3f2fd !important;
+}
+
+.ag-theme-quartz .ag-row-selected {
+  background: #bbdefb !important;
+}
+
+.ag-theme-quartz .ag-cell {
+  border-right: 1px solid #f0f0f0;
+  display: flex;
+  align-items: center;
 }
 
 // ─── Shared form card ────────────────────────────────────────────────────────
@@ -327,4 +410,16 @@ body {
     letter-spacing: 0.5px;
     margin-top: 0.25rem;
   }
+}
+
+// ─── Course Detail Dialog ─────────────────────────────────────────────────────
+.course-detail-dialog .mat-mdc-dialog-container {
+  border-radius: 16px;
+  overflow: hidden;
+}
+.course-detail-dialog .mat-mdc-dialog-surface {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5) !important;
+  border-radius: 16px !important;
 }

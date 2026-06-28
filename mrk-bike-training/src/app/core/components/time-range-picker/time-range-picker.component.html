@@ -1,0 +1,57 @@
+<div class="time-range-picker-wrapper">
+  <!-- Visible input trigger -->
+  <mat-form-field appearance="outline" class="time-range-field" (click)="onInputClick()">
+    <mat-label>{{ label }}</mat-label>
+    <input
+      matInput
+      [placeholder]="placeholder"
+      readonly
+    />
+    <mat-icon matSuffix>schedule</mat-icon>
+  </mat-form-field>
+
+  <!-- Hidden from/to time pickers -->
+  <div class="hidden-picker">
+    <input
+      [ngxMatTimepicker]="fromTimePicker"
+      [format]="12"
+      [min]="minTime"
+      [max]="maxTime"
+      readonly
+      class="hidden-time-input"
+    />
+    <ngx-mat-timepicker
+      #fromTimePicker
+      [format]="12"
+      [timepickerClass]="'from-time-picker'"
+      [enableKeyboardInput]="true"
+      [editableHintTmpl]="fromHintTmpl"
+      (timeSet)="onFromTimeSet($event)"
+    ></ngx-mat-timepicker>
+
+    <ng-template #fromHintTmpl>
+      <div class="clock-dialog-title">{{ fromLabel }}</div>
+    </ng-template>
+
+    <input
+      [ngxMatTimepicker]="toTimePicker"
+      [format]="12"
+      [min]="pendingFromTimeForMin"
+      [max]="maxTime"
+      readonly
+      class="hidden-time-input"
+    />
+    <ngx-mat-timepicker
+      #toTimePicker
+      [format]="12"
+      [timepickerClass]="'to-time-picker'"
+      [enableKeyboardInput]="true"
+      [editableHintTmpl]="toHintTmpl"
+      (timeSet)="onToTimeSet($event)"
+    ></ngx-mat-timepicker>
+
+    <ng-template #toHintTmpl>
+      <div class="clock-dialog-title">{{ toLabel }}</div>
+    </ng-template>
+  </div>
+</div>

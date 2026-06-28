@@ -38,9 +38,9 @@ public class ClientProfile {
     private LocalDate dateOfBirth;
 
     @Column(name = "profile_picture")
-    private String profilePicture;
+    private byte[] profilePicture;
 
-    @Column(name = "height_ft", nullable = false)
+    @Column(name = "height_ft")
     private Double heightFt;
 
     @Column(name = "weight_kg")
@@ -62,8 +62,8 @@ public class ClientProfile {
     public void setAllowedNumOfTrainings(Integer allowedNumOfTrainings) { this.allowedNumOfTrainings = allowedNumOfTrainings; }
     public LocalDate getDateOfBirth() { return dateOfBirth; }
     public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
-    public String getProfilePicture() { return profilePicture; }
-    public void setProfilePicture(String profilePicture) { this.profilePicture = profilePicture; }
+    public byte[] getProfilePicture() { return profilePicture; }
+    public void setProfilePicture(byte[] profilePicture) { this.profilePicture = profilePicture; }
     public Double getHeightFt() { return heightFt; }
     public void setHeightFt(Double heightFt) { this.heightFt = heightFt; }
     public Integer getWeightKg() { return weightKg; }

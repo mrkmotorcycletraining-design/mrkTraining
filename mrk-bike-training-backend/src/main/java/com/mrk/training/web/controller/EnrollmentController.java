@@ -1,5 +1,19 @@
 package com.mrk.training.web.controller;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.mrk.training.dto.enrollment.EnrollmentRequest;
 import com.mrk.training.model.ClientCourseEnrollment;
 import com.mrk.training.model.EnrollmentStatus;
@@ -9,13 +23,8 @@ import com.mrk.training.repository.EnrollmentRepository;
 import com.mrk.training.repository.ScheduleSlotRepository;
 import com.mrk.training.security.SecurityUtils;
 import com.mrk.training.service.EnrollmentEngine;
-import jakarta.validation.Valid;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/enrollments")
@@ -38,6 +47,13 @@ public class EnrollmentController {
     //    @PreAuthorize("hasAnyRole('CLIENT','ADMIN','SUPER_ADMIN')")
     public ClientCourseEnrollment submit(@Valid @RequestBody EnrollmentRequest request) {
         return enrollmentEngine.submitEnrollment(request);
+    }
+
+    @PostMapping("/admin-assign")
+    //    @PreAuthorize("hasAnyRole('ADMIN','SUPER_ADMIN')")
+    public ClientCourseEnrollment adminAssign(
+            @Valid @RequestBody com.mrk.training.dto.enrollment.AdminAssignTrainingRequest request) {
+        return enrollmentEngine.adminAssignTraining(request);
     }
 
     @GetMapping

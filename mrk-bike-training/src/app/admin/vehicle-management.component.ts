@@ -228,7 +228,11 @@ export class VehicleManagementComponent implements OnInit {
   }
 
   switchBranch() {
-    if (!this.selectedVehicleId || !this.newBranchId || !confirm('Switch vehicle branch?')) return;
+    if (!this.selectedVehicleId || !this.newBranchId) return;
+    const confirmed = confirm(
+      '⚠️ Warning: Switching this vehicle\'s branch may affect currently scheduled trainings that use this vehicle.\n\nAny active or upcoming schedules assigned to this vehicle at the current branch could be impacted.\n\nDo you want to proceed?'
+    );
+    if (!confirmed) return;
     this.loading.set(true);
     this.error.set(null);
     this.api.switchVehicleBranch(this.selectedVehicleId, this.newBranchId).subscribe({

@@ -1,5 +1,16 @@
 package com.mrk.training.service;
 
+import java.math.BigDecimal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.mrk.training.dto.enrollment.EnrollmentRequest;
 import com.mrk.training.dto.scheduler.ScheduleQuery;
 import com.mrk.training.dto.scheduler.TimeInterval;
@@ -9,19 +20,22 @@ import com.mrk.training.event.SlotRejectedEvent;
 import com.mrk.training.exception.EnrollmentLimitException;
 import com.mrk.training.exception.InvalidStartDateException;
 import com.mrk.training.exception.ScheduleContinuityException;
-import com.mrk.training.model.*;
-import com.mrk.training.repository.*;
+import com.mrk.training.model.ClientCourseEnrollment;
+import com.mrk.training.model.ClientProfile;
+import com.mrk.training.model.Course;
+import com.mrk.training.model.EnrollmentStatus;
+import com.mrk.training.model.ScheduleSlot;
+import com.mrk.training.model.ScheduleStatus;
+import com.mrk.training.model.ScheduleType;
+import com.mrk.training.model.TrainerProfile;
+import com.mrk.training.repository.BranchRepository;
+import com.mrk.training.repository.ClientRepository;
+import com.mrk.training.repository.CourseRepository;
+import com.mrk.training.repository.EnrollmentRepository;
+import com.mrk.training.repository.ScheduleSlotRepository;
+import com.mrk.training.repository.TrainerRepository;
+import com.mrk.training.repository.UserRepository;
 import com.mrk.training.security.SecurityUtils;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class EnrollmentEngine {
@@ -32,6 +46,7 @@ public class EnrollmentEngine {
     private final ScheduleSlotRepository slotRepository;
     private final TrainerRepository trainerRepository;
     private final BranchRepository branchRepository;
+    private final UserRepository userRepository;
     private final SchedulerService schedulerService;
     private final ApplicationEventPublisher events;
 
@@ -42,6 +57,7 @@ public class EnrollmentEngine {
             ScheduleSlotRepository slotRepository,
             TrainerRepository trainerRepository,
             BranchRepository branchRepository,
+            UserRepository userRepository,
             SchedulerService schedulerService,
             ApplicationEventPublisher events) {
         this.clientRepository = clientRepository;
@@ -50,6 +66,7 @@ public class EnrollmentEngine {
         this.slotRepository = slotRepository;
         this.trainerRepository = trainerRepository;
         this.branchRepository = branchRepository;
+        this.userRepository = userRepository;
         this.schedulerService = schedulerService;
         this.events = events;
     }
@@ -190,6 +207,99 @@ public class EnrollmentEngine {
         if (request.clientId() != null) {
             return request.clientId();
         }
-        return SecurityUtils.currentUserId();
+        // Resolve client_profiles.id from users.id via username lookup
+        Long userId = SecurityUtils.currentUserId();
+        com.mrk.training.model.User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found."));
+        ClientProfile profile = clientRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("Client not found."));
+        return profile.getId();
+    }
+
+    /**
+     * Admin-assigned training: creates enrollment + schedule slots + decrements allowance
+     * all in a single transaction.
+     */
+    @Transactional
+    public ClientCourseEnrollment adminAssignTraining(
+            com.mrk.training.dto.enrollment.AdminAssignTrainingRequest request) {
+
+        ClientProfile client = clientRepository.findById(request.clientId())
+                .orElseThrow(() -> new IllegalArgumentException("Client not found."));
+        if (client.getAllowedNumOfTrainings() == null || client.getAllowedNumOfTrainings() < 1) {
+            throw new EnrollmentLimitException("No training allowance remaining for this client.");
+        }
+
+        Course course = courseRepository.findById(request.courseId())
+                .orElseThrow(() -> new IllegalArgumentException("Course not found."));
+
+        TrainerProfile trainer = null;
+        if (request.trainerId() != null) {
+            trainer = trainerRepository.findById(request.trainerId())
+                    .orElseThrow(() -> new IllegalArgumentException("Trainer not found."));
+        }
+
+        // 1. Reduce client's allowed trainings
+        client.setAllowedNumOfTrainings(client.getAllowedNumOfTrainings() - 1);
+        clientRepository.save(client);
+
+        // 2. Create enrollment
+        ClientCourseEnrollment enrollment = new ClientCourseEnrollment();
+        enrollment.setClient(client);
+        enrollment.setCourse(course);
+        branchRepository.findById(request.branchId()).ifPresent(enrollment::setBranch);
+        enrollment.setTotalAmountPaid(request.totalAmountPaid() != null ? request.totalAmountPaid() : BigDecimal.ZERO);
+        enrollment.setEnrollmentDate(LocalDate.now());
+        enrollment.setStatus(EnrollmentStatus.ACTIVE);
+        int bufferDays = course.getBufferDays() != null ? course.getBufferDays() : 0;
+        enrollment.setBufferDaysAllocated(bufferDays);
+        enrollment.setBufferDaysUsed(0);
+        enrollment = enrollmentRepository.save(enrollment);
+
+        // 3. Create schedule slots for each day in the provided ranges
+        for (var rangeSlot : request.slots()) {
+            LocalDate cursor = rangeSlot.startDate();
+            while (!cursor.isAfter(rangeSlot.endDate())) {
+                LocalDateTime slotStart = LocalDateTime.of(cursor, rangeSlot.startTime());
+                LocalDateTime slotEnd = LocalDateTime.of(cursor, rangeSlot.endTime());
+
+                ScheduleSlot slot = new ScheduleSlot();
+                slot.setEnrollment(enrollment);
+                slot.setClient(client);
+                slot.setBranchId(request.branchId());
+                slot.setTitle(course.getName());
+                slot.setStartDateTime(slotStart);
+                slot.setEndDateTime(slotEnd);
+                slot.setType(ScheduleType.REGULAR_TRAINING);
+                // Admin-assigned slots are directly ACTIVE (pre-approved)
+                slot.setStatus(ScheduleStatus.ACTIVE);
+                if (trainer != null) {
+                    slot.setTrainer(trainer);
+                }
+                if (request.vehicleId() != null) {
+                    slot.setResourceId(request.vehicleId());
+                }
+                slotRepository.save(slot);
+
+                cursor = cursor.plusDays(1);
+            }
+        }
+
+        // 4. Create buffer slots if course has buffer days
+        for (int i = 0; i < bufferDays; i++) {
+            ScheduleSlot bufferSlot = new ScheduleSlot();
+            bufferSlot.setEnrollment(enrollment);
+            bufferSlot.setClient(client);
+            bufferSlot.setBranchId(request.branchId());
+            bufferSlot.setTitle(course.getName() + " (Buffer)");
+            bufferSlot.setStartDateTime(LocalDateTime.now());
+            bufferSlot.setEndDateTime(LocalDateTime.now());
+            bufferSlot.setType(ScheduleType.BUFFER_SESSION);
+            bufferSlot.setStatus(ScheduleStatus.PENDING);
+            slotRepository.save(bufferSlot);
+        }
+
+        events.publishEvent(new EnrollmentCreatedEvent(enrollment));
+        return enrollment;
     }
 }

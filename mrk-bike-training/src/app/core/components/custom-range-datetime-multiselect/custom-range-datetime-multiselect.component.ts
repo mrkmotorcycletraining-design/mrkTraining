@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule, MatDateRangePicker } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { NgxMatTimepickerComponent, NgxMatTimepickerDirective } from 'ngx-mat-timepicker';
+import { TimeRangePickerComponent } from '../time-range-picker/time-range-picker.component';
 
 export interface DateTimeRange {
   start: string;
@@ -26,6 +27,7 @@ export interface DateTimeRange {
     MatNativeDateModule,
     NgxMatTimepickerComponent,
     NgxMatTimepickerDirective,
+    TimeRangePickerComponent,
   ],
   templateUrl: './custom-range-datetime-multiselect.component.html',
   styleUrls: ['./custom-range-datetime-multiselect.component.scss']
@@ -50,6 +52,7 @@ export class CustomRangeDatetimeMultiselectComponent {
   @ViewChild('rangePicker') rangePicker!: MatDateRangePicker<Date>;
   @ViewChild('fromTimePicker') fromTimePicker!: NgxMatTimepickerComponent;
   @ViewChild('toTimePicker') toTimePicker!: NgxMatTimepickerComponent;
+  @ViewChild('timeRangePicker') timeRangePicker!: TimeRangePickerComponent;
 
   ranges = signal<string[]>([]);
 
@@ -66,7 +69,7 @@ export class CustomRangeDatetimeMultiselectComponent {
     if (this.dateOnly) {
       this.openDateRangePicker();
     } else if (this.timeOnly) {
-      this.openFromTimePicker();
+      this.timeRangePicker.open();
     } else {
       // Datetime mode: open date range picker first
       this.openDateRangePicker();
@@ -111,40 +114,31 @@ export class CustomRangeDatetimeMultiselectComponent {
     }
   }
 
-  /** Called when "from" time picker sets a value */
-  onFromTimeSet(time: string): void {
-    if (this.timeOnly) {
-      this.pendingFromTime = time;
-      // Now open the "to" picker
-      this.openToTimePicker();
-    } else {
-      // Datetime mode: we have the date range + from time
-      this.pendingFromTime = time;
-      if (this.endTimeRequired) {
-        this.openToTimePicker();
-      } else {
-        // Format: DD/MM/YYYY-DD/MM/YYYY HH:MM AM/PM
-        const formatted = `${this.formatDate(this.pendingDateStart!)}-${this.formatDate(this.pendingDateEnd!)} ${time}`;
-        this.addChip(formatted);
-        this.resetPending();
-      }
-    }
+  /** Called when the time-range-picker emits a complete range (timeOnly mode) */
+  onTimeRangeSelected(range: string): void {
+    this.addChip(range);
   }
 
-  /** Called when "to" time picker sets a value */
-  onToTimeSet(time: string): void {
-    if (this.timeOnly) {
-      // Format: HH:MM AM/PM-HH:MM AM/PM
-      const formatted = `${this.pendingFromTime}-${time}`;
-      this.addChip(formatted);
-      this.pendingFromTime = '';
+  /** Called when "from" time picker sets a value (datetime mode only) */
+  onFromTimeSet(time: string): void {
+    // Datetime mode: we have the date range + from time
+    this.pendingFromTime = time;
+    if (this.endTimeRequired) {
+      this.openToTimePicker();
     } else {
-      // Datetime with endTimeRequired
-      // Format: DD/MM/YYYY HH:MM AM/PM-DD/MM/YYYY HH:MM AM/PM
-      const formatted = `${this.formatDate(this.pendingDateStart!)} ${this.pendingFromTime}-${this.formatDate(this.pendingDateEnd!)} ${time}`;
+      // Format: DD/MM/YYYY-DD/MM/YYYY HH:MM AM/PM
+      const formatted = `${this.formatDate(this.pendingDateStart!)}-${this.formatDate(this.pendingDateEnd!)} ${time}`;
       this.addChip(formatted);
       this.resetPending();
     }
+  }
+
+  /** Called when "to" time picker sets a value (datetime mode with endTimeRequired) */
+  onToTimeSet(time: string): void {
+    // Format: DD/MM/YYYY HH:MM AM/PM-DD/MM/YYYY HH:MM AM/PM
+    const formatted = `${this.formatDate(this.pendingDateStart!)} ${this.pendingFromTime}-${this.formatDate(this.pendingDateEnd!)} ${time}`;
+    this.addChip(formatted);
+    this.resetPending();
   }
 
   removeChip(index: number): void {

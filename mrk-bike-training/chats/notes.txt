@@ -13,6 +13,8 @@ rohan rohan0202
 client
 mkarora@123.com mkarora123
 
+Download will first ask to enter the login id and password again and ask a question: What color is of banana. If user ans "raining mumbai"
+
 ToDo
 1. Add trainer
 2. Add client

@@ -88,6 +88,16 @@ These rules apply to all Angular components in the mrk-bike-training project.
 - Use `.field-row` with `display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem` for side-by-side fields.
 - Form actions (submit + cancel) go in a `.form-actions` flex container.
 
+## Custom Reusable Components
+
+- All custom reusable UI components MUST live in: `src/app/core/components/`
+- Each component gets its own subdirectory (e.g., `core/components/profile-picture-upload/`).
+- Available reusable components:
+  - `<app-custom-grid>` — ag-grid wrapper for list pages
+  - `<app-custom-range-datetime-multiselect>` — multi-range date/time picker
+  - `<app-profile-picture-upload>` — circular profile picture picker (FB-style)
+- When building new shared/reusable UI widgets, always place them here — never inline in feature modules.
+
 ## Data Models — Schema Alignment
 
 - All frontend TypeScript interfaces/models MUST align with the database schema defined in:
@@ -101,17 +111,29 @@ These rules apply to all Angular components in the mrk-bike-training project.
 - Any column storing days of the week (e.g., `preferred_days`, `available_days`) uses a **comma-separated string of 2-letter abbreviations** in the database and API:
   `Mo,Tu,We,Th,Fr,Sa,Su`
 - The UI MUST display the **full day name** (Monday, Tuesday, etc.) to the user.
-- When the user selects days (e.g., multi-select or checkboxes), map:
-  | Stored | Displayed |
-  |--------|-----------|
-  | Mo | Monday |
-  | Tu | Tuesday |
-  | We | Wednesday |
-  | Th | Thursday |
-  | Fr | Friday |
-  | Sa | Saturday |
-  | Su | Sunday |
+- **Frontend**: Use the shared `DAYS_OF_WEEK` constant and helper functions from `core/models/days.enum.ts`:
+  - `DAYS_OF_WEEK` — array of `{ code, shortName, fullName }` for checkboxes/selects
+  - `daysCodesToFullNames(codes)` — converts "Mo,Tu" → "Monday, Tuesday" (for grid display)
+  - `daysCodesToShortNames(codes)` — converts "Mo,Tu" → "Mon, Tue"
+  - `DAY_CODE_TO_FULL` / `DAY_CODE_TO_SHORT` — lookup maps
+- **Backend**: Use the `DayOfWeekCode` enum (`com.mrk.training.model.DayOfWeekCode`):
+  - `DayOfWeekCode.Mo.getFullName()` → "Monday"
+  - `DayOfWeekCode.fromCode("Mo")` → enum value
+  - `DayOfWeekCode.codesToFullNames("Mo,Tu")` → "Monday, Tuesday"
+- Mapping reference:
+  | Code | Short | Full |
+  |------|-------|-----------|
+  | Mo | Mon | Monday |
+  | Tu | Tue | Tuesday |
+  | We | Wed | Wednesday |
+  | Th | Thu | Thursday |
+  | Fr | Fri | Friday |
+  | Sa | Sat | Saturday |
+  | Su | Sun | Sunday |
 - Store and transmit only the 2-letter codes; UI handles display conversion.
+- In **ag-grid** list views, display the **short name** (Mon, Tue, Wed, etc.) using `daysCodesToShortNames()` for compact column display.
+- In **forms** and **detail views**, display the **full day name** (Monday, Tuesday, etc.).
+- Do NOT inline day arrays in components — always import from `days.enum.ts`.
 
 ## Vehicle Display Format
 

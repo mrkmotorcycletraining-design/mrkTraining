@@ -17,6 +17,8 @@ import {
   TimeIntervalApi,
   TrainerApi,
   TrainerAvailabilityApi,
+  TrainerAvailabilityResponse,
+  VehicleAvailabilityResponse,
   VehicleTypeConfigApi,
   EnrollmentStatus,
   ScheduleStatus
@@ -113,7 +115,7 @@ export class TrainingApiService {
       return this.http.post<BranchApi>('/api/branches', body);
     }
   }
-  updateBranch(id: string, body: { name?: string; locationAddress?: string }) {
+  updateBranch(id: string, body: { name?: string; locationAddress?: string; operatingDays?: string | null; operatingTime?: string | null }) {
     return this.http.put<BranchApi>(`/api/branches/${id}`, { id, ...body });
   }
   listAssets(branchId?: string, type?: string) {
@@ -168,6 +170,18 @@ export class TrainingApiService {
     maintenanceIntervalKm?: number | null;
   }) {
     return this.http.post<VehicleTypeConfigApi>('/api/vehicles/types', body);
+  }
+  deactivateVehicleType(typeId: number) {
+    return this.http.put<any[]>(`/api/vehicles/types/${typeId}/deactivate`, {});
+  }
+  activateVehicleType(typeId: number) {
+    return this.http.put<void>(`/api/vehicles/types/${typeId}/activate`, {});
+  }
+  deleteVehicleType(typeId: number) {
+    return this.http.delete<void>(`/api/vehicles/types/${typeId}`);
+  }
+  getDeactivatedVehiclesByType(typeId: number) {
+    return this.http.get<any[]>(`/api/vehicles/types/${typeId}/deactivated-vehicles`);
   }
   listCourses(status?: string) {
     let params = new HttpParams();
@@ -261,6 +275,9 @@ export class TrainingApiService {
   submitEnrollment(body: unknown) {
     return this.http.post<EnrollmentApi>('/api/enrollments', body);
   }
+  adminAssignTraining(body: unknown) {
+    return this.http.post<EnrollmentApi>('/api/enrollments/admin-assign', body);
+  }
   pauseEnrollment(id: number) {
     return this.http.put<EnrollmentApi>(`/api/enrollments/${id}/pause`, {});
   }
@@ -304,5 +321,39 @@ export class TrainingApiService {
   }
   addExpense(body: unknown) {
     return this.http.post<unknown>('/api/ledger/expense', body);
+  }
+
+  // Availability checks
+  checkTrainerAvailability(body: {
+    branchId: string;
+    ranges: { startDate: string; endDate: string; startTime: string; endTime: string }[];
+  }) {
+    return this.http.post<TrainerAvailabilityResponse>('/api/availability/trainers', body);
+  }
+
+  checkVehicleAvailability(body: {
+    branchId: string;
+    vehicleType: string;
+    vehicleName: string;
+    ranges: { startDate: string; endDate: string; startTime: string; endTime: string }[];
+  }) {
+    return this.http.post<VehicleAvailabilityResponse>('/api/availability/vehicles', body);
+  }
+
+  // Backup & Restore
+  downloadBackup(body: { username: string; password: string; secretAnswer: string }) {
+    return this.http.post('/api/backup/download', body, { responseType: 'blob' });
+  }
+
+  restoreBackup(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ message: string }>('/api/backup/restore', formData);
+  }
+
+  validateBackupSql(file: File) {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<{ valid: boolean; message?: string; errors?: string[] }>('/api/backup/validate', formData);
   }
 }

@@ -20,10 +20,22 @@ public class BranchRequest {
     @Size(max = 1000)
     private String locationAddress;
 
+    /** Comma-separated 2-letter day codes: Mo,Tu,We,Th,Fr */
+    @Size(max = 255)
+    private String operatingDays;
+
+    /** Comma-separated time ranges: 07:00 AM-10:00 AM,05:00 PM-10:00 PM */
+    @Size(max = 512)
+    private String operatingTime;
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getLocationAddress() { return locationAddress; }
     public void setLocationAddress(String locationAddress) { this.locationAddress = locationAddress; }
+    public String getOperatingDays() { return operatingDays; }
+    public void setOperatingDays(String operatingDays) { this.operatingDays = operatingDays; }
+    public String getOperatingTime() { return operatingTime; }
+    public void setOperatingTime(String operatingTime) { this.operatingTime = operatingTime; }
 }

@@ -1,7 +1,6 @@
 package com.mrk.training.model;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,13 +41,13 @@ public class Course {
     private LocalDate startDate;
 
     @Column(name = "start_time")
-    private LocalTime startTime;
+    private String startTime;
 
     @Column(name = "end_date")
     private LocalDate endDate;
 
     @Column(name = "end_time")
-    private LocalTime endTime;
+    private String endTime;
 
     @Column(name = "status")
     private String status = "ACTIVE";
@@ -73,12 +72,12 @@ public class Course {
     public void setTemplateImage(byte[] templateImage) { this.templateImage = templateImage; }
     public LocalDate getStartDate() { return startDate; }
     public void setStartDate(LocalDate startDate) { this.startDate = startDate; }
-    public LocalTime getStartTime() { return startTime; }
-    public void setStartTime(LocalTime startTime) { this.startTime = startTime; }
+    public String getStartTime() { return startTime; }
+    public void setStartTime(String startTime) { this.startTime = startTime; }
     public LocalDate getEndDate() { return endDate; }
     public void setEndDate(LocalDate endDate) { this.endDate = endDate; }
-    public LocalTime getEndTime() { return endTime; }
-    public void setEndTime(LocalTime endTime) { this.endTime = endTime; }
+    public String getEndTime() { return endTime; }
+    public void setEndTime(String endTime) { this.endTime = endTime; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 }

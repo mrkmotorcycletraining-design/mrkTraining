@@ -1,5 +1,6 @@
 package com.mrk.training.service;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -60,6 +61,7 @@ public class ClientService {
         profile.setAllowedNumOfTrainings(req.allowedNumOfTrainings());
         profile.setHeightFt(req.heightFt());
         profile.setWeightKg(req.weightKg());
+        profile.setProfilePicture(decodeProfilePicture(req.profilePicture()));
         profile = clientRepo.save(profile);
 
         // Set user reference for DTO mapping
@@ -76,7 +78,8 @@ public class ClientService {
                 req.getPassword(),
                 1,
                 req.getHeightFt(),
-                req.getWeightKg());
+                req.getWeightKg(),
+                null);
         AdminClientProfileResponse admin = create(create);
         com.mrk.training.dto.ClientDto dto = new com.mrk.training.dto.ClientDto();
         dto.setId(admin.id());
@@ -109,7 +112,7 @@ public class ClientService {
         if (req.heightFt() != null) profile.setHeightFt(req.heightFt());
         if (req.weightKg() != null) profile.setWeightKg(req.weightKg());
         if (req.dateOfBirth() != null) profile.setDateOfBirth(req.dateOfBirth());
-        if (req.profilePicture() != null) profile.setProfilePicture(req.profilePicture());
+        if (req.profilePicture() != null) profile.setProfilePicture(decodeProfilePicture(req.profilePicture()));
         if (req.email() != null) profile.setEmail(req.email());
         return toClientDto(clientRepo.save(profile));
     }
@@ -175,7 +178,7 @@ public class ClientService {
                 p.getHeightFt(),
                 p.getWeightKg(),
                 p.getDateOfBirth(),
-                p.getProfilePicture());
+                encodeProfilePicture(p.getProfilePicture()));
     }
 
     private ClientProfileResponse toClientDto(ClientProfile p) {
@@ -187,6 +190,18 @@ public class ClientService {
                 p.getHeightFt(),
                 p.getWeightKg(),
                 p.getDateOfBirth(),
-                p.getProfilePicture());
+                encodeProfilePicture(p.getProfilePicture()));
+    }
+
+    private byte[] decodeProfilePicture(String base64) {
+        if (base64 == null || base64.isBlank()) return null;
+        // Strip data URI prefix if present (e.g., "data:image/png;base64,")
+        String raw = base64.contains(",") ? base64.substring(base64.indexOf(",") + 1) : base64;
+        return Base64.getDecoder().decode(raw);
+    }
+
+    private String encodeProfilePicture(byte[] data) {
+        if (data == null || data.length == 0) return null;
+        return "data:image/png;base64," + Base64.getEncoder().encodeToString(data);
     }
 }

@@ -1,47 +1,84 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common';
-import { CalendarComponent } from '../calendar/calendar';
-import { TrainingApiService } from '../core/services/training-api.service';
-import { slotsToEvents } from '../core/utils/calendar-mapper';
-import { CalendarEvent } from '../calendar/models/calendar.types';
+import { Component } from '@angular/core';
+import { ColDef } from 'ag-grid-community';
+import { CustomGridComponent } from '../core/components/custom-grid.component/custom-grid.component';
 
 @Component({
   selector: 'app-client-schedule',
   standalone: true,
-  imports: [CommonModule, DatePipe, CalendarComponent],
+  imports: [CustomGridComponent],
   template: `
-    <h2>My Schedule</h2>
-    <app-calendar [events]="events()" [resources]="[]" viewMode="week" [readOnly]="true" />
-    @if (selected(); as slot) {
-      <div class="actions">
-        <p>{{ slot.title }} — {{ slot.startTime | date: 'medium' }}</p>
-        @if (slot.status === 'ACTIVE' || slot.status === 'PENDING') {
-          <button type="button" (click)="requestAbsence(slot)">Request Absence</button>
-        }
+    <div class="page-container">
+      <div class="head">
+        <h2>📅 My Schedule</h2>
       </div>
-    }
+      <app-custom-grid
+        [apiUrl]="apiUrl"
+        [columnDefs]="columnDefs"
+        [enableRowClick]="true"
+        rowDataPath="slots"
+      />
+    </div>
   `,
-  styles: `.actions { margin-top: 1rem; padding: 1rem; background: #f5f5f5; border-radius: 6px; }`
+  styles: `
+    .page-container {
+      padding: 1.5rem;
+    }
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+  `
 })
-export class ClientScheduleComponent implements OnInit {
-  private readonly api = inject(TrainingApiService);
-  events = signal<CalendarEvent[]>([]);
-  selected = signal<CalendarEvent | null>(null);
+export class ClientScheduleComponent {
+  apiUrl = '/api/slots?clientId=me';
 
-  ngOnInit() {
-    this.api.listSlots({ clientId: 'me' }).subscribe((response) => {
-      const slots = response.slots || [];
-      const active = slots.filter((s) => s.status === 'ACTIVE' || s.status === 'PENDING');
-      this.events.set(slotsToEvents(active));
-    });
-  }
-
-  requestAbsence(ev: CalendarEvent) {
-    const id = Number(ev.id);
-    if (!confirm('Request absence for this session?')) return;
-    this.api.recordSlotAbsence(id).subscribe(() => {
-      alert('Absence recorded.');
-      this.ngOnInit();
-    });
-  }
+  columnDefs: ColDef[] = [
+    {
+      field: 'title',
+      headerName: 'Session',
+      flex: 1.5,
+      valueFormatter: params => params.value ?? '—'
+    },
+    {
+      field: 'startDateTime',
+      headerName: 'Start',
+      flex: 1.2,
+      valueFormatter: params => params.value ? new Date(params.value).toLocaleString() : '—'
+    },
+    {
+      field: 'endDateTime',
+      headerName: 'End',
+      flex: 1.2,
+      valueFormatter: params => params.value ? new Date(params.value).toLocaleString() : '—'
+    },
+    {
+      field: 'type',
+      headerName: 'Type',
+      flex: 0.9,
+      valueFormatter: params => {
+        const val = params.value;
+        if (!val) return '—';
+        return val.replace(/_/g, ' ');
+      }
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      flex: 0.8,
+      valueFormatter: params => params.value ?? '—'
+    },
+    {
+      field: 'branchId',
+      headerName: 'Branch',
+      flex: 1,
+      valueFormatter: params => params.value ?? '—'
+    }
+  ];
 }

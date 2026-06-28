@@ -13,6 +13,7 @@ import { TrainingApiService } from '../core/services/training-api.service';
 import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-template';
 import { CustomRangeDatetimeMultiselectComponent, DateTimeRange } from '../core/components/custom-range-datetime-multiselect/custom-range-datetime-multiselect.component';
 import { BranchApi } from '../core/models/api.models';
+import { DAYS_OF_WEEK } from '../core/models/days.enum';
 
 @Component({
   selector: 'app-trainer-add',
@@ -122,20 +123,6 @@ import { BranchApi } from '../core/models/api.models';
           </mat-form-field>
         </div>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Assigned Branch</mat-label>
-          <mat-select
-            name="branch"
-            [(ngModel)]="branchId"
-          >
-            <mat-option value="">— None —</mat-option>
-            @for (b of branches(); track b.id) {
-              <mat-option [value]="b.id">{{ b.name }} ({{ b.id }})</mat-option>
-            }
-          </mat-select>
-          <mat-icon matSuffix>store</mat-icon>
-        </mat-form-field>
-
         <!-- Preferred Days -->
         <div class="field-section">
           <label class="section-label">Preferred Days</label>
@@ -145,7 +132,7 @@ import { BranchApi } from '../core/models/api.models';
                 [checked]="isDaySelected(day.code)"
                 (change)="toggleDay(day.code, $event.checked)"
                 color="primary"
-              >{{ day.label }}</mat-checkbox>
+              >{{ day.fullName }}</mat-checkbox>
             }
           </div>
         </div>
@@ -321,15 +308,7 @@ export class TrainerAddComponent implements OnInit {
   selectedLocations: string[] = [];
   selectedDays: string[] = [];
 
-  allDays = [
-    { code: 'Mo', label: 'Monday' },
-    { code: 'Tu', label: 'Tuesday' },
-    { code: 'We', label: 'Wednesday' },
-    { code: 'Th', label: 'Thursday' },
-    { code: 'Fr', label: 'Friday' },
-    { code: 'Sa', label: 'Saturday' },
-    { code: 'Su', label: 'Sunday' }
-  ];
+  allDays = DAYS_OF_WEEK;
 
   branches = signal<BranchApi[]>([]);
   loading = signal(false);
@@ -378,7 +357,7 @@ export class TrainerAddComponent implements OnInit {
         name: this.trainerName.trim(),
         startDate: this.startDate ? this.formatDate(this.startDate) : null,
         salary: this.salary ?? null,
-        defaultBranchId: this.branchId || null,
+        defaultBranchId: null,
         preferredDays: this.selectedDays.length ? this.selectedDays.join(',') : null,
         preferredTime,
         preferredLocations: this.selectedLocations.length ? this.selectedLocations.join(',') : null

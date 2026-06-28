@@ -55,6 +55,46 @@ public class AssetController {
         return ResponseEntity.created(URI.create("/api/vehicles/types/" + saved.getTypeId())).body(saved);
     }
 
+    /**
+     * PUT /api/vehicles/types/{id}/deactivate
+     * Deactivates a vehicle type config and all linked vehicles.
+     * Returns the list of deactivated vehicles.
+     */
+    @PutMapping("/types/{id}/deactivate")
+    public ResponseEntity<List<AssetInfo>> deactivateType(@PathVariable Long id) {
+        List<AssetInfo> deactivated = service.deactivateTypeConfig(id);
+        return ResponseEntity.ok(deactivated);
+    }
+
+    /**
+     * PUT /api/vehicles/types/{id}/activate
+     * Reactivates a vehicle type config.
+     */
+    @PutMapping("/types/{id}/activate")
+    public ResponseEntity<Void> activateType(@PathVariable Long id) {
+        service.activateTypeConfig(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * DELETE /api/vehicles/types/{id}
+     * Deletes a vehicle type config. Fails if vehicles still reference it.
+     */
+    @DeleteMapping("/types/{id}")
+    public ResponseEntity<Void> deleteType(@PathVariable Long id) {
+        service.deleteTypeConfig(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * GET /api/vehicles/types/{id}/deactivated-vehicles
+     * Returns vehicles linked to this type that are currently INACTIVE.
+     */
+    @GetMapping("/types/{id}/deactivated-vehicles")
+    public List<AssetInfo> getDeactivatedVehiclesByType(@PathVariable Long id) {
+        return service.getDeactivatedVehiclesByType(id);
+    }
+
     @PostMapping
     public ResponseEntity<AssetInfo> create(@Valid @RequestBody AssetRequest req) {
         AssetInfo saved = service.create(req);

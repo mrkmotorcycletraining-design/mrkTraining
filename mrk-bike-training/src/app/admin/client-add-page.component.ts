@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { TrainingApiService } from '../core/services/training-api.service';
 import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-template';
+import { ProfilePictureUploadComponent } from '../core/components/profile-picture-upload/profile-picture-upload.component';
 
 @Component({
   selector: 'app-client-add-page',
@@ -17,7 +18,8 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
     MatInputModule,
     MatButtonModule,
     MatIconModule,
-    FormBgTemplateComponent
+    FormBgTemplateComponent,
+    ProfilePictureUploadComponent
   ],
   template: `
     <app-form-bg-template>
@@ -27,6 +29,12 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
         @if (error()) {
           <div class="alert alert-error">⚠️ {{ error() }}</div>
         }
+
+        <!-- Profile Picture -->
+        <app-profile-picture-upload
+          label="Profile Picture (optional)"
+          (imageSelected)="onProfilePicChange($event)"
+        />
 
         <mat-form-field appearance="outline">
           <mat-label>Full Name</mat-label>
@@ -98,40 +106,37 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
           }
         </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Height (ft)</mat-label>
-          <input
-            matInput
-            name="heightFt"
-            type="number"
-            step="0.01"
-            min="1"
-            max="8"
-            placeholder="e.g. 5.7"
-            required
-            [(ngModel)]="heightFt"
-            #heightCtrl="ngModel"
-          />
-          <mat-icon matSuffix>height</mat-icon>
-          <mat-hint>Height in feet (e.g. 5.7 for 5 feet 7 inches)</mat-hint>
-          @if (heightCtrl.touched && heightCtrl.errors?.['required']) {
-            <mat-error>Height is required</mat-error>
-          }
-        </mat-form-field>
+        <div class="field-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Height (ft) — optional</mat-label>
+            <input
+              matInput
+              name="heightFt"
+              type="number"
+              step="0.01"
+              min="1"
+              max="8"
+              placeholder="e.g. 5.7"
+              [(ngModel)]="heightFt"
+            />
+            <mat-icon matSuffix>height</mat-icon>
+            <mat-hint>Height in feet (e.g. 5.7 for 5′7″)</mat-hint>
+          </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Weight (kg)</mat-label>
-          <input
-            matInput
-            name="weightKg"
-            type="number"
-            min="20"
-            max="300"
-            placeholder="e.g. 65"
-            [(ngModel)]="weightKg"
-          />
-          <mat-icon matSuffix>monitor_weight</mat-icon>
-        </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Weight (kg)</mat-label>
+            <input
+              matInput
+              name="weightKg"
+              type="number"
+              min="20"
+              max="300"
+              placeholder="e.g. 65"
+              [(ngModel)]="weightKg"
+            />
+            <mat-icon matSuffix>monitor_weight</mat-icon>
+          </mat-form-field>
+        </div>
 
         <mat-form-field appearance="outline">
           <mat-label>Allowed Trainings</mat-label>
@@ -151,6 +156,7 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
           <button mat-flat-button color="primary" type="submit" [disabled]="loading()">
             {{ loading() ? 'Creating…' : 'Create Client' }}
           </button>
+          <button mat-stroked-button type="button" (click)="cancel()">Cancel</button>
         </div>
       </form>
     </app-form-bg-template>
@@ -181,6 +187,12 @@ import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-templa
       border: 1px solid rgba(255, 255, 255, 0.4);
       padding: 0.5rem 0.75rem;
       border-radius: 4px;
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
     }
 
     /* Material form field overrides for white-on-blue */
@@ -245,9 +257,14 @@ export class ClientAddPageComponent {
   heightFt: number | null = null;
   weightKg: number | null = null;
   allowed = 2;
+  profilePicture: string | null = null;
 
   loading = signal(false);
   error = signal<string | null>(null);
+
+  onProfilePicChange(base64: string | null) {
+    this.profilePicture = base64;
+  }
 
   submit(form: NgForm) {
     if (form.invalid) {
@@ -266,10 +283,11 @@ export class ClientAddPageComponent {
         password: this.password,
         allowedNumOfTrainings: this.allowed,
         heightFt: this.heightFt,
-        weightKg: this.weightKg
+        weightKg: this.weightKg,
+        profilePicture: this.profilePicture
       })
       .subscribe({
-        next: (c) => this.router.navigate(['/admin/clients', c.id]),
+        next: () => this.router.navigate(['/admin/clients-view']),
         error: (e) => {
           this.error.set(e.error?.error ?? 'Failed to create client');
           this.loading.set(false);
@@ -278,6 +296,6 @@ export class ClientAddPageComponent {
   }
 
   cancel() {
-    this.router.navigate(['/admin/clients']);
+    this.router.navigate(['/admin/clients-view']);
   }
 }

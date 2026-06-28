@@ -37,8 +37,20 @@
     </div>
   }
 
-  <!-- Hidden time pickers (timeOnly or datetime mode) -->
-  @if (!dateOnly) {
+  <!-- Time range picker for timeOnly mode (uses reusable sub-component) -->
+  @if (timeOnly) {
+    <div class="hidden-picker">
+      <app-time-range-picker
+        #timeRangePicker
+        [label]="label"
+        [placeholder]="placeholder"
+        (rangeSelected)="onTimeRangeSelected($event)"
+      />
+    </div>
+  }
+
+  <!-- Hidden time pickers for datetime mode (not timeOnly) -->
+  @if (!dateOnly && !timeOnly) {
     <div class="hidden-picker">
       <input
         [ngxMatTimepicker]="fromTimePicker"
@@ -51,8 +63,8 @@
         [format]="12"
         [timepickerClass]="'from-time-picker'"
         [enableKeyboardInput]="true"
-        (timeSet)="onFromTimeSet($event)"
         [editableHintTmpl]="fromTimeLabel"
+        (timeSet)="onFromTimeSet($event)"
       ></ngx-mat-timepicker>
 
       <ng-template #fromTimeLabel>

@@ -15,7 +15,7 @@ export const CLIENT_ROUTES: Routes = [
       {
         path: 'trainings/apply',
         loadComponent: () =>
-          import('./enrollment-stepper.component').then((m) => m.EnrollmentStepperComponent)
+          import('./apply-training.component').then((m) => m.ApplyTrainingComponent)
       },
       {
         path: 'trainings/:id',

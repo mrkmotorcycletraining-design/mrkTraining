@@ -37,9 +37,10 @@ public class BranchService {
     }
 
     /**
-     * Update an existing branch's name and/or address.
+     * Update an existing branch's name, address, operating days, and/or operating time.
      */
-    public Branch update(String id, String name, String locationAddress) {
+    public Branch update(String id, String name, String locationAddress,
+                         String operatingDays, String operatingTime) {
         Branch branch = findById(id);
         if (name != null && !name.isBlank()) {
             branch.setName(name.trim());
@@ -47,6 +48,8 @@ public class BranchService {
         if (locationAddress != null && !locationAddress.isBlank()) {
             branch.setLocationAddress(locationAddress.trim());
         }
+        branch.setOperatingDays(operatingDays);
+        branch.setOperatingTime(operatingTime);
         return repo.save(branch);
     }
 }

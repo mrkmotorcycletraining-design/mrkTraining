@@ -33,6 +33,9 @@ public class TrainerAvailabilityController {
     //    @PreAuthorize("hasAnyRole('TRAINER','ADMIN','SUPER_ADMIN')")
     public List<TrainerAvailability> list(@RequestParam(required = false) Long trainerId) {
         Long id = resolveTrainerId(trainerId);
+        if (id == null) {
+            return service.getAllActiveSlots();
+        }
         return service.getActiveSlots(id);
     }
 
@@ -56,9 +59,7 @@ public class TrainerAvailabilityController {
         if (SecurityUtils.currentRole() == Role.TRAINER) {
             return SecurityUtils.currentUserId();
         }
-        if (trainerId == null) {
-            throw new IllegalArgumentException("trainerId is required for admin callers.");
-        }
+        // Admin/SuperAdmin: if no trainerId provided, return null to fetch all
         return trainerId;
     }
 

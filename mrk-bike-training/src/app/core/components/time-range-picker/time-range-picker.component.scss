@@ -1,0 +1,67 @@
+:host {
+  display: block;
+}
+
+.time-range-picker-wrapper {
+  width: 100%;
+}
+
+.time-range-field {
+  width: 100%;
+  cursor: pointer;
+
+  input {
+    cursor: pointer;
+  }
+}
+
+/* White-on-blue styling to match parent form fields */
+::ng-deep .time-range-field.mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: rgba(255, 255, 255, 0.7);
+  --mdc-outlined-text-field-hover-outline-color: #fff;
+  --mdc-outlined-text-field-focus-outline-color: #fff;
+  --mdc-outlined-text-field-label-text-color: #fff;
+  --mdc-outlined-text-field-focus-label-text-color: #fff;
+  --mdc-outlined-text-field-hover-label-text-color: #fff;
+  --mdc-outlined-text-field-input-text-color: #fff;
+  --mdc-outlined-text-field-input-text-placeholder-color: rgba(255, 255, 255, 0.5);
+  --mdc-outlined-text-field-caret-color: #fff;
+  --mat-form-field-state-layer-color: transparent;
+}
+
+::ng-deep .time-range-field .mdc-floating-label,
+::ng-deep .time-range-field .mdc-floating-label--float-above,
+::ng-deep .time-range-field .mat-mdc-floating-label,
+::ng-deep .time-range-field label {
+  color: #fff !important;
+}
+
+::ng-deep .time-range-field input.mat-mdc-input-element {
+  color: #fff !important;
+}
+
+::ng-deep .time-range-field input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+::ng-deep .time-range-field .mat-mdc-form-field-icon-suffix {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Hidden elements */
+.hidden-picker {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hidden-time-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}

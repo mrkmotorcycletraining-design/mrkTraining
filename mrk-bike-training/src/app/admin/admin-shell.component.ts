@@ -22,9 +22,7 @@ import { NavbarComponent } from '../core/components/app-navbar/app-navbar.compon
     }
     .content-container {
       flex: 1;
-      padding: 2rem;
-      max-width: 1200px;
-      margin: 0 auto;
+      padding: 1rem;
       width: 100%;
       box-sizing: border-box;
     }

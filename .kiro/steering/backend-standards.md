@@ -58,16 +58,23 @@ Controller → Service (interface) → ServiceImpl → Repository
   `Mo,Tu,We,Th,Fr,Sa,Su`
 - The backend stores and returns only these 2-letter codes.
 - The frontend is responsible for displaying full day names to the user.
+- **Use the `DayOfWeekCode` enum** (`com.mrk.training.model.DayOfWeekCode`) for all day-related logic:
+  - `DayOfWeekCode.Mo` — enum constant, `.name()` returns "Mo"
+  - `.getShortName()` → "Mon"
+  - `.getFullName()` → "Monday"
+  - `DayOfWeekCode.fromCode("Mo")` → parses a 2-letter string to the enum
+  - `DayOfWeekCode.codesToFullNames("Mo,Tu,Fr")` → "Monday, Tuesday, Friday"
+- Do NOT hardcode day mappings inline — always reference the enum.
 - Mapping reference:
-  | Code | Day |
-  |------|-----------|
-  | Mo | Monday |
-  | Tu | Tuesday |
-  | We | Wednesday |
-  | Th | Thursday |
-  | Fr | Friday |
-  | Sa | Saturday |
-  | Su | Sunday |
+  | Code | Short | Full |
+  |------|-------|-----------|
+  | Mo | Mon | Monday |
+  | Tu | Tue | Tuesday |
+  | We | Wed | Wednesday |
+  | Th | Thu | Thursday |
+  | Fr | Fri | Friday |
+  | Sa | Sat | Saturday |
+  | Su | Sun | Sunday |
 
 ## Time Range Columns
 

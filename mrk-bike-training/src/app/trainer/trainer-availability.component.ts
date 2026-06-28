@@ -12,7 +12,7 @@ import { TrainerAvailabilityApi } from '../core/models/api.models';
     <h2>My Availability</h2>
     <form (ngSubmit)="add()" class="form">
       <label>Branch ID <input [(ngModel)]="branchId" name="b" required /></label>
-      <label>Days (Mo,Tu,...) <input [(ngModel)]="availableDays" name="days" required /></label>
+      <label>Max Trainings <input type="number" [(ngModel)]="numberOfTrainingCanTake" name="maxTrainings" required min="1" /></label>
       <label>Start <input type="time" [(ngModel)]="slotStart" name="s" required /></label>
       <label>End <input type="time" [(ngModel)]="slotEnd" name="e" required /></label>
       <label>From <input type="date" [(ngModel)]="effectiveFrom" name="f" required /></label>
@@ -23,7 +23,7 @@ import { TrainerAvailabilityApi } from '../core/models/api.models';
     <ul>
       @for (a of slots(); track a.id) {
         <li>
-          {{ a.branchId }} {{ a.availableDays }} {{ a.slotStartTime }}–{{ a.slotEndTime }}
+          {{ a.branchId }} Max: {{ a.numberOfTrainingCanTake }} {{ a.slotStartTime }}–{{ a.slotEndTime }}
           <button type="button" (click)="remove(a.id)">Remove</button>
         </li>
       }
@@ -40,7 +40,7 @@ export class TrainerAvailabilityComponent implements OnInit {
   slots = signal<TrainerAvailabilityApi[]>([]);
   conflict = signal<string | null>(null);
   branchId = '';
-  availableDays = 'Mo,Tu,We,Th,Fr';
+  numberOfTrainingCanTake: number = 1;
   slotStart = '09:00';
   slotEnd = '17:00';
   effectiveFrom = '';
@@ -61,7 +61,7 @@ export class TrainerAvailabilityComponent implements OnInit {
       .addTrainerAvailability({
         trainerId,
         branchId: this.branchId,
-        availableDays: this.availableDays,
+        numberOfTrainingCanTake: this.numberOfTrainingCanTake,
         slotStartTime: this.slotStart + ':00',
         slotEndTime: this.slotEnd + ':00',
         effectiveFrom: this.effectiveFrom,

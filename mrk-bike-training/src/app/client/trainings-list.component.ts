@@ -1,46 +1,96 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
-import { DatePipe } from '@angular/common';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { TrainingApiService } from '../core/services/training-api.service';
-import { EnrollmentApi } from '../core/models/api.models';
+import { ColDef } from 'ag-grid-community';
+import { CustomGridComponent } from '../core/components/custom-grid.component/custom-grid.component';
 
 @Component({
   selector: 'app-trainings-list',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, CustomGridComponent],
   template: `
-    <div class="head">
-      <h2>My Trainings</h2>
-      <a routerLink="/client/trainings/apply" class="btn">Apply New Training</a>
+    <div class="page-container">
+      <div class="head">
+        <h2>📋 My Trainings</h2>
+        <a routerLink="/client/trainings/apply" class="btn">Apply New Training</a>
+      </div>
+      <app-custom-grid
+        [apiUrl]="apiUrl"
+        [columnDefs]="columnDefs"
+        [enableRowClick]="true"
+      />
     </div>
-    <table>
-      <thead>
-        <tr><th>Course</th><th>Status</th><th>Submitted</th><th></th></tr>
-      </thead>
-      <tbody>
-        @for (e of enrollments(); track e.id) {
-          <tr>
-            <td>{{ e.course?.name ?? e.course?.id }}</td>
-            <td>{{ e.status }}</td>
-            <td>{{ e.enrollmentDate | date }}</td>
-            <td><a [routerLink]="['/client/trainings', e.id]">Details</a></td>
-          </tr>
-        }
-      </tbody>
-    </table>
   `,
   styles: `
-    .head { display: flex; justify-content: space-between; align-items: center; }
-    .btn { padding: 0.4rem 0.8rem; background: #1565c0; color: #fff; text-decoration: none; border-radius: 4px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-    th, td { border: 1px solid #ddd; padding: 0.5rem; text-align: left; }
+    .page-container {
+      padding: 1.5rem;
+    }
+    .head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+    .btn {
+      background: #1565c0;
+      color: #fff;
+      padding: 0.5rem 1rem;
+      text-decoration: none;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
   `
 })
-export class TrainingsListComponent implements OnInit {
-  private readonly api = inject(TrainingApiService);
-  enrollments = signal<EnrollmentApi[]>([]);
+export class TrainingsListComponent {
+  apiUrl = '/api/enrollments/mine';
 
-  ngOnInit() {
-    this.api.listMyEnrollments().subscribe((list) => this.enrollments.set(list));
-  }
+  columnDefs: ColDef[] = [
+    {
+      field: 'course.name',
+      headerName: 'Course',
+      flex: 1.5,
+      valueFormatter: params => params.value ?? '—'
+    },
+    {
+      field: 'course.category',
+      headerName: 'Category',
+      flex: 1,
+      valueFormatter: params => params.value ?? '—'
+    },
+    {
+      field: 'branch.name',
+      headerName: 'Branch',
+      flex: 1,
+      valueFormatter: params => params.value ?? '—'
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      flex: 0.8,
+      valueFormatter: params => params.value ?? '—'
+    },
+    {
+      field: 'enrollmentDate',
+      headerName: 'Enrolled',
+      flex: 0.9,
+      valueFormatter: params => params.value ? new Date(params.value).toLocaleDateString() : '—'
+    },
+    {
+      field: 'totalAmountPaid',
+      headerName: 'Amount Paid',
+      flex: 0.8,
+      valueFormatter: params => params.value != null ? `₹${params.value}` : '—'
+    },
+    {
+      field: 'bufferDaysAllocated',
+      headerName: 'Buffer Days',
+      flex: 0.7,
+      valueFormatter: params => params.value != null ? `${params.value}` : '—'
+    }
+  ];
 }

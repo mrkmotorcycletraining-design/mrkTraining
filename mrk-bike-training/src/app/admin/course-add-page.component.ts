@@ -8,10 +8,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { NgxMatTimepickerComponent, NgxMatTimepickerDirective } from 'ngx-mat-timepicker';
 import { TrainingApiService } from '../core/services/training-api.service';
 import { FormBgTemplateComponent } from '../core/form-bg-template/form-bg-template';
-import { TimePickerComponent } from '../core/components/time-picker/time-picker.component';
 import { CourseCategory } from '../core/models/api.models';
+import { DAYS_OF_WEEK } from '../core/models/days.enum';
 
 @Component({
   selector: 'app-course-add-page',
@@ -25,8 +27,10 @@ import { CourseCategory } from '../core/models/api.models';
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    FormBgTemplateComponent,
-    TimePickerComponent
+    MatCheckboxModule,
+    NgxMatTimepickerComponent,
+    NgxMatTimepickerDirective,
+    FormBgTemplateComponent
   ],
   template: `
     <app-form-bg-template>
@@ -93,7 +97,7 @@ import { CourseCategory } from '../core/models/api.models';
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-          <mat-label>Total Days</mat-label>
+          <mat-label>No. of Training Days</mat-label>
           <input
             matInput
             name="totalDays"
@@ -102,32 +106,29 @@ import { CourseCategory } from '../core/models/api.models';
             placeholder="e.g. 15"
             required
             [(ngModel)]="totalDays"
+            (ngModelChange)="onTotalDaysChange($event)"
             #tdCtrl="ngModel"
           />
           <mat-icon matSuffix>date_range</mat-icon>
           @if (tdCtrl.touched && tdCtrl.errors?.['required']) {
-            <mat-error>Total days is required</mat-error>
+            <mat-error>No. of Training Days is required</mat-error>
           }
         </mat-form-field>
 
         @if (category !== 'TRIP') {
-          <mat-form-field appearance="outline">
-            <mat-label>Preferred Days of Week</mat-label>
-            <mat-select
-              name="preferredDays"
-              multiple
-              [(ngModel)]="selectedDays"
-            >
-              <mat-option value="Mon">Monday</mat-option>
-              <mat-option value="Tue">Tuesday</mat-option>
-              <mat-option value="Wed">Wednesday</mat-option>
-              <mat-option value="Thu">Thursday</mat-option>
-              <mat-option value="Fri">Friday</mat-option>
-              <mat-option value="Sat">Saturday</mat-option>
-              <mat-option value="Sun">Sunday</mat-option>
-            </mat-select>
-            <mat-icon matSuffix>event_note</mat-icon>
-          </mat-form-field>
+          <!-- Preferred Days -->
+          <div class="field-section">
+            <label class="section-label">Preferred Days</label>
+            <div class="days-row">
+              @for (day of allDays; track day.code) {
+                <mat-checkbox
+                  [checked]="isDaySelected(day.code)"
+                  (change)="toggleDay(day.code, $event.checked)"
+                  color="primary"
+                >{{ day.fullName }}</mat-checkbox>
+              }
+            </div>
+          </div>
 
           <mat-form-field appearance="outline">
             <mat-label>Buffer Days</mat-label>
@@ -166,17 +167,7 @@ import { CourseCategory } from '../core/models/api.models';
                 <mat-error>Start date is required for trips</mat-error>
               }
             </mat-form-field>
-
-            <app-time-picker
-              name="startTime"
-              [(ngModel)]="startTime"
-              [label]="'Start Time' + (category === 'TRIP' ? ' *' : '')"
-              placeholder="Select start time"
-              [required]="category === 'TRIP'"
-            ></app-time-picker>
-          </div>
-
-          <div class="field-row">
+            
             <mat-form-field appearance="outline">
               <mat-label>End Date</mat-label>
               <input
@@ -189,13 +180,49 @@ import { CourseCategory } from '../core/models/api.models';
               <mat-datepicker-toggle matIconSuffix [for]="endPicker"></mat-datepicker-toggle>
               <mat-datepicker #endPicker></mat-datepicker>
             </mat-form-field>
+          </div>
 
-            <app-time-picker
-              name="endTime"
-              [(ngModel)]="endTime"
-              label="End Time"
-              placeholder="Select end time"
-            ></app-time-picker>
+          <div class="field-row">
+            <div>
+              <mat-form-field appearance="outline" (click)="startTimePicker.open()">
+                <mat-label>Start Time{{ category === 'TRIP' ? ' *' : '' }}</mat-label>
+                <input
+                  matInput
+                  [ngxMatTimepicker]="startTimePicker"
+                  [format]="12"
+                  readonly
+                  placeholder="Select start time"
+                  name="startTime"
+                  [(ngModel)]="startTime"
+                  [required]="category === 'TRIP'"
+                />
+                <mat-icon matSuffix>access_time</mat-icon>
+              </mat-form-field>
+              <ngx-mat-timepicker #startTimePicker [format]="12" [enableKeyboardInput]="true" [editableHintTmpl]="startTimeLabel"></ngx-mat-timepicker>
+              <ng-template #startTimeLabel>
+                <div class="clock-dialog-title">Select Start Time</div>
+              </ng-template>
+            </div>
+
+            <div>
+              <mat-form-field appearance="outline" (click)="endTimePicker.open()">
+                <mat-label>End Time</mat-label>
+                <input
+                  matInput
+                  [ngxMatTimepicker]="endTimePicker"
+                  [format]="12"
+                  readonly
+                  placeholder="Select end time"
+                  name="endTime"
+                  [(ngModel)]="endTime"
+                />
+                <mat-icon matSuffix>access_time</mat-icon>
+              </mat-form-field>
+              <ngx-mat-timepicker #endTimePicker [format]="12" [enableKeyboardInput]="true" [editableHintTmpl]="endTimeLabel"></ngx-mat-timepicker>
+              <ng-template #endTimeLabel>
+                <div class="clock-dialog-title">Select End Time</div>
+              </ng-template>
+            </div>
           </div>
         </div>
 
@@ -407,6 +434,32 @@ import { CourseCategory } from '../core/models/api.models';
       gap: 0.75rem;
       margin-top: 0.75rem;
     }
+
+    .field-section {
+      margin-bottom: 0.5rem;
+    }
+
+    .section-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #fff;
+      margin-bottom: 0.4rem;
+    }
+
+    .days-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+    }
+
+    ::ng-deep .days-row .mat-mdc-checkbox .mdc-label {
+      color: #fff !important;
+    }
+
+    ::ng-deep .days-row .mat-mdc-checkbox .mdc-checkbox__background {
+      border-color: rgba(255, 255, 255, 0.7) !important;
+    }
   `
 })
 export class CourseAddPageComponent {
@@ -424,11 +477,31 @@ export class CourseAddPageComponent {
   endDateValue: Date | null = null;
   endTime = '';
 
+  allDays = DAYS_OF_WEEK;
+
   selectedFile = signal<File | null>(null);
   imagePreview = signal<string | null>(null);
 
   loading = signal(false);
   error = signal<string | null>(null);
+
+  isDaySelected(code: string): boolean {
+    return this.selectedDays.includes(code);
+  }
+
+  toggleDay(code: string, checked: boolean) {
+    if (checked) {
+      this.selectedDays = [...this.selectedDays, code];
+    } else {
+      this.selectedDays = this.selectedDays.filter(d => d !== code);
+    }
+  }
+
+  onTotalDaysChange(value: number | null) {
+    if (value != null && value >= 0) {
+      this.bufferDays = value;
+    }
+  }
 
   onFileSelected(event: Event) {
     const input = event.target as HTMLInputElement;

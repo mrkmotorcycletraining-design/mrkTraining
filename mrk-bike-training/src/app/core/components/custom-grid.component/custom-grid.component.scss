@@ -1,4 +1,11 @@
+/* Grid container sizing */
+app-custom-grid {
+  display: block;
+  width: 100%;
+}
+
 .grid-container {
   width: 100%;
-  height: 500px;
+  height: calc(100vh - 160px);
+  min-height: 400px;
 }

@@ -165,4 +165,59 @@ public class AssetService {
         v.setCurrentBranch(branch);
         repo.save(v);
     }
+
+    /**
+     * Deactivate a vehicle type config and all linked vehicles.
+     * Returns the list of vehicles that were deactivated.
+     */
+    public List<AssetInfo> deactivateTypeConfig(Long typeId) {
+        VehicleTypeConfig config = typeConfigRepo.findById(typeId)
+                .orElseThrow(() -> new IllegalArgumentException("Vehicle type config not found: " + typeId));
+        config.setStatus(false);
+        typeConfigRepo.save(config);
+
+        // Deactivate all linked vehicles
+        List<AssetInfo> linkedVehicles = repo.findByVehicleType_TypeId(typeId);
+        for (AssetInfo v : linkedVehicles) {
+            v.setStatus("INACTIVE");
+        }
+        repo.saveAll(linkedVehicles);
+        return linkedVehicles.stream().filter(v -> "INACTIVE".equals(v.getStatus())).toList();
+    }
+
+    /**
+     * Activate a vehicle type config (does NOT auto-activate vehicles).
+     */
+    public void activateTypeConfig(Long typeId) {
+        VehicleTypeConfig config = typeConfigRepo.findById(typeId)
+                .orElseThrow(() -> new IllegalArgumentException("Vehicle type config not found: " + typeId));
+        config.setStatus(true);
+        typeConfigRepo.save(config);
+    }
+
+    /**
+     * Delete a vehicle type config. Fails if any active/non-deleted vehicles still reference it.
+     */
+    public void deleteTypeConfig(Long typeId) {
+        VehicleTypeConfig config = typeConfigRepo.findById(typeId)
+                .orElseThrow(() -> new IllegalArgumentException("Vehicle type config not found: " + typeId));
+
+        List<AssetInfo> linkedVehicles = repo.findByVehicleType_TypeId(typeId);
+        if (!linkedVehicles.isEmpty()) {
+            throw new IllegalArgumentException(
+                    "Cannot delete this vehicle type. There are " + linkedVehicles.size()
+                    + " vehicle(s) linked to it. Please deactivate or delete them first.");
+        }
+
+        typeConfigRepo.delete(config);
+    }
+
+    /**
+     * Get vehicles linked to a type config that are now inactive.
+     */
+    public List<AssetInfo> getDeactivatedVehiclesByType(Long typeId) {
+        return repo.findByVehicleType_TypeId(typeId).stream()
+                .filter(v -> "INACTIVE".equals(v.getStatus()))
+                .toList();
+    }
 }

@@ -30,7 +30,7 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'clients-view',
         loadComponent: () =>
-          import('../components/client/client-view').then((m) => m.ClientView)
+          import('./client-list-page.component').then((m) => m.ClientListPageComponent)
       },
       {
         path: 'clients/:id',
@@ -52,7 +52,7 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'trainers-view',
         loadComponent: () =>
-          import('../components/trainer/trainer-view').then((m) => m.TrainerView)
+          import('./trainer-list-page.component').then((m) => m.TrainerListPageComponent)
       },
       {
         path: 'trainers/:id',
@@ -64,17 +64,37 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () =>
           import('./trainer-add.component').then((m) => m.TrainerAddComponent)
       },
+      {
+        path: 'trainer-schedule-add',
+        loadComponent: () =>
+          import('./trainer-schedule-add.component').then((m) => m.TrainerScheduleAddComponent)
+      },
+      {
+        path: 'trainer-schedule-view',
+        loadComponent: () =>
+          import('./trainer-schedule-view.component').then((m) => m.TrainerScheduleViewComponent)
+      },
 
       // Admin
-      {
-        path: 'branches-view',
-        loadComponent: () =>
-          import('../components/branch/branch-view').then((m) => m.BranchView)
-      },
       {
         path: 'branches-add',
         loadComponent: () =>
           import('./branch-add-page.component').then((m) => m.BranchAddPageComponent)
+      },
+      {
+        path: 'branches-view',
+        loadComponent: () =>
+          import('./branch-list-page.component').then((m) => m.BranchListPageComponent)
+      },
+      {
+        path: 'backup-download',
+        loadComponent: () =>
+          import('./backup-download.component').then((m) => m.BackupDownloadComponent)
+      },
+      {
+        path: 'backup-restore',
+        loadComponent: () =>
+          import('./backup-restore.component').then((m) => m.BackupRestoreComponent)
       },
       {
         path: 'site',
@@ -129,6 +149,13 @@ export const ADMIN_ROUTES: Routes = [
         path: 'vehicles-manage',
         loadComponent: () =>
           import('./vehicle-management.component').then((m) => m.VehicleManagementComponent)
+      },
+
+      // Assign Training
+      {
+        path: 'assign-training',
+        loadComponent: () =>
+          import('./assign-training.component').then((m) => m.AssignTrainingComponent)
       }
     ]
   }

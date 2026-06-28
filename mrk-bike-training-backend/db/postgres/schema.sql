@@ -60,8 +60,8 @@ CREATE TABLE IF NOT EXISTS client_profiles (
     --   Only Admin/SuperAdmin can set or change this value; not visible to client.
     allowed_num_of_trainings INTEGER DEFAULT 1,
     date_of_birth DATE,
-    profile_picture TEXT,
-    height_ft DOUBLE PRECISION NOT NULL,
+    profile_picture BYTEA,
+    height_ft DOUBLE PRECISION,
     weight_kg INTEGER,
     CONSTRAINT fk_client_user FOREIGN KEY (username) REFERENCES users(username) ON DELETE CASCADE
 );
@@ -69,7 +69,9 @@ CREATE TABLE IF NOT EXISTS client_profiles (
 CREATE TABLE IF NOT EXISTS branches (
     id VARCHAR(255) PRIMARY KEY,
     name VARCHAR(255),
-    location_address TEXT NOT NULL
+    location_address TEXT NOT NULL,
+    operating_days VARCHAR(255),
+    operating_time VARCHAR(512)
 );
 
 CREATE TABLE IF NOT EXISTS vehicle_type_config (
@@ -117,9 +119,9 @@ CREATE TABLE IF NOT EXISTS courses (
     buffer_days INTEGER DEFAULT 0,
     template_image BYTEA,
     start_date DATE,
-    start_time TIME DEFAULT '00:00:00',
+    start_time VARCHAR(20),
     end_date DATE,
-    end_time TIME,
+    end_time VARCHAR(20),
     status VARCHAR(50) DEFAULT 'ACTIVE'
 );
 
@@ -195,15 +197,19 @@ CREATE TABLE IF NOT EXISTS trainer_availability (
     id                  BIGSERIAL PRIMARY KEY,
     trainer_id          BIGINT NOT NULL,
     branch_id           VARCHAR(255) NOT NULL,
-    available_days      VARCHAR(50) NOT NULL,
+    number_of_training_can_take INTEGER NOT NULL DEFAULT 1,
     slot_start_time     TIME NOT NULL,
     slot_end_time       TIME NOT NULL,
     effective_from      DATE NOT NULL,
     effective_to        DATE,
+    preferred_days      VARCHAR(255),
     is_active           BOOLEAN DEFAULT TRUE,
     audit_start_date_time TIMESTAMP NOT NULL DEFAULT NOW(),
+    last_update_user    BIGINT,
     CONSTRAINT fk_avail_trainer FOREIGN KEY (trainer_id)
-        REFERENCES trainer_profiles(id)
+        REFERENCES trainer_profiles(id),
+    CONSTRAINT fk_avail_last_user FOREIGN KEY (last_update_user)
+        REFERENCES users(id)
 );
 
 CREATE INDEX IF NOT EXISTS idx_avail_trainer_branch
